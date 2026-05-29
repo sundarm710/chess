@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Positional Feature Stepper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F0E7; --paper2:#EDE7D9; --ink:#211C16; --ink2:#5C5345; --line:#D8CFBC;
+    --w:#9A3B2E; --b:#1F5673;
+    --good:#0F6E56; --bad:#B0522A; --hl:rgba(176,138,46,.40);
+    --lsq:#EAE0C8; --dsq:#B59169;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Hanken Grotesk",sans-serif;line-height:1.4;
+    -webkit-font-smoothing:antialiased;padding:12px 16px 14px;font-size:13px;}
+  .wrap{max-width:1360px;margin:0 auto;}
+
+  /* ---- top bar: title + controls on one line ---- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:9px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:baseline;gap:10px;min-width:0;}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:19px;letter-spacing:-.01em;margin:0;white-space:nowrap;}
+  .tagline{font-size:11.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  select,button,textarea,input{font-family:inherit;font-size:12.5px;color:var(--ink);}
+  select{padding:5px 8px;border:1px solid var(--line);background:var(--paper2);border-radius:6px;max-width:330px;}
+  button{padding:5px 10px;border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer;transition:background .15s,transform .05s;}
+  button:hover{background:var(--paper2);} button:active{transform:scale(.97);}
+  button:disabled{opacity:.4;cursor:default;}
+  .modetoggle{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink2);cursor:pointer;white-space:nowrap;}
+  .urlin{padding:5px 7px;border:1px solid var(--line);border-radius:6px;background:#fff;
+    font-family:"IBM Plex Mono",monospace;font-size:11px;width:150px;}
+  .urlin:disabled{opacity:.45;}
+  .pgnbox{display:none;width:100%;margin-bottom:8px;}
+  textarea{width:100%;min-height:64px;padding:8px;border:1px solid var(--line);border-radius:6px;
+    background:#fff;resize:vertical;font-family:"IBM Plex Mono",monospace;font-size:12px;}
+  .err{color:var(--bad);font-size:12px;min-height:0;}
+  .err:not(:empty){margin:2px 0 6px;}
+
+  /* ---- dashboard: board | features | trends ---- */
+  .dash{display:grid;grid-template-columns:330px minmax(0,1fr) 300px;gap:16px;align-items:start;}
+  @media(max-width:1140px){.dash{grid-template-columns:300px minmax(0,1fr);}
+    .trend-col{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:16px;}}
+  @media(max-width:760px){.dash{grid-template-columns:1fr;}.trend-col{grid-template-columns:1fr;}}
+  .col{min-width:0;}
+
+  /* ---- board ---- */
+  .boardwrap,.board-col{user-select:none;}
+  .matchup{font-size:12px;color:var(--ink2);margin-bottom:5px;display:flex;justify-content:space-between;gap:8px;}
+  .matchup b{font-weight:600;color:var(--ink);}
+  .colw{color:var(--w);} .colb{color:var(--b);}
+  .board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);
+    grid-template-rows:repeat(8,1fr);border:1px solid var(--ink);border-radius:4px;overflow:hidden;}
+  .sq{display:flex;align-items:center;justify-content:center;position:relative;min-width:0;min-height:0;overflow:hidden;}
+  .sq.l{background:var(--lsq);} .sq.d{background:var(--dsq);}
+  .sq.mv::after{content:"";position:absolute;inset:0;background:var(--hl);}
+  .sq.fx-bad{box-shadow:inset 0 0 0 3px rgba(176,82,42,.9);}
+  .sq.fx-good{box-shadow:inset 0 0 0 3px rgba(15,110,86,.9);}
+  .sq.fx-neutral{box-shadow:inset 0 0 0 3px rgba(176,138,46,.95);}
+  .pc{position:relative;z-index:1;width:100%;height:100%;}
+  .pc svg{width:100%;height:100%;display:block;}
+  .nav{display:flex;align-items:center;gap:5px;margin-top:6px;}
+  .nav button{min-width:34px;font-size:14px;padding:4px 7px;}
+  .counter{flex:1;text-align:center;font-family:"IBM Plex Mono",monospace;font-size:13px;}
+  .counter .hint{color:var(--ink2);font-size:10.5px;margin-left:4px;font-family:"Hanken Grotesk",sans-serif;}
+  .counter b{color:var(--ink);}
+  .chip{margin-top:6px;padding:6px 9px;border:1px solid var(--line);border-radius:7px;background:var(--paper2);
+    font-size:12px;min-height:28px;display:flex;flex-wrap:wrap;align-items:center;gap:7px;}
+  .tag{font-size:10px;padding:1px 6px;border-radius:20px;font-weight:600;letter-spacing:.02em;}
+  .tag.cap{background:#e7d6cf;color:#7a3326;} .tag.chk{background:#d9e4ea;color:#1f5673;}
+  .tag.cas{background:#e3e0d3;color:#5c5345;} .tag.exp{background:#f0d9c6;color:#9a3b2e;}
+  .tag.dev{background:#d7e6db;color:#0f6e56;}
+
+  /* ---- feature list + explanation ---- */
+  .panelhead{display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+  .panelhead h2{font-family:"Fraunces",serif;font-weight:500;font-size:15px;margin:0;}
+  .ptag{font-size:11px;color:var(--ink2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .fav{font-family:"IBM Plex Mono",monospace;font-size:12px;display:inline-flex;gap:8px;white-space:nowrap;}
+  .fav .favw{color:var(--w);font-weight:600;} .fav .favb{color:var(--b);font-weight:600;}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+  .seg-btn{border:none;background:#fff;padding:3px 9px;font-size:11px;color:var(--ink2);cursor:pointer;}
+  .seg-btn+.seg-btn{border-left:1px solid var(--line);}
+  .seg-btn.on{background:var(--ink);color:var(--paper);}
+  table{width:100%;border-collapse:collapse;}
+  .ftable{table-layout:fixed;}
+  .c-val{width:98px;} .c-cmp{width:24px;}
+  th{font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink2);
+    border-bottom:1px solid var(--line);padding:3px 6px;text-align:right;}
+  th.feat{text-align:left;} th.cmp{text-align:center;padding:3px 0;}
+  td{padding:2.5px 6px;text-align:right;font-size:12.5px;}
+  td.feat{text-align:left;color:var(--ink);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  td.val{font-family:"IBM Plex Mono",monospace;white-space:nowrap;}
+  td.val .num{margin-right:9px;}
+  td.val .dlt{display:inline-block;width:42px;text-align:left;font-size:10px;}
+  td.val.shared{text-align:center;color:var(--ink2);}
+  td.cmp{text-align:center;padding:2.5px 0;font-size:11px;}
+  .cmp-w{color:var(--w);} .cmp-b{color:var(--b);} .cmp-x{color:var(--line);}
+  tr.frow{cursor:pointer;}
+  tr.frow:hover td{background:var(--paper2);}
+  tr.frow.sel td{background:#efe7d6;}
+  tr.frow.sel td.feat{box-shadow:inset 3px 0 0 var(--ink);}
+  tr.cat td{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);
+    padding:6px 6px 1px;font-weight:600;}
+  .tier{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:9px;font-weight:500;
+    padding:0 4px;border-radius:9px;margin-left:5px;vertical-align:middle;background:#e7dfce;color:#6a5f49;}
+  .tier.tT0{background:#e0ead9;color:#3e6f53;} .tier.tT1{background:#e3e7d2;color:#5d6a37;}
+  .tier.tT2{background:#ece4cf;color:#7a6a3e;} .tier.tT3{background:#efddc9;color:#9a6a3b;}
+  .tier.tT4{background:#efd6cb;color:#9a4e3b;} .tier.tT5{background:#e7d2da;color:#7d3b56;}
+  .tier.tT6{background:#d9d2e7;color:#4b3b7d;}
+  .dlt{font-family:"IBM Plex Mono",monospace;}
+  .dlt.pos{color:var(--good);} .dlt.neg{color:var(--bad);} .dlt.neu{color:var(--ink2);}
+
+  .explain{margin-top:8px;border:1px solid var(--line);border-radius:8px;background:var(--paper2);
+    padding:8px 10px;min-height:64px;}
+  .exhint{font-size:12px;color:var(--ink2);}
+  .exhead{display:flex;align-items:center;gap:7px;margin-bottom:3px;}
+  .exname{font-family:"Fraunces",serif;font-weight:500;font-size:14.5px;}
+  .excat{font-size:10px;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em;}
+  .exdesc{font-size:12px;color:var(--ink);margin:0 0 6px;}
+  .exdesc.tech{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink2);margin:-3px 0 6px;}
+  .exwhy .tech{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink2);}
+  .exvals{display:flex;gap:16px;margin-bottom:5px;}
+  .exvals .dlt{margin-left:5px;font-size:11px;}
+  .evside{display:flex;align-items:baseline;gap:5px;}
+  .evlbl{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink2);}
+  .evside.w .evlbl{color:var(--w);} .evside.b .evlbl{color:var(--b);}
+  .evval{font-family:"IBM Plex Mono",monospace;font-size:16px;}
+  .exwhy{border-top:1px solid var(--line);padding-top:5px;}
+  .exwhy-h{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink2);margin-bottom:2px;}
+  .exwhy ul{margin:0;padding-left:15px;font-size:12px;}
+  .exwhy li{margin:1px 0;}
+  .exna{font-size:11px;color:var(--bad);margin:5px 0 0;}
+
+  /* ---- trends + aggregates ---- */
+  .chartcard{border:1px solid var(--line);border-radius:9px;background:#fff;padding:9px 10px 5px;}
+  .chartcard .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px;}
+  .chartcard h3{font-family:"Fraunces",serif;font-weight:500;font-size:13.5px;margin:0;}
+  .trendply{font-size:10.5px;color:var(--ink2);white-space:nowrap;}
+  .legend{display:flex;gap:12px;font-size:10.5px;color:var(--ink2);align-items:center;margin-bottom:2px;}
+  .legend span{display:flex;align-items:center;gap:4px;}
+  .swatch{width:14px;height:0;border-top-width:2px;border-top-style:solid;}
+  .chh{position:relative;height:150px;}
+  .agg{margin-top:10px;}
+  .agg h3{font-family:"Fraunces",serif;font-weight:500;font-size:13.5px;margin:0 0 6px;}
+  .cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+  .card{border:1px solid var(--line);border-radius:7px;background:#fff;padding:5px 7px;}
+  .card .lbl{font-size:8.5px;text-transform:uppercase;letter-spacing:.02em;color:var(--ink2);line-height:1.2;}
+  .card .v{font-family:"IBM Plex Mono",monospace;font-size:15px;margin-top:1px;}
+  .card.wc{border-left:3px solid var(--w);} .card.bc{border-left:3px solid var(--b);}
+  .read{margin-top:8px;font-size:11px;line-height:1.45;color:var(--ink2);border-left:3px solid var(--line);padding-left:9px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <h1>Positional Feature Stepper</h1>
+      <span class="tagline">engine-free positional features, move by move — click a feature to see why it changed</span>
+    </div>
+    <div class="controls">
+      <select id="gameSel">
+        <option value="opera">Morphy vs Allies, 1858 — sacrificial attack</option>
+        <option value="club">White vs Black, club ~1500 — a queen blunder</option>
+        <option value="paste">Paste your own PGN…</option>
+      </select>
+      <button id="loadBtn">Load</button>
+      <label class="modetoggle" title="Compute via the Python backend instead of in-browser">
+        <input type="checkbox" id="backendToggle" checked> Backend
+      </label>
+      <input type="text" id="backendUrl" class="urlin" value="http://localhost:8001" title="Backend base URL" spellcheck="false">
+    </div>
+  </div>
+  <div class="pgnbox" id="pgnbox">
+    <textarea id="pgnIn" placeholder="Paste a PGN here (headers optional). Then press Load."></textarea>
+  </div>
+  <div class="err" id="err"></div>
+
+  <div class="dash">
+    <!-- board -->
+    <section class="col board-col">
+      <div class="matchup"><span class="colw"><b id="wName">White</b></span><span class="colb"><b id="bName">Black</b></span></div>
+      <div class="board" id="board"></div>
+      <div class="nav">
+        <button id="first" title="start">|◀</button>
+        <button id="prev" title="previous">◀</button>
+        <span class="counter" id="counter"></span>
+        <button id="next" title="next">▶</button>
+        <button id="last" title="end">▶|</button>
+      </div>
+      <div class="chip" id="chip"></div>
+    </section>
+
+    <!-- feature list + explanation -->
+    <section class="col feat-col">
+      <div class="panelhead">
+        <h2>Features</h2>
+        <span class="ptag" id="ptag">starting position</span>
+        <span class="fav" id="favSummary" title="features favouring each side"></span>
+      </div>
+      <table class="ftable">
+        <colgroup><col class="c-feat"><col class="c-val"><col class="c-val"><col class="c-cmp"></colgroup>
+        <thead><tr><th class="feat">Feature</th><th class="colw">White</th><th class="colb">Black</th><th class="cmp" title="who it favours">±</th></tr></thead>
+        <tbody id="ftbody"></tbody>
+      </table>
+    </section>
+
+    <!-- trends + aggregates -->
+    <aside class="col trend-col">
+      <div class="chartcard">
+        <div class="row">
+          <h3>Trend · <span id="chartFeat">Hanging</span></h3>
+          <span class="trendply">through move <span id="trendPly">0</span></span>
+        </div>
+        <div class="legend" id="legend">
+          <span><span class="swatch" style="border-color:var(--w)"></span>White</span>
+          <span><span class="swatch" style="border-color:var(--b);border-top-style:dashed"></span>Black</span>
+        </div>
+        <div class="chh"><canvas id="chart" role="img" aria-label="Trend of the selected feature for both players across the moves played so far"></canvas></div>
+      </div>
+      <div class="explain" id="explain"></div>
+      <div class="agg">
+        <h3>Aggregates so far</h3>
+        <div class="cards">
+          <div class="card wc"><div class="lbl">W en prise</div><div class="v" id="aWexp">0</div></div>
+          <div class="card wc"><div class="lbl">W avg space</div><div class="v" id="aWsp">0</div></div>
+          <div class="card wc"><div class="lbl">W worst def.</div><div class="v" id="aWdef">0</div></div>
+          <div class="card bc"><div class="lbl">B en prise</div><div class="v" id="aBexp">0</div></div>
+          <div class="card bc"><div class="lbl">B avg space</div><div class="v" id="aBsp">0</div></div>
+          <div class="card bc"><div class="lbl">B worst def.</div><div class="v" id="aBdef">0</div></div>
+        </div>
+        <p class="read" id="read"></p>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script type="module" src="./src/app.js"></script>
+</body>
+</html>

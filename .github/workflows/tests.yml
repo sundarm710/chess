@@ -1,0 +1,30 @@
+# Automatic test gate (CLAUDE.md §13). Runs the same suite as ./run_tests.sh on
+# every push and PR: Python golden/unit tests, then JS golden + parity.
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install engine (with dev deps)
+        working-directory: engine
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run full suite
+        run: ./run_tests.sh

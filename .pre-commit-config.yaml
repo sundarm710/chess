@@ -1,0 +1,13 @@
+# Local pre-commit gate (CLAUDE.md §13). Once this is a git repo:
+#   pip install pre-commit && pre-commit install
+# Then the full suite must pass before any commit lands.
+repos:
+  - repo: local
+    hooks:
+      - id: chesslab-suite
+        name: chesslab full test suite
+        entry: ./run_tests.sh
+        language: system
+        pass_filenames: false
+        # Only trigger on source changes; docs/config edits skip the suite.
+        files: '\.(py|js|mjs|html)$'

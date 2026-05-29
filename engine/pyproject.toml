@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chesslab"
+version = "0.1.0"
+description = "Engine-free chess positional feature analysis — canonical reference engine"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+# python-chess powers the pipeline's move application / FEN handling only; the
+# feature engine itself never depends on it (CLAUDE.md §6). The API + corpus tier
+# live here too — the core engine stays zero-dependency.
+pipeline = [
+    "python-chess>=1.999",
+    "pyarrow>=15",
+    "duckdb>=0.10",
+    "PyYAML>=6",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+]
+dev = ["pytest>=8", "mypy>=1.8", "httpx>=0.27", "types-PyYAML>=6"]
+
+[tool.setuptools.packages.find]
+include = ["chesslab*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["chesslab"]
+
+# python-chess ships no type stubs; treat it as untyped at the boundary only.
+[[tool.mypy.overrides]]
+module = ["chess", "chess.*"]
+ignore_missing_imports = true
