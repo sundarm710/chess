@@ -10,8 +10,21 @@ export const PHASE_LABEL: Record<string, string> = {
   endgame: 'Endgame',
 };
 
-// Stable category order so feature columns group sensibly.
+// Stable category order + human labels so feature columns group sensibly.
 const CAT_ORDER = ['MAT', 'SPC', 'KSF', 'STR', 'DEV', 'ACT', 'DYN', 'TAC', 'DEC', 'TIM', 'EVAL'];
+export const CATEGORY_LABEL: Record<string, string> = {
+  MAT: 'Material',
+  SPC: 'Space',
+  KSF: 'King safety',
+  STR: 'Structure',
+  DEV: 'Development',
+  ACT: 'Activity',
+  DYN: 'Dynamics',
+  TAC: 'Tactics',
+  DEC: 'Decisions',
+  TIM: 'Time',
+  EVAL: 'Evaluation',
+};
 
 export interface SliceSel {
   phase: 'all' | (typeof PHASES)[number];
@@ -79,4 +92,70 @@ export function columnRange(
 export function cellColor(g: number): string {
   const hue = g * 120; // red→green
   return `hsl(${hue}, 55%, ${91 - Math.abs(g - 0.5) * 14}%)`;
+}
+
+/** Features grouped by category, in CAT_ORDER. */
+export function featuresByCategory(p: Profile): { cat: string; label: string; ids: string[] }[] {
+  const groups = new Map<string, string[]>();
+  for (const id of availableFeatures(p)) {
+    const cat = p.meta[id]?.category ?? '';
+    if (!groups.has(cat)) groups.set(cat, []);
+    groups.get(cat)!.push(id);
+  }
+  return [...groups.entries()].map(([cat, ids]) => ({ cat, label: CATEGORY_LABEL[cat] ?? cat, ids }));
+}
+
+export interface RankRow {
+  name: string;
+  mean: number;
+  n: number;
+}
+
+/** Players ranked for a feature under a slice; sub-min-n pushed to the bottom. */
+export function rankedEntries(p: Profile, fid: string, sel: SliceSel, nMin: number): RankRow[] {
+  const higher = p.meta[fid]?.higher ?? 'neutral';
+  const rows: RankRow[] = [];
+  for (const [name, d] of Object.entries(p.players)) {
+    const s = sliceValue(d, fid, sel);
+    if (isOk(s)) rows.push({ name, mean: s.mean, n: s.n });
+  }
+  const asc = higher === 'bad';
+  rows.sort(
+    (a, b) => Number(a.n < nMin) - Number(b.n < nMin) || (asc ? a.mean - b.mean : b.mean - a.mean),
+  );
+  return rows;
+}
+
+export interface Mover {
+  id: string;
+  name: string;
+  r: number;
+}
+
+/** Top +r / top -r features by correlation with the game result, for a phase. */
+export function topMovers(p: Profile, phase: SliceSel['phase'], k = 6): { up: Mover[]; down: Mover[] } {
+  const avail = new Set(availableFeatures(p));
+  const all: Mover[] = [];
+  for (const [id, rc] of Object.entries(p.result_correlation)) {
+    if (!avail.has(id)) continue;
+    const r = phase === 'all' ? rc.r : rc.phases?.[phase]?.r;
+    if (r == null) continue;
+    all.push({ id, name: p.meta[id]?.name ?? id, r });
+  }
+  return {
+    up: all.filter((m) => m.r > 0).sort((a, b) => b.r - a.r).slice(0, k),
+    down: all.filter((m) => m.r < 0).sort((a, b) => a.r - b.r).slice(0, k),
+  };
+}
+
+/** One-sentence narrative of what tracked winning/losing in this field. */
+export function takeaway(p: Profile, phase: SliceSel['phase']): string | null {
+  const { up, down } = topMovers(p, phase, 2);
+  if (!up.length && !down.length) return null;
+  const names = (xs: Mover[]) => xs.map((m) => m.name).join(' and ');
+  const where = phase === 'all' ? 'In this field' : `In the ${PHASE_LABEL[phase].toLowerCase()}`;
+  const parts: string[] = [];
+  if (up.length) parts.push(`winners showed more ${names(up)}`);
+  if (down.length) parts.push(`${names(down)} tracked losses`);
+  return `${where}, ${parts.join('; ')}.`;
 }

@@ -6,6 +6,27 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-05-30 — `web-next/` Profiles UX redesign (insight-first layout)
+
+- **What:** Reworked the spike from stacked full-width sections into a two-column
+  "instrument", giving space in proportion to value:
+  - **Takeaway sentence** (`takeaway()`) auto-derived from result-correlation top movers
+    ("winners showed more Trade discipline and King-pawn shield; In check and Move time
+    tracked losses"), phase-aware.
+  - **Matrix as hero** with **category group headers** (Material/Space/King safety/…),
+    sortable, sticky header + player column, click-to-focus.
+  - **Insight rail:** **Winning DNA** — top ↑/↓ features as compact diverging bars
+    (`topMovers()`), replacing the full-height 30-bar chart (now behind a "Show all
+    features" toggle); **Focus panel** — the clicked feature's meaning + ranked players
+    (`rankedEntries()`).
+  - New pure helpers in `lib/profile.ts` (`featuresByCategory`, `rankedEntries`,
+    `topMovers`, `takeaway`, `CATEGORY_LABEL`); build + Vitest green.
+- **Why:** The "What wins" chart ate ~900px for an answer that's really "the top few
+  features" — poor signal-per-pixel — and full-width stacking buried the matrix (the actual
+  scan surface). For a club player trying to *understand and improve*, the redesign leads
+  with the narrative (takeaway), makes the style-scan the hero, distills "what matters" into
+  a glanceable panel, and gives every matrix column a purpose (focus → meaning + ranking).
+
 ## 2026-05-30 — `web-next/` frontend spike (Vite + React + TS + Tailwind + TanStack)
 
 - **What:** New `web-next/` proof-of-concept (the existing `web/` is untouched). Ports the

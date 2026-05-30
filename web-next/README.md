@@ -22,10 +22,20 @@ untouched and remains the source of truth.**
 | Data types | `(p.meta[id]||{})` guards | compile-checked `types.ts` |
 | View-logic tests | — | `profile.test.ts` (Vitest) |
 
-Ported so far: tournament selector, **phase + colour filter bar**, **overview matrix**
-(sortable, click a column to focus), and the **What-wins feature↔result correlation** chart.
-Not yet ported: the leaderboard, radar clusters, scatter, the Phase&colour card, and the
-game stepper/board — those would follow the same component pattern.
+### Layout (redesigned, not a 1:1 port)
+
+A two-column "instrument" rather than stacked full-width sections — space in proportion to value:
+
+- **Takeaway** — one auto-generated sentence ("winners showed more X; Y tracked losses").
+- **Matrix (hero, left)** — players × features heatmap with **category group headers**,
+  sortable, sticky header + player column; click a column to focus it.
+- **Insight rail (right):**
+  - **Winning DNA** — features that track winning/losing as compact diverging bars
+    (replaces the old full-height 30-bar chart; the full chart sits behind "Show all features").
+  - **Focus panel** — the clicked feature's plain-language meaning + ranked players.
+
+Not yet ported: radar clusters, scatter, the Phase&colour trajectory/fingerprint card, and the
+game stepper/board — they'd follow the same component pattern.
 
 ## Run
 
