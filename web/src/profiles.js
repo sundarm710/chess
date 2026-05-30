@@ -15,19 +15,16 @@ import { CATEGORY_LABEL, ORDER } from './catalog.js';
 const $ = (id) => document.getElementById(id);
 const fmt = (x) => (x == null ? '–' : Number.isInteger(x) ? String(x) : String(Math.round(x * 100) / 100));
 
-// A curated radar set spanning categories (filtered to what a tournament has).
-const RADAR_FEATURES = [
-  'SPC.space', 'ACT.mobility', 'ACT.coordination', 'DYN.initiative',
-  'DEC.prophylaxis', 'STR.tension_hold', 'KSF.zone_pressure', 'MAT.hanging',
-];
-const PALETTE = ['#9A3B2E', '#1F5673', '#0F6E56', '#B0522A', '#7d3b56', '#5d6a37'];
+const PALETTE =['#9A3B2E', '#1F5673', '#0F6E56', '#B0522A', '#7d3b56', '#5d6a37', '#4b3b7d', '#2f6f6a'];
+const MAX_RADAR_PLAYERS = 8;
+const CLUSTER_MAX = 8; // features per radar (<= 10)
 
 let current = null;
 let featureId = null;
 let selectedPlayers = null; // Set of player names for the radar
 let scatterX = null;
 let scatterY = null;
-let radarChart = null;
+let radarCharts = []; // one Chart per feature cluster
 let scatterChart = null;
 
 export async function loadProfiles(slug) {
@@ -67,7 +64,8 @@ function cellColor(goodness) {
 }
 
 function destroyCharts() {
-  if (radarChart) { radarChart.destroy(); radarChart = null; }
+  radarCharts.forEach((c) => c.destroy());
+  radarCharts = [];
   if (scatterChart) { scatterChart.destroy(); scatterChart = null; }
 }
 
@@ -86,13 +84,10 @@ function render() {
   root.appendChild(matrix(p));
   root.appendChild(leaderboard(p, featureId));
 
-  const charts = document.createElement('div');
-  charts.className = 'pcharts';
-  charts.appendChild(radarCard(p));
-  charts.appendChild(scatterCard(p));
-  root.appendChild(charts);
+  root.appendChild(radarSection(p));
+  root.appendChild(scatterCard(p));
 
-  drawRadar();
+  drawRadars();
   drawScatter();
 }
 
@@ -187,30 +182,80 @@ function leaderboard(p, id) {
   return wrap;
 }
 
-// ---- player radar -----------------------------------------------------------
-function radarCard(p) {
+// ---- player radar (all features, clustered into several radars) -------------
+// Group available features into category-coherent clusters of <= CLUSTER_MAX.
+function clusters(p) {
+  const runs = [];
+  let run = null;
+  for (const id of availableFeatures(p)) {
+    const cat = (p.meta[id] || {}).category || '';
+    if (!run || run.cat !== cat) { run = { cat, ids: [] }; runs.push(run); }
+    run.ids.push(id);
+  }
+  const out = [];
+  let cur = [];
+  for (const r of runs) {
+    if (cur.length && cur.length + r.ids.length > CLUSTER_MAX) { out.push(cur); cur = []; }
+    cur.push(...r.ids);
+  }
+  if (cur.length) out.push(cur);
+  if (out.length >= 2 && out[out.length - 1].length < 3) out[out.length - 2].push(...out.pop());
+  return out;
+}
+
+function clusterTitle(p, ids) {
+  const cats = [];
+  for (const id of ids) {
+    const c = (p.meta[id] || {}).category || '';
+    if (!cats.includes(c)) cats.push(c);
+  }
+  return cats.map((c) => CATEGORY_LABEL[c] || c).join(' · ');
+}
+
+function plottedPlayers(p) {
+  return playersByScore(p).map(([n]) => n).filter((n) => selectedPlayers.has(n)).slice(0, MAX_RADAR_PLAYERS);
+}
+
+function radarSection(p) {
   const card = document.createElement('div');
   card.className = 'pcard';
-  card.innerHTML = '<h3>Player radar</h3><p class="psub">compare players across features — outward = better</p>';
+  card.innerHTML = `<h3>Player radar</h3><p class="psub">compare up to ${MAX_RADAR_PLAYERS} players — ` +
+    `outward = better; all features grouped into clusters</p>`;
+
   const picks = document.createElement('div');
   picks.className = 'ppicks';
   for (const [name] of playersByScore(p)) {
-    const id = `rp-${name.replace(/\W+/g, '_')}`;
     const lab = document.createElement('label');
     lab.className = 'ppick';
     lab.innerHTML = `<input type="checkbox" ${selectedPlayers.has(name) ? 'checked' : ''}> ${name}`;
     lab.querySelector('input').addEventListener('change', (e) => {
-      if (e.target.checked) selectedPlayers.add(name);
-      else selectedPlayers.delete(name);
-      drawRadar();
+      if (e.target.checked) {
+        if (selectedPlayers.size >= MAX_RADAR_PLAYERS) { e.target.checked = false; return; }
+        selectedPlayers.add(name);
+      } else {
+        selectedPlayers.delete(name);
+      }
+      drawRadars();
     });
     picks.appendChild(lab);
   }
   card.appendChild(picks);
-  const cv = document.createElement('div');
-  cv.className = 'chartbox';
-  cv.innerHTML = '<canvas id="pradar"></canvas>';
-  card.appendChild(cv);
+
+  const legend = document.createElement('div');
+  legend.className = 'radarlegend';
+  legend.id = 'radarLegend';
+  card.appendChild(legend);
+
+  const grid = document.createElement('div');
+  grid.className = 'radargrid';
+  clusters(p).forEach((ids, i) => {
+    const item = document.createElement('div');
+    item.className = 'radaritem';
+    item.innerHTML = `<div class="radartitle">${clusterTitle(p, ids)}</div>` +
+      `<div class="chartbox"><canvas id="pradar${i}"></canvas></div>`;
+    grid.appendChild(item);
+  });
+  card.appendChild(grid);
   return card;
 }
 
@@ -226,40 +271,54 @@ function axisMinMax(p, ids) {
   return stats;
 }
 
-function drawRadar() {
+function drawRadars() {
   const p = current;
-  const ids = RADAR_FEATURES.filter((id) => p.leaderboards[id]?.available);
-  const stats = axisMinMax(p, ids);
+  radarCharts.forEach((c) => c.destroy());
+  radarCharts = [];
+  const stats = axisMinMax(p, availableFeatures(p));
   const goodness = (id, v) => {
     const s = stats[id];
     if (!s || s.hi === s.lo || v == null) return 0.5;
     const t = (v - s.lo) / (s.hi - s.lo);
     return p.meta[id]?.higher === 'bad' ? 1 - t : t;
   };
-  const datasets = [...selectedPlayers].map((name, i) => {
-    const color = PALETTE[i % PALETTE.length];
-    const d = p.players[name];
-    return {
-      label: name,
-      data: ids.map((id) => Math.round(goodness(id, d?.rollups?.[id]?.mean) * 100) / 100),
-      borderColor: color, backgroundColor: color + '22', borderWidth: 2, pointRadius: 2,
-    };
-  });
-  radarChart = new window.Chart($('pradar'), {
-    type: 'radar',
-    data: { labels: ids.map((id) => (p.meta[id] || {}).name || id), datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      scales: { r: { min: 0, max: 1, ticks: { display: false }, pointLabels: { font: { size: 10 } } } },
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } },
-    },
+  const plotted = plottedPlayers(p);
+
+  const leg = $('radarLegend');
+  if (leg) {
+    leg.innerHTML = plotted.map((n, i) =>
+      `<span class="rchip"><span class="rdot" style="background:${PALETTE[i % PALETTE.length]}"></span>${n}</span>`
+    ).join('') || '<span class="psub">select players above</span>';
+  }
+
+  clusters(p).forEach((ids, ci) => {
+    const cv = $('pradar' + ci);
+    if (!cv) return;
+    const datasets = plotted.map((name, i) => {
+      const color = PALETTE[i % PALETTE.length];
+      const d = p.players[name];
+      return {
+        label: name,
+        data: ids.map((id) => Math.round(goodness(id, d?.rollups?.[id]?.mean) * 100) / 100),
+        borderColor: color, backgroundColor: color + '22', borderWidth: 1.5, pointRadius: 2,
+      };
+    });
+    radarCharts.push(new window.Chart(cv, {
+      type: 'radar',
+      data: { labels: ids.map((id) => (p.meta[id] || {}).name || id), datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        scales: { r: { min: 0, max: 1, ticks: { display: false }, pointLabels: { font: { size: 9 } } } },
+        plugins: { legend: { display: false } },
+      },
+    }));
   });
 }
 
 // ---- feature × feature scatter ----------------------------------------------
 function scatterCard(p) {
   const card = document.createElement('div');
-  card.className = 'pcard';
+  card.className = 'pcard scattercard';
   const avail = availableFeatures(p);
   const opts = (sel) => avail.map((id) =>
     `<option value="${id}" ${id === sel ? 'selected' : ''}>${(p.meta[id] || {}).name || id}</option>`).join('');
@@ -274,6 +333,7 @@ function scatterCard(p) {
 
 function drawScatter() {
   const p = current;
+  if (scatterChart) { scatterChart.destroy(); scatterChart = null; }
   const min = nMin(p);
   const pts = playersByScore(p)
     .filter(([, d]) => d.rollups[scatterX]?.n >= min && d.rollups[scatterY]?.n >= min)

@@ -6,6 +6,21 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-05-30 14:06 IST — Profiles charts: fix scatter update, multi-radar over all features
+
+- **What:**
+  - Fixed the scatter (and radar) not updating: `drawScatter`/`drawRadars` now destroy the
+    existing Chart.js instance before recreating (Chart.js refuses to mount onto an
+    in-use canvas, so the change was silently no-op'ing).
+  - Player radar now covers **all** features: they're clustered by category into groups of
+    ≤8 (`CLUSTER_MAX`), rendered as **multiple radar plots** (Material·Space, King safety,
+    Structure, Development·Activity, Dynamics·Tactics·Decisions·Time). Up to 8 players can
+    be selected; a shared colour legend spans the radars; min-n excluded from the
+    normalization scale.
+- **Why:** A single 8-axis radar hid most features, and the broken scatter looked frozen.
+  Clustering shows every feature while keeping each radar readable, and the destroy-then-
+  recreate is the correct Chart.js lifecycle.
+
 ## 2026-05-30 13:59 IST — Profiles depth: radar, scatter, feature description
 
 - **What:**
