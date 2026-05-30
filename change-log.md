@@ -6,6 +6,21 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-05-30 12:15 IST — Profiles fixes: women data, scroll, value wrap
+
+- **What:**
+  - Removed `data/raw/candidates2026/women/round-14/` — it was a byte-for-byte duplicate
+    of the Open round-14 games (the women's real round 14 isn't in the archive). Women is
+    now a clean 13 rounds / 52 games / 8 players; rebuilt library + profiles (758 games).
+  - Profiles matrix: clicking a column header no longer rebuilds the matrix — it updates
+    the header highlight + the focused leaderboard in place (`focusFeature`), so the
+    horizontal scroll position is preserved.
+  - Leaderboard value (`.lbval`) is now single-line (`white-space:nowrap`, wider) so wide
+    values like "15.54 ±5.43 n=13" no longer wrap and shift the row layout.
+- **Why:** Switching to Candidates Women showed the 8 Open players "appended" — that was
+  the misfiled round-14 surfacing; removing it fixes it at the source. The scroll reset
+  and value-wrap were jarring interaction/layout bugs in the new matrix view.
+
 ## 2026-05-30 12:01 IST — Profiles overview matrix (all features at a glance)
 
 - **What:** Reworked the Profiles view (`web/src/profiles.js`) from a single-feature

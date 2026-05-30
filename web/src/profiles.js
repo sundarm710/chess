@@ -141,11 +141,24 @@ function matrix(p) {
     `<table class="matrix"><thead><tr>` +
     `<th class="mx-name">Player</th>${header}</tr></thead><tbody>${body}</tbody></table>`;
 
-  // Click a feature column header → focus that feature's leaderboard.
+  // Click a feature column header → focus that feature (without rebuilding the matrix,
+  // so the horizontal scroll position is preserved).
   wrap.querySelectorAll('th.mx-h').forEach((th) => {
-    th.addEventListener('click', () => { featureId = th.dataset.id; render(); });
+    th.addEventListener('click', () => focusFeature(th.dataset.id));
   });
   return wrap;
+}
+
+// Re-point the focus leaderboard at a feature, updating only the header highlight and
+// the leaderboard element — the matrix DOM (and its scroll) stays put.
+function focusFeature(id) {
+  featureId = id;
+  const root = $('profilesRoot');
+  root.querySelectorAll('.matrix th.mx-h.sel').forEach((th) => th.classList.remove('sel'));
+  const th = root.querySelector(`.matrix th.mx-h[data-id="${id}"]`);
+  if (th) th.classList.add('sel');
+  const old = root.querySelector('.lboard');
+  if (old) old.replaceWith(leaderboard(current, id));
 }
 
 function leaderboard(p, id) {
