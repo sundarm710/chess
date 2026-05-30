@@ -140,15 +140,23 @@ FEATURE_CATALOG.md    the full T0–T6 feature ladder + metadata schema
 - Free / public sources by design: Lichess Open DB & cached cloud‑eval, the Chess.com
   published‑data API, TWIC / Caissabase. No paid feeds, no local engine in the core path.
 
+## Tournament profiles
+
+A **Profiles** tab aggregates a tournament's games across players: pick any feature →
+players ranked ("who gains most space / is most prophylactic / gets into time trouble"),
+with sample-size badges, CI whiskers, and a min-n gate so low-sample players never top
+the board. Capability-gated (clock leaderboards disabled where a tournament has no
+clocks). Built by `scripts/build_profiles.py` → `web/data/profiles/<slug>.json`.
+
 ## Roadmap
 
-- **MOVE tier (in progress):** initiative, tactical density, prophylaxis are live;
-  material swing, one‑move exposure, tempo‑waste, tension‑holding, trade‑discipline next.
-- **EVAL / CLOCK tier:** squeeze index, defensive resourcefulness, error‑floor &
-  consistency, time–complexity slope — using the clocks already in the Candidates PGNs
-  and sampled cached cloud‑eval.
-- **Corpus & profiles:** batch‑ingest many games into DuckDB/Parquet → per‑player and
-  per‑tournament style profiles (radar / style‑space).
+- **MOVE/CLOCK tier:** live (initiative, prophylaxis, tempo-waste, tension-holding,
+  trade-discipline, exposure, material swing, move-time/clock).
+- **Profiles depth:** opponent-Elo normalization + by-colour/result (off by default),
+  player radar, feature×feature scatter, drill-through to games; a DuckDB corpus store
+  ("any number of games, queryable") as the engine of record.
+- **EVAL tier:** squeeze, defensive resourcefulness, error-floor — via cached cloud-eval
+  to backfill the games that lack `%eval`.
 
 See `FEATURE_CATALOG.md` for the complete feature ladder and `CLAUDE.md` for the
 engineering standards.

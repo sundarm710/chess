@@ -20,6 +20,7 @@ const EXPECTED = {
   'analysis.js': ['buildAnalysis', 'indexPly'],
   'api.js': ['analyzeGame', 'fetchManifest'],
   'explain.js': ['renderFeatureList', 'renderExplain'],
+  'profiles.js': ['loadProfiles'],
 };
 
 let passed = 0;

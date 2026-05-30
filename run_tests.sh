@@ -40,6 +40,9 @@ node "$ROOT/web/test/analysis.test.mjs"
 echo "== JS games library =="
 node "$ROOT/web/test/library.test.mjs"
 
+echo "== JS tournament profiles =="
+node "$ROOT/web/test/profiles.test.mjs"
+
 echo "== JS parity =="
 node "$ROOT/web/test/parity.mjs"
 

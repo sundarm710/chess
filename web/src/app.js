@@ -10,6 +10,7 @@ import { buildAnalysis, indexPly } from './analysis.js';
 import { highlightsFor } from './highlights.js';
 import { renderFeatureList, renderExplain } from './explain.js';
 import { analyzeGame } from './api.js';
+import { loadProfiles } from './profiles.js';
 
 const engine = new FeatureEngine();
 
@@ -23,6 +24,7 @@ const S = {
   ply: 0,
   name: { w: 'White', b: 'Black' },
   selectedId: 'MAT.hanging',
+  view: 'game', // 'game' | 'profiles'
   index: [], // [{slug, label, ...}] from web/data/library.json
   tournaments: {}, // slug -> {games:[...]} (lazy-fetched, cached)
   byId: {}, // game id -> game record (across loaded tournaments)
@@ -151,6 +153,21 @@ function loadGameById(id) {
   const g = S.byId[id];
   if (!g) return;
   return loadGame(g.pgn, fmtName(g.white, g.welo), fmtName(g.black, g.belo));
+}
+
+// Switch between the game stepper and the tournament-profiles view.
+function setView(view) {
+  S.view = view;
+  const profiles = view === 'profiles';
+  document.querySelector('.dash').style.display = profiles ? 'none' : '';
+  $('profilesRoot').style.display = profiles ? 'block' : 'none';
+  $('gameSel').style.display = profiles ? 'none' : '';
+  $('loadBtn').style.display = profiles ? 'none' : '';
+  if (!profiles) $('pgnbox').style.display = 'none';
+  for (const b of $('viewTabs').querySelectorAll('[data-view]')) {
+    b.classList.toggle('on', b.dataset.view === view);
+  }
+  if (profiles) loadProfiles($('tournamentSel').value);
 }
 
 async function loadGame(pgn, wn, bn) {
@@ -383,8 +400,16 @@ function goto(p) {
 
 /* ---------- events ---------- */
 function wireEvents() {
-  // First filter: tournament · section (or Custom PGN).
-  $('tournamentSel').addEventListener('change', (e) => selectTournament(e.target.value));
+  // View tabs (Game / Profiles).
+  $('viewTabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-view]');
+    if (btn) setView(btn.dataset.view);
+  });
+  // First filter: tournament · section (or Custom PGN). Routes by current view.
+  $('tournamentSel').addEventListener('change', (e) => {
+    if (S.view === 'profiles') loadProfiles(e.target.value);
+    else selectTournament(e.target.value);
+  });
   // Second filter: picking a game loads it immediately.
   $('gameSel').addEventListener('change', (e) => loadGameById(e.target.value));
   // Load button: only needed for the custom-PGN path.
@@ -420,6 +445,8 @@ function wireEvents() {
 // Optional deep link: #<game-id>@<ply>, e.g. #candidates-2026-open__r01b01@20.
 // The slug (tournament) is the part before "__".
 function parseHash() {
+  const prof = (location.hash || '').match(/^#profiles\/([\w-]+)$/);
+  if (prof) return { profiles: prof[1] };
   const m = (location.hash || '').match(/^#([\w-]+__r\d+b\d+)(?:@(\d+))?$/);
   return m ? { game: m[1], ply: Number(m[2] || 0) } : null;
 }
@@ -438,7 +465,12 @@ async function boot() {
     return;
   }
   const h = parseHash();
-  if (h) {
+  if (h && h.profiles) {
+    $('tournamentSel').value = h.profiles;
+    setView('profiles');
+    return;
+  }
+  if (h && h.game) {
     const slug = h.game.split('__')[0];
     $('tournamentSel').value = slug;
     await selectTournament(slug, h.game);

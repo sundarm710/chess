@@ -9,6 +9,7 @@ added in a later phase; here evidence is minimal.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import List
 
 from ..registry import (
@@ -22,6 +23,19 @@ from ..registry import (
 )
 
 _SIDES = ("w", "b")
+
+# Advantage direction per board feature (drives the favour/comparison + leaderboard sort).
+# Kept as one map so the Python manifest is authoritative (the JS HIGHER map mirrors it).
+_HIGHER = {
+    "MAT.balance": "good", "MAT.hanging": "bad",
+    "ACT.control": "good", "ACT.mobility": "good", "ACT.coordination": "good",
+    "ACT.rook_open": "good", "ACT.outpost": "good", "ACT.bishop_quality": "good",
+    "SPC.space": "good", "SPC.center_control": "good", "SPC.center_occ": "good",
+    "DEV.count": "good",
+    "KSF.castle": "good", "KSF.shield": "good", "KSF.zone_pressure": "bad", "KSF.in_check": "bad",
+    "STR.islands": "bad", "STR.isolated": "bad", "STR.doubled": "bad", "STR.passed": "good",
+    "STR.colour_complex": "neutral", "STR.tension": "neutral",
+}
 
 
 class SideScalarBoardFeature(PositionFeature):
@@ -71,7 +85,16 @@ class SharedScalarBoardFeature(PositionFeature):
 
 
 def board_features() -> List[PositionFeature]:
-    """Construct the 10 BOARD-tier features (CLAUDE.md §6) as registry entries."""
+    """Construct the BOARD-tier features as registry entries, with advantage direction set."""
+    feats = _board_features_raw()
+    for f in feats:
+        direction = _HIGHER.get(f.meta.id)
+        if direction:
+            f.meta = replace(f.meta, higher=direction)
+    return feats
+
+
+def _board_features_raw() -> List[PositionFeature]:
     return [
         SideScalarBoardFeature(
             FeatureMeta(
@@ -146,7 +169,7 @@ def board_features() -> List[PositionFeature]:
         SideScalarBoardFeature(
             FeatureMeta(
                 id="KSF.castle", name="Castled", tier="T1", scope=Scope.POSITION,
-                category="KSF", inputs="P", output_type="per-side", viz="trend",
+                category="KSF", inputs="P", output_type="per-side", viz="trend", aggregation="max",
                 description="Whether the king has castled to safety.",
                 computation="1 if the king is off its home square and on the g- or c-file, else 0.",
                 saturation="~1700",

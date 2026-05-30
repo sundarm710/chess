@@ -62,6 +62,7 @@ def build_manifest(registry: FeatureRegistry) -> Dict[str, Dict[str, Any]]:
             "viz": m.viz,
             "engine": m.engine,
             "higher": m.higher,
+            "aggregation": m.aggregation,  # how it rolls up across plies (see aggregate.py)
             "requires": sorted(c.value for c in m.requires),
             "saturation": m.saturation,
         }

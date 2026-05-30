@@ -388,6 +388,39 @@ populate `#gameSel` grouped by round; picking a game loads it. There are **no bu
 sample games** — the library + custom paste are the only sources. To add a tournament:
 drop its PGN under `data/raw/`, add a `SOURCES` row, run `build_library.py`, commit.
 
+## 17. Cross-game aggregation & tournament profiles
+
+Tournament-wide, cross-player views ("who is most X") are computed **generically**:
+
+- **Reducer spine (`engine/chesslab/aggregate.py`).** Each feature declares a Layer-A
+  reducer in `FeatureMeta.aggregation` (`end|mean|max|min|sum`); the default is derived
+  from scope (GAME→`end`, else `mean`) so all features work unspecced. `summarize(analysis,
+  *, slug, game)` reduces a game's per-ply matrix to one `FeatureCell` per (feature, side)
+  — pure, replays stored orchestrator output (no engine re-run, no parity impact).
+  Overrides set so far: `TIM.clock`=min (low-water = time trouble), `TIM.move_time`=max
+  (biggest think), `TAC.density`=mean, `MAT.swing`=max, `KSF.castle`=max.
+- **Rollups.** `tournament_profile(...)` aggregates each player's per-game scalars across
+  their games → `mean, stdev, ci (95%), mean_white/black/won, n, n_unavailable` + standings
+  (score, W-D-L, linear TPR). Shared features (density, swing, tension) attribute to BOTH
+  players of a game. **Leaderboards are pre-sorted server-side** by the manifest's `higher`.
+- **Honest stats (MVP).** Raw means + n-badge + CI; a **min-n gate** (`n_min`, default 3)
+  pushes low-sample players below qualified ones (Swiss tail never ranks #1). Opponent-Elo
+  normalization / by-colour-result / per-phase are a later, **off-by-default** sub-phase.
+- **Capability gating.** `status` propagates upward: a clockless game's clock cells are
+  `unavailable` (excluded from means, counted in `n_unavailable`); a `Leaderboard` is
+  `available:false` when *every* game lacks the capability (Grand Swiss/Norway → `TIM.*`
+  disabled; `EVAL.*` disabled everywhere until cloud-eval). The UI shows these disabled.
+- **Backend-only**, like the MOVE/GAME tier — not mirrored in JS. The parity wall is
+  untouched (everything is downstream of stored analysis).
+- **Build & data.** `scripts/build_profiles.py` (run after `build_library.py`) →
+  `web/data/profiles/<slug>.json` (precomputed, committed, lazy-loaded; carries a compact
+  `meta` map so the SPA is self-contained). DuckDB corpus store (`game_summaries` fact +
+  `player_feature_rollup` view, "any number of games, queryable") is the planned
+  fast-follow; the JSON becomes its materialized view.
+- **Frontend.** A "Game / Profiles" tab (`#viewTabs`) flips `S.view`; `web/src/profiles.js`
+  renders the **generic leaderboard** (pick any feature → players ranked) + standings into
+  `#profilesRoot`. Deep link `#profiles/<slug>`. Radar/scatter/drill-through are later.
+
 ## 12. Glossary
 
 - **en prise** — a piece sitting where it can be profitably captured (attacked and

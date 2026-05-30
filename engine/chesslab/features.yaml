@@ -21,7 +21,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: good
   version: 1
 - id: ACT.control
   name: Board control
@@ -42,7 +42,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: good
   version: 1
 - id: ACT.coordination
   name: Coordination
@@ -63,7 +63,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: good
   version: 1
 - id: ACT.mobility
   name: Piece mobility
@@ -85,7 +85,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: good
   version: 1
 - id: ACT.outpost
   name: Knight outposts
@@ -107,7 +107,7 @@
   residualize_on: ''
   status: implemented
   viz: board
-  higher: neutral
+  higher: good
   version: 1
 - id: ACT.rook_open
   name: Rooks on open files
@@ -128,7 +128,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: good
   version: 1
 - id: DEC.prophylaxis
   name: Prophylaxis
@@ -193,7 +193,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: good
   version: 1
 - id: DEV.tempo_waste
   name: Tempo waste
@@ -295,7 +295,7 @@
   engine: none
   requires: []
   output_type: per-side
-  aggregation: ''
+  aggregation: max
   normalization: ''
   saturation: ~1700
   confounders: ''
@@ -303,7 +303,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: good
   version: 1
 - id: KSF.in_check
   name: In check
@@ -324,7 +324,7 @@
   residualize_on: ''
   status: implemented
   viz: board
-  higher: neutral
+  higher: bad
   version: 1
 - id: KSF.shield
   name: King pawn shield
@@ -345,7 +345,7 @@
   residualize_on: ''
   status: implemented
   viz: board
-  higher: neutral
+  higher: good
   version: 1
 - id: KSF.zone_pressure
   name: King-zone pressure
@@ -367,7 +367,7 @@
   residualize_on: ''
   status: implemented
   viz: board
-  higher: neutral
+  higher: bad
   version: 1
 - id: MAT.balance
   name: Material
@@ -388,7 +388,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: good
   version: 1
 - id: MAT.hanging
   name: Hanging (en prise)
@@ -410,7 +410,7 @@
   residualize_on: ''
   status: implemented
   viz: board
-  higher: neutral
+  higher: bad
   version: 1
 - id: MAT.swing
   name: Material swing
@@ -423,7 +423,7 @@
   engine: none
   requires: []
   output_type: scalar
-  aggregation: ''
+  aggregation: max
   normalization: ''
   saturation: ~2200
   confounders: ''
@@ -452,7 +452,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: good
   version: 1
 - id: SPC.center_occ
   name: Center occupation
@@ -473,7 +473,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: good
   version: 1
 - id: SPC.space
   name: Space
@@ -494,7 +494,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: good
   version: 1
 - id: STR.colour_complex
   name: Colour-complex control
@@ -536,7 +536,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: bad
   version: 1
 - id: STR.islands
   name: Pawn islands
@@ -557,7 +557,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: bad
   version: 1
 - id: STR.isolated
   name: Isolated pawns
@@ -578,7 +578,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: bad
   version: 1
 - id: STR.passed
   name: Passed pawns
@@ -599,7 +599,7 @@
   residualize_on: ''
   status: implemented
   viz: trend
-  higher: neutral
+  higher: good
   version: 1
 - id: STR.tension
   name: Tension
@@ -658,7 +658,7 @@
   engine: none
   requires: []
   output_type: scalar
-  aggregation: ''
+  aggregation: mean
   normalization: ''
   saturation: ~2600
   confounders: ''
@@ -690,18 +690,20 @@
   higher: bad
   version: 1
 - id: TIM.clock
-  name: Clock remaining
+  name: Clock remaining (low-water)
   tier: T4
   scope: game
   category: TIM
-  description: Each side's remaining time on the clock.
-  computation: The %clk after the side's last move, in seconds.
+  description: Each side's remaining time on the clock; aggregated as the lowest it
+    dropped to (time trouble).
+  computation: The %clk after the side's last move, in seconds; rolled up as the game
+    minimum.
   inputs: K
   engine: none
   requires:
   - clock
   output_type: scalar
-  aggregation: ''
+  aggregation: min
   normalization: ''
   saturation: ~2700
   confounders: ''
@@ -724,7 +726,7 @@
   requires:
   - clock
   output_type: scalar
-  aggregation: ''
+  aggregation: max
   normalization: ''
   saturation: ~2700
   confounders: ''

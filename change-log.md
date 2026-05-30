@@ -6,6 +6,30 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-05-30 11:45 IST — Tournament profiles (cross-player aggregation) — MVP
+
+- **What:**
+  - New `engine/chesslab/aggregate.py`: a generic **reducer spine** — each feature
+    declares an `aggregation` (`end|mean|max|min|sum`, defaulted by scope); `summarize()`
+    reduces a game's per-ply matrix to one value per (feature, side); `tournament_profile()`
+    rolls players up (mean/stdev/95%-CI, by-colour/result, standings + linear TPR) and emits
+    pre-sorted leaderboards. So "who is most X" = pick feature X.
+  - `scripts/build_profiles.py` → `web/data/profiles/<slug>.json` (committed, lazy-loaded);
+    `web/src/profiles.js` + a **Game / Profiles** tab (`#profiles/<slug>` deep-link) rendering
+    a generic leaderboard (bars + n-badge + CI + min-n greying) and standings.
+  - `FeatureMeta.higher`/`aggregation` now set on the Python board features and surfaced in
+    the manifest (the Python manifest is authoritative for direction; clock→min, swing/
+    move-time→max, density→mean, castle→max). Capability gating propagated to leaderboards
+    (Grand Swiss/Norway `TIM.*` disabled; `EVAL.*` disabled everywhere).
+  - Tests: `test_aggregate.py` (reducer resolution/summarize/rollup math) + `profiles.test.mjs`
+    (shape, sort direction, gating, min-n). Suite green; mypy clean.
+- **Why:** Answer tournament-wide, cross-player questions (most space, time trouble,
+  prophylaxis, prepared, …) generically — a new feature flows into profiles for free.
+  MVP-first (pure-Python → static JSON; DuckDB corpus store + radar/scatter/Elo-normalization
+  are the planned depth, off by default). Known source-data issue: `women/round-14` holds the
+  Open round-14 games (8 phantom 1-game "players" in the women profile; min-n keeps them off
+  the leaderboards) — flagged for cleanup.
+
 ## 2026-05-30 10:24 IST — Multi-tournament library, data reorg, two-level filter
 
 - **What:**
