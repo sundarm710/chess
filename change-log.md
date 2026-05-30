@@ -6,6 +6,22 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-05-30 — `web-next/` frontend spike (Vite + React + TS + Tailwind + TanStack)
+
+- **What:** New `web-next/` proof-of-concept (the existing `web/` is untouched). Ports the
+  Profiles **overview matrix** (TanStack Table — sortable, colour-coded, sticky, click-to-focus),
+  the **phase + colour filter bar**, and the **What-wins feature↔result correlation** chart
+  (react-chartjs-2), on Vite 6 + React 19 + strict TypeScript + Tailwind v4 with the project
+  design tokens. Typed profile contract (`types.ts`), pure view-logic (`lib/profile.ts`) with
+  **Vitest** unit tests (7 passing), `sync-data` script mirroring `../web/data` (git-ignored).
+  Build green (399 kB JS / 128 kB gz; CSS 3.4 kB gz). Pinned Vite to 6 because 7/8 (rolldown)
+  need Node 22.12+ (local is 22.9).
+- **Why:** The user asked to *feel* the difference between the hand-rolled vanilla UI and a
+  modern component stack before deciding on a migration. The spike shows the headline wins —
+  the matrix's sort/sticky/virtualization-ready behaviour, declarative chart lifecycle (kills
+  the destroy/recreate bug class), compile-checked data, and testable view-logic — at the cost
+  of a build step (gives up §11 "openable as a static file"). Kept side-by-side so both run.
+
 ## 2026-05-30 — Profiles: game-phase & colour dimensions + what-wins correlation
 
 - **What:**

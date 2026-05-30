@@ -1,0 +1,28 @@
+@import 'tailwindcss';
+
+/* Design system (CLAUDE.md §9) exposed as Tailwind theme tokens → bg-paper, text-ink, … */
+@theme {
+  --color-paper: #f4f0e7;
+  --color-paper2: #ece5d6;
+  --color-ink: #211c16;
+  --color-ink2: #6b6052;
+  --color-line: #ddd3bf;
+  --color-w: #9a3b2e; /* White-player accent (oxblood) */
+  --color-b: #1f5673; /* Black-player accent (deep blue) */
+  --color-good: #0f6e56;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: var(--color-paper);
+  }
+  body {
+    margin: 0;
+  }
+}
