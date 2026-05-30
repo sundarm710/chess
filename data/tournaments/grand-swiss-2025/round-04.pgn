@@ -1,0 +1,1513 @@
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.1"]
+[White "Maghsoodloo, Parham"]
+[Black "Abdusattorov, Nodirbek"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2692"]
+[BlackElo "2748"]
+[ECO "D16"]
+[Opening "QGD Slav"]
+[Variation "Soultanbeieff variation"]
+[WhiteFideId "12539929"]
+[BlackFideId "14204118"]
+[EventDate "2025.09.04"]
+
+1. c4 c6 2. d4 d5 3. Nf3 Nf6 4. Nc3 dxc4 5. a4 e6 6. e3 c5 7. Bxc4 Nc6 8. Qe2
+cxd4 9. exd4 Be7 10. Be3 O-O 11. Rd1 Nb4 12. O-O Bd7 13. Ne5 Bc6 14. f4 Rc8 15.
+f5 Bd5 16. fxe6 Bxc4 17. Nxc4 fxe6 18. Bc1 Rc6 19. Ne5 Rb6 20. Nb5 a6 21. Nc3
+Rd6 22. Nc4 Rc6 23. Ne5 Rd6 24. Nf3 Nc6 25. Kh1 Nxd4 26. Nxd4 Rxd4 27. Qxe6+
+Rf7 28. Bg5 Qd6 29. Qb3 Qb4 30. Qa2 Qc4 31. Qxc4 Rxc4 32. h3 h6 33. Be3 Ne4 34.
+Rxf7 Kxf7 35. Nxe4 Rxe4 36. Bd4 h5 37. b3 g6 38. Bf2 Ke6 39. Kg1 Re2 40. Re1
+Rxe1+ 41. Bxe1 Kd5 42. Kf1 Kd4 43. Ke2 b6 44. Bd2 Bc5 45. Be1 a5 46. h4 Bb4 47.
+Bf2+ Kc3 48. Bxb6 Kxb3 49. Kf3 Kxa4 50. g4 Be7 51. gxh5 gxh5 52. Bxa5 Kxa5 53.
+Kg2 Bxh4 54. Kh3 Kb5 55. Kxh4 Kc5 56. Kxh5 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.2"]
+[White "Praggnanandhaa, R"]
+[Black "Mishra, Abhimanyu"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2785"]
+[BlackElo "2611"]
+[ECO "A15"]
+[Opening "English opening"]
+[WhiteFideId "25059530"]
+[BlackFideId "30920019"]
+[EventDate "2025.09.04"]
+
+1. c4 Nf6 2. Nf3 e6 3. b3 d5 4. Bb2 Bd6 5. g3 O-O 6. Bg2 c5 7. cxd5 exd5 8. d4
+Nc6 9. O-O Re8 10. Nc3 Nxd4 11. Nxd4 cxd4 12. Nb5 Be5 13. Bxd4 Bxd4 14. Nxd4
+Bg4 15. h3 Bd7 16. e3 Rc8 17. Ne2 Bb5 18. Re1 Bxe2 19. Rxe2 Ne4 20. Rc2 Qf6 21.
+Rac1 Rcd8 22. Qf3 Qxf3 23. Bxf3 Kf8 24. Rc7 Re7 25. Bg4 Nd6 26. Rxe7 Kxe7 27.
+Rc7+ Kf6 28. Kf1 g6 29. h4 h5 30. Bh3 Ke5 31. f4+ Kf6 32. Ke2 Re8 33. Kf3 Re7
+34. Rc5 d4 35. exd4 Re8 36. Rc7 Re7 37. Rxe7 Kxe7 38. f5 Kf6 39. fxg6 Kxg6 40.
+Kf4 f6 41. Bg2 b6 42. a4 Kg7 43. a5 Kh6 44. Bf3 Kg6 45. Bc6 Kg7 46. b4 Kg6 47.
+a6 Kg7 48. Ba4 Kg6 49. Bd1 Kh6 50. d5 Kg6 51. Ba4 Kg7 52. Bd1 Kg6 53. Be2 Kh6
+54. Kf3 Kg6 55. Kg2 Kh6 56. Kh3 Kg6 57. Bd1 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.3"]
+[White "Gukesh, D"]
+[Black "Erigaisi, Arjun"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2767"]
+[BlackElo "2771"]
+[ECO "E01"]
+[Opening "Catalan"]
+[Variation "closed"]
+[WhiteFideId "46616543"]
+[BlackFideId "35009192"]
+[EventDate "2025.09.04"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 Bd6 5. Nf3 O-O 6. O-O Nbd7 7. Qc2 c6 8. Nbd2
+Re8 9. b3 e5 10. cxd5 cxd5 11. dxe5 Nxe5 12. Bb2 Bg4 13. Bxe5 Bxe5 14. Nxe5
+Rxe5 15. Nf3 Re7 16. Nd4 Rc8 17. Qb2 Rec7 18. Rac1 a6 19. e3 Rxc1 20. Rxc1
+Rxc1+ 21. Qxc1 Qc8 22. Qf1 h5 23. a4 Qc3 24. h3 Bd7 25. Qd1 Qc8 26. h4 Qc3 27.
+Bf3 Bg4 28. Kg2 g6 29. Qc2 Qxc2 30. Nxc2 Bxf3+ 31. Kxf3 Ne4 32. Nb4 Nd2+ 33.
+Kf4 Nxb3 34. Nxd5 Nc5 35. Nc3 Nd3+ 36. Kf3 Kf8 37. e4 Ke7 38. Ke3 Nc5 39. f3
+Ke6 40. g4 f6 41. gxh5 gxh5 42. f4 Kd6 43. Kd4 Ne6+ 44. Ke3 Nc5 45. Kd4 Ne6+
+46. Ke3 Nc5 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.4"]
+[White "Firouzja, Alireza"]
+[Black "Gumularz, Szymon"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2754"]
+[BlackElo "2590"]
+[ECO "D45"]
+[Opening "QGD semi-Slav"]
+[Variation "accelerated Meran (Alekhine variation)"]
+[WhiteFideId "12573981"]
+[BlackFideId "1188062"]
+[EventDate "2025.09.04"]
+
+1. c4 c6 2. Nf3 d5 3. d4 Nf6 4. Nc3 e6 5. e3 a6 6. Qc2 c5 7. cxd5 exd5 8. Be2
+cxd4 9. exd4 Nc6 10. O-O Be6 11. Bg5 h6 12. Bh4 Be7 13. Rad1 O-O 14. Ne5 Rc8
+15. Bf3 Nd7 16. Bg3 Ndxe5 17. dxe5 d4 18. Qe4 Re8 19. Ne2 Bc5 20. b3 Qd7 21.
+Qf4 Bd5 22. Bg4 Be6 23. Bf3 Bd5 24. Bg4 Be6 25. Bf3 Bd5 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.5"]
+[White "Keymer, Vincent"]
+[Black "Svane, Frederik"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2751"]
+[BlackElo "2643"]
+[ECO "C82"]
+[Opening "Ruy Lopez"]
+[Variation "open, Dilworth variation"]
+[WhiteFideId "12940690"]
+[BlackFideId "12923044"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Nxe4 6. d4 b5 7. Bb3 d5 8. dxe5
+Be6 9. c3 Bc5 10. Nbd2 O-O 11. Bc2 Nxf2 12. Rxf2 f6 13. exf6 Qxf6 14. Qf1 Rae8
+15. Nb3 Bxf2+ 16. Qxf2 Ne5 17. Nbd4 Bg4 18. Bg5 Qb6 19. Qh4 Nxf3+ 20. gxf3 Bf5
+21. Bb3 c6 22. Be7 Rf7 23. Re1 Bd7 24. Re5 c5 25. Bxc5 Qxc5 26. Rxd5 Qc7 27.
+Qh5 Ree7 28. Rc5 Qd6 29. Bxf7+ Rxf7 30. Rd5 Qf8 31. a3 h6 32. Qg6 Qe8 33. Qd3
+Qe1+ 34. Qf1 Qe3+ 35. Qf2 Qc1+ 36. Kg2 Re7 37. h4 Qf4 38. Ne2 Qf6 39. Rd4 Qg6+
+40. Ng3 Bc6 41. Rd8+ Re8 42. Rxe8+ Qxe8 43. Qc5 Qe6 44. Kf2 Qf6 45. Qh5 Qf4 46.
+Qg4 Qd2+ 47. Ne2 Be8 48. Qc8 Kf7 49. Qxa6 Qxb2 50. Qb7+ Kf8 51. a4 b4 52. Qxb4+
+Qxb4 53. cxb4 Bxa4 54. Nd4 Bd7 55. b5 Ke7 56. h5 Kd6 57. Ke3 Kc5 58. Ke4 Kb6
+59. Nf5 Bxb5 60. Ke5 Be2 61. Kf4 Bb5 62. Nxg7 Bc6 63. Nf5 Be8 64. Ng3 Bc6 65.
+Ne4 Be8 66. Kg4 Bd7+ 67. Kg3 Be8 68. Nf6 Bf7 69. Kh4 Kc5 70. Ng4 Bd5 71. f4 Kd4
+72. Nxh6 1-0
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.6"]
+[White "Cheparinov, Ivan"]
+[Black "Giri, Anish"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2627"]
+[BlackElo "2746"]
+[ECO "E49"]
+[Opening "Nimzo-Indian"]
+[Variation "4.e3, Botvinnik system"]
+[WhiteFideId "2905540"]
+[BlackFideId "24116068"]
+[EventDate "2025.09.04"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. e3 O-O 5. Bd3 d5 6. a3 Bxc3+ 7. bxc3 dxc4 8.
+Bxc4 c5 9. Ne2 Qc7 10. Bd3 Nc6 11. O-O e5 12. e4 cxd4 13. cxd4 Nxd4 14. Nxd4
+exd4 15. Bd2 Ng4 16. f4 Ne3 17. Qc1 Qxc1 18. Rfxc1 Bd7 19. Kf2 Bc6 20. Bxe3
+dxe3+ 21. Kxe3 g6 22. g3 Rad8 23. Rab1 Rd7 24. Rc3 h5 25. Rb4 Rfd8 26. a4 a5
+27. Rbc4 Kg7 28. h4 Kh6 29. Ra3 Kg7 30. Rac3 Kh6 31. Ra3 Kg7 32. Rac3 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.7"]
+[White "Salem, A.R. Saleh"]
+[Black "Aronian, Levon"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2640"]
+[BlackElo "2744"]
+[ECO "A05"]
+[Opening "Reti opening"]
+[WhiteFideId "9301348"]
+[BlackFideId "13300474"]
+[EventDate "2025.09.04"]
+
+1. Nf3 Nf6 2. g3 c5 3. Bg2 Nc6 4. O-O d5 5. d4 e6 6. b3 cxd4 7. Nxd4 Bd7 8. Bb2
+Bc5 9. c4 Bxd4 10. Bxd4 Nxd4 11. Qxd4 dxc4 12. Bxb7 Rb8 13. Bf3 cxb3 14. axb3
+Qb6 15. Rd1 Qxd4 16. Rxd4 e5 17. Rd1 e4 18. Bg2 Bg4 19. Nc3 O-O 20. Nxe4 Nxe4
+21. Bxe4 Bxe2 22. Re1 Bg4 23. Bd5 Be6 24. Bxe6 fxe6 25. Rxe6 Rxb3 26. Ra2 Rb7
+27. Rea6 Rff7 28. h4 h6 29. Kg2 Kh7 30. R6a5 Rbc7 31. Ra6 Rb7 32. R6a5 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.8"]
+[White "Nepomniachtchi, Ian"]
+[Black "Hovhannisyan, Robert"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2742"]
+[BlackElo "2629"]
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "Nimzovich attack"]
+[WhiteFideId "4168119"]
+[BlackFideId "13302507"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. Nc3 Nxc3 6. dxc3 Be7 7. Be3 Nd7
+8. Qd2 O-O 9. O-O-O Nf6 10. Bd3 Re8 11. Rhe1 Bg4 12. h3 Bxf3 13. gxf3 g6 14.
+Rg1 Bf8 15. f4 Bh6 16. Rde1 d5 17. f5 Ne4 18. Bxe4 Bxe3 19. Rxe3 dxe4 20. Qe2
+Qd5 21. fxg6 hxg6 22. c4 Qe5 23. Rg4 Qh2 24. Qf1 Re5 25. Rgxe4 Rae8 26. Rxe5
+Rxe5 27. Rxe5 Qxe5 28. Kb1 Kg7 29. a4 b6 30. Ka2 a5 31. Qd3 c5 32. Qf3 Qf5 33.
+Qb3 Qxf2 34. Qxb6 Qxc2 35. Qxc5 Qxa4+ 36. Kb1 Qd1+ 37. Ka2 Qa4+ 38. Kb1 Qd1+
+39. Ka2 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.9"]
+[White "Demchenko, Anton"]
+[Black "Mamedyarov, Shakhriyar"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2620"]
+[BlackElo "2741"]
+[ECO "A45"]
+[Opening "Queen's pawn game"]
+[WhiteFideId "4160258"]
+[BlackFideId "13401319"]
+[EventDate "2025.09.04"]
+
+1. d4 Nf6 2. Bf4 c5 3. d5 d6 4. Nc3 e5 5. Bg5 Be7 6. Bxf6 Bxf6 7. e4 h5 8. h4
+Bxh4 9. g3 Bg5 10. Rxh5 Bh6 11. Bh3 Nd7 12. Kf1 Rb8 13. Rh4 b5 14. Qe2 Ke7 15.
+Kg2 g5 16. Rh5 Nf6 17. Bxc8 Nxh5 18. Bf5 Nf6 19. Nf3 g4 20. Nh2 Qa5 21. Nxg4
+Nxg4 22. Bxg4 b4 23. Nd1 Qb5 24. Qf3 Bd2 25. Ne3 Bxe3 26. fxe3 Rh7 27. a4 Qc4
+28. Qf5 Qxc2+ 29. Kf3 Rh6 30. Qd7+ Kf8 31. Rh1 Rf6+ 32. Bf5 Kg7 33. Rh7+ Kg8
+34. Rh1 Kg7 35. Rh7+ Kg8 36. Rh1 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.10"]
+[White "Vachier-Lagrave, Maxime"]
+[Black "Maurizzi, MarcAndria"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2738"]
+[BlackElo "2610"]
+[ECO "B12"]
+[Opening "Caro-Kann"]
+[Variation "advance variation"]
+[WhiteFideId "623539"]
+[BlackFideId "36083534"]
+[EventDate "2025.09.04"]
+
+1. e4 c6 2. d4 d5 3. e5 Bf5 4. Nf3 e6 5. Be2 Ne7 6. O-O c5 7. Be3 Nec6 8. c3
+Nd7 9. a3 Be7 10. b4 cxd4 11. cxd4 O-O 12. Nbd2 Rc8 13. Rc1 a6 14. Nb3 b5 15.
+Nc5 Nb6 16. Nxa6 Nc4 17. a4 Nxb4 18. Nxb4 Bxb4 19. Qb3 Ba3 20. Rxc4 dxc4 21.
+Qxa3 Qa5 22. d5 b4 23. Qb2 exd5 24. Nd4 Bd7 25. f4 c3 26. Qb1 Bxa4 27. Bd3 g6
+28. f5 b3 29. Qe1 Qc7 30. Bh6 c2 31. Qb4 Qxe5 32. Qxa4 Rc4 33. Nc6 Rxa4 34.
+Nxe5 Rc8 35. Bc1 Ra2 36. fxg6 hxg6 37. Bxg6 fxg6 38. Nd3 Ra1 0-1
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.11"]
+[White "Mendonca, Leon Luke"]
+[Black "Niemann, Hans Moke"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2615"]
+[BlackElo "2733"]
+[ECO "A14"]
+[Opening "English"]
+[Variation "Neo-Catalan declined"]
+[WhiteFideId "35028561"]
+[BlackFideId "2093596"]
+[EventDate "2025.09.04"]
+
+1. Nf3 d5 2. g3 Nf6 3. Bg2 e6 4. O-O Be7 5. c4 O-O 6. b3 d4 7. e3 c5 8. Ne5 Qc7
+9. f4 Nfd7 10. exd4 cxd4 11. Nd3 Nc5 12. Nxc5 Bxc5 13. Ba3 Bxa3 14. Nxa3 Bd7
+15. Qe2 Bc6 16. f5 exf5 17. Rxf5 Nd7 18. Nb5 Qb6 19. Qf2 g6 20. Rf4 Bxb5 21.
+cxb5 Qxb5 22. Rxd4 Rad8 23. Re1 Ne5 24. a4 Qa5 25. b4 Qc7 26. Rxd8 Rxd8 27.
+Qxa7 Nd3 28. Rf1 Nxb4 29. Qxb7 Qxb7 30. Bxb7 Rd7 31. Bf3 Rxd2 32. Ra1 Nc2 33.
+Rd1 Nd4 34. Bg4 Ne2+ 35. Bxe2 Rxe2 36. Ra1 Re6 37. a5 Ra6 38. Kf2 Kf8 39. Ke3
+Ke7 40. Kd4 Kd6 41. g4 h6 42. h3 Kc7 43. Rc1+ Kb7 44. Rf1 Rxa5 45. Rxf7+ Kc8
+46. Rf6 h5 47. Rxg6 hxg4 48. hxg4 Kd7 49. g5 Ke7 50. Ke4 Kf7 51. Rf6+ Kg7 52.
+Rf5 Ra4+ 53. Kf3 Kg6 54. Rf4 Ra5 55. Rg4 Rf5+ 56. Kg3 Rxg5 57. Kh4 Rxg4+ 58.
+Kxg4 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.12"]
+[White "Ivanchuk, Vasyl"]
+[Black "Vidit, Santosh Gujrathi"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2608"]
+[BlackElo "2712"]
+[ECO "C45"]
+[Opening "Scotch"]
+[Variation "Mieses variation"]
+[WhiteFideId "14100010"]
+[BlackFideId "5029465"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 5. Nxc6 bxc6 6. e5 Qe7 7. Qe2 Nd5 8.
+h4 Qe6 9. Nd2 a5 10. c4 Nb4 11. Nf3 Qg6 12. h5 Qc2 13. h6 gxh6 14. Nd4 Qxe2+
+15. Kxe2 Bg7 16. Rh4 Ba6 17. Ke1 c5 18. a3 cxd4 19. axb4 axb4 20. Bxh6 Bxh6 21.
+Rxh6 Bb7 22. Rxa8+ Bxa8 23. g3 Ke7 24. Kd2 Rg8 25. Ra6 Bf3 26. Rf6 Bh5 27. Rh6
+Bg6 28. Bh3 Ra8 29. f4 Be4 30. f5 Ra5 31. Rxh7 Rxe5 32. g4 Ra5 33. Bf1 Ra2 34.
+Bd3 Bxd3 35. Kxd3 Rxb2 36. Kxd4 Rg2 37. Ke5 Rxg4 38. f6+ Kf8 39. Rh8+ Rg8 40.
+Rh1 Ke8 41. c5 d6+ 42. cxd6 c6 43. Ra1 Rg5+ 44. Kf4 Rb5 45. Ra8+ Kd7 46. Rf8
+Kxd6 47. Rxf7 b3 48. Ra7 Ke6 49. f7 Rb8 50. Ke3 b2 51. f8=Q Rxf8 52. Rb7 Kd5
+53. Rxb2 c5 54. Rc2 Rh8 55. Rc1 Rh2 56. Kd3 Rh3+ 57. Kc2 Kc4 58. Rg1 Rh2+ 59.
+Kc1 Re2 60. Rg3 Kb4 61. Rh3 c4 62. Rg3 Rh2 63. Rf3 Ra2 64. Rh3 Rg2 65. Rf3 c3
+66. Rf7 Rb2 67. Rb7+ Ka3 68. Rc7 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.13"]
+[White "Predke, Alexandr"]
+[Black "Rapport, Richard"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2609"]
+[BlackElo "2711"]
+[ECO "A81"]
+[Opening "Dutch defence"]
+[WhiteFideId "24107581"]
+[BlackFideId "738590"]
+[EventDate "2025.09.04"]
+
+1. d4 f5 2. g3 Nf6 3. Bg2 g6 4. Nd2 Bg7 5. e4 fxe4 6. Nxe4 Nxe4 7. Bxe4 d5 8.
+Bg2 O-O 9. Nh3 Nc6 10. c3 e5 11. dxe5 Nxe5 12. f4 Nf7 13. O-O c6 14. Be3 Re8
+15. Bd4 Bxd4+ 16. Qxd4 Qb6 17. Ng5 Nd6 18. Rfe1 Bg4 19. Qxb6 axb6 20. h4 h6 21.
+Rxe8+ Rxe8 22. Nf3 Bxf3 23. Bxf3 Nc4 24. b3 Nb2 25. Bg4 h5 26. Bd7 Re3 27. Kg2
+Rxc3 28. Be8 Kg7 29. Re1 Kf6 30. f5 Rc2+ 31. Kg1 gxf5 32. Bxh5 d4 0-1
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.14"]
+[White "Pranav, V"]
+[Black "Nihal, Sarin"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2596"]
+[BlackElo "2693"]
+[ECO "C67"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence, open variation"]
+[WhiteFideId "25060783"]
+[BlackFideId "25092340"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O Nxe4 5. Re1 Nd6 6. Nxe5 Be7 7. Bf1 Nf5 8.
+Nf3 d5 9. d4 O-O 10. Nc3 Nh4 11. Nxh4 Bxh4 12. Bb5 Ne7 13. Bd3 Ng6 14. Qh5 c6
+15. Bf4 Bf6 16. Ne2 Re8 17. c3 Bd7 18. Bg3 a5 19. Nf4 a4 20. Rxe8+ Qxe8 21. a3
+Qe7 22. Qd1 Bg5 23. Nxg6 hxg6 24. Qf3 Re8 25. h3 Qf6 26. Qxf6 Bxf6 27. Bf4 Bf5
+28. Bf1 g5 29. Bd2 Be7 30. Re1 f6 31. f3 Kf8 32. Kf2 Ra8 33. Be2 Bd6 34. Rh1
+Kf7 35. g4 Bc2 36. c4 dxc4 37. Bxc4+ Ke7 38. h4 gxh4 39. Rxh4 b5 40. Be2 Rb8
+41. g5 b4 42. gxf6+ gxf6 43. axb4 Bxb4 44. Bc1 Bd6 45. f4 c5 46. Ke3 Bb1 47.
+dxc5 Bxc5+ 48. Kd2 Rb4 49. Rh5 Bd6 50. Kc3 Re4 51. Bc4 Bxf4 52. Bxf4 Rxf4 53.
+Ra5 Bc2 54. Ra7+ Kd6 55. Ra6+ Kc5 56. Ra5+ Kb6 57. Rb5+ Kc6 58. Rb4 Rf2 59. Bf7
+Kd7 60. Bc4 Kd6 61. Bf7 f5 62. Be8 f4 63. Bxa4 Bb1 64. Bd1 Ke5 65. Rb8 f3 66.
+Re8+ Kf4 67. Rf8+ Bf5 68. Ba4 Ke5 69. Re8+ Kd6 70. Rf8 Bg4 71. Bd1 Ke5 72. Kd3
+Rf1 73. Bxf3 Bxf3 74. Ke3 Rb1 75. Rxf3 Rxb2 76. Rf2 Rb3+ 77. Ke2 Ke4 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.15"]
+[White "Esipenko, Andrey"]
+[Black "Suleymanli, Aydin"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2687"]
+[BlackElo "2602"]
+[ECO "C50"]
+[Opening "Giuoco Pianissimo"]
+[Variation "Italian four knights variation"]
+[WhiteFideId "24175439"]
+[BlackFideId "13413937"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d3 Bc5 5. Nc3 h6 6. h3 a6 7. Bd5 Qe7 8. O-O
+O-O 9. Bxc6 dxc6 10. Ne2 Rd8 11. Ng3 Nh7 12. Kh1 Nf8 13. Nh2 Qh4 14. Qe1 Bd6
+15. Be3 c5 16. f3 Ng6 17. Bf2 Qg5 18. Ng4 Re8 19. Ne3 Qd8 20. a4 a5 21. Bg1 Be6
+22. b3 b6 23. Ngf5 Bf8 24. Bh2 f6 25. Ng3 Nf4 26. Ne2 Bd6 27. Qd2 Qd7 28. Rf2
+Rad8 29. Nd1 Ng6 30. Ne3 Nf4 31. Nd1 Ng6 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.16"]
+[White "Kuzubov, Yuriy"]
+[Black "Yakubboev, Nodirbek"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2600"]
+[BlackElo "2681"]
+[ECO "A07"]
+[Opening "Reti"]
+[Variation "King's Indian attack (Barcza system)"]
+[WhiteFideId "14112906"]
+[BlackFideId "14203987"]
+[EventDate "2025.09.04"]
+
+1. Nf3 d5 2. g3 Nc6 3. d4 Bf5 4. Bg2 Nb4 5. Na3 e6 6. Nh4 Bg4 7. O-O Nf6 8. c4
+c6 9. b3 Bh5 10. Bb2 Ne4 11. Nf3 Be7 12. Nb1 a5 13. Nc3 O-O 14. a3 Na6 15. Ne5
+f5 16. f3 Nxc3 17. Bxc3 Nb8 18. g4 fxg4 19. fxg4 Rxf1+ 20. Qxf1 Be8 21. e4 Nd7
+22. exd5 Nxe5 23. dxe5 cxd5 24. cxd5 exd5 25. Bd4 Ra6 26. a4 Rg6 27. Qf3 Bf7
+28. Rf1 Be6 29. h3 h5 30. gxh5 Rg5 31. Kh1 Qe8 32. h6 gxh6 33. Be3 Rg6 34. Qh5
+Kh7 35. Bf3 Qg8 36. Bf4 Bg5 37. Bh2 Be3 38. Qh4 Rg5 39. Bf4 Rg1+ 40. Kh2 Bxf4+
+0-1
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.17"]
+[White "Henriquez Villagra, Cristobal"]
+[Black "Bluebaum, Matthias"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2594"]
+[BlackElo "2671"]
+[ECO "C43"]
+[Opening "Petrov"]
+[Variation "modern attack, Symmetrical variation"]
+[WhiteFideId "3409350"]
+[BlackFideId "24651516"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nf6 3. d4 Nxe4 4. Bd3 d5 5. Nxe5 Nd7 6. Nc3 Nxe5 7. dxe5 Nxc3
+8. bxc3 Bc5 9. Qh5 h6 10. O-O Qe7 11. a4 Bd7 12. Bf4 O-O-O 13. Rfe1 Kb8 14. Qf3
+Bc6 15. Bb5 Qe6 16. Rab1 Bb6 17. Bg3 Rhf8 18. Re2 g5 19. h3 a6 20. Bxc6 Qxc6
+21. Qf6 Qxf6 22. exf6 Kc8 23. Re7 Rd7 24. Re5 Rd6 25. Rd1 Rfd8 26. h4 Rxf6 27.
+hxg5 hxg5 28. Rxg5 Rc6 29. Rgxd5 Rxd5 30. Rxd5 Rxc3 31. Bh4 c5 32. Rf5 Rxc2 33.
+g4 Rc4 34. f3 Rxa4 35. Bf2 Bc7 36. Rxf7 c4 37. Rf8+ Kd7 38. Rf7+ Kc6 39. Rf6+
+Kd5 40. Rf5+ Ke6 41. Bd4 Ra3 42. Kf2 Rd3 43. Be3 b5 44. Rh5 b4 0-1
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.18"]
+[White "Moussard, Jules"]
+[Black "Vitiugov, Nikita"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2591"]
+[BlackElo "2666"]
+[ECO "C85"]
+[Opening "Ruy Lopez"]
+[Variation "Exchange variation doubly deferred (DERLD)"]
+[WhiteFideId "642908"]
+[BlackFideId "4152956"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Bxc6 dxc6 7. Nc3 Bg4 8.
+h3 Bh5 9. Qe2 Bc5 10. Nd1 Nd7 11. d3 f6 12. Ne3 Bxe3 13. Bxe3 c5 14. g4 Bf7 15.
+Nh4 h5 16. g5 fxg5 17. Nf3 g4 18. Ng5 Qe7 19. f4 exf4 20. Bxf4 Bg6 21. h4 O-O-O
+22. b3 Ne5 23. Rf2 Rhf8 24. Qe3 Rf6 25. Raf1 Rdf8 26. Bg3 Nc6 27. c3 Rd8 28.
+Bf4 b6 29. Rd2 Ne5 30. d4 Nf7 31. e5 Rf5 32. Ne4 Qe6 33. Ng3 Nh6 34. Qe4 Qd5
+35. Qxd5 Rxd5 36. Nxf5 Nxf5 37. dxc5 Rxc5 38. e6 Nxh4 39. Rd7 Bf5 40. Re7 Nf3+
+41. Kf2 g5 42. Be3 Re5 43. Rd1 Bxe6 44. Bxb6 cxb6 45. Rd6 Rf5 46. Ke3 Re5+ 47.
+Kf2 Rf5 48. Ke3 Bf7 49. Rdd7 Re5+ 50. Kf2 Rxe7 51. Rxe7 Bd5 52. Kg3 Nd2 0-1
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.19"]
+[White "Aditya, Mittal"]
+[Black "Erdogmus, Yagiz Kaan"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2589"]
+[BlackElo "2646"]
+[ECO "D31"]
+[Opening "QGD"]
+[Variation "3.Nc3"]
+[WhiteFideId "35042025"]
+[BlackFideId "44599790"]
+[EventDate "2025.09.04"]
+
+1. c4 e6 2. Nc3 d5 3. d4 dxc4 4. e4 c5 5. d5 exd5 6. exd5 Bd6 7. Bxc4 Ne7 8. h3
+O-O 9. Nf3 Nd7 10. O-O Nb6 11. b3 Nxc4 12. bxc4 Ng6 13. Ne4 Bf5 14. Nxd6 Qxd6
+15. Qb3 b6 16. a4 a5 17. Re1 Rfe8 18. Be3 h6 19. Ra2 Be4 20. Nd2 Nh4 21. Bxc5
+Qg6 22. g3 Bg2 23. Be7 Bxh3 24. Kh2 Ng2 25. Re5 f6 26. Qxb6 Nf4 27. Re4 Qh5 28.
+Rxf4 Bg4+ 29. Kg1 Rxe7 30. Ra1 Rae8 31. Rf1 Bh3 32. d6 Re2 33. Rh4 Qf5 34. Qb5
+R8e5 35. d7 Rxd2 36. Qb8+ Kh7 37. d8=Q Qxf2+ 38. Rxf2 Re1+ 39. Kh2 Rxf2+ 40.
+Kxh3 Rh1+ 41. Kg4 f5+ 42. Kh5 g6# 0-1
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.20"]
+[White "Woodward, Andy"]
+[Black "Rodshtein, Maxim"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2557"]
+[BlackElo "2645"]
+[ECO "E01"]
+[Opening "Catalan"]
+[Variation "closed"]
+[WhiteFideId "30953499"]
+[BlackFideId "2806851"]
+[EventDate "2025.09.04"]
+
+1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 Bb4+ 5. Bd2 Be7 6. Nf3 O-O 7. O-O Nbd7 8.
+Qc2 c6 9. Nc3 dxc4 10. Ne4 Nxe4 11. Qxe4 b5 12. a4 Bb7 13. axb5 Nf6 14. Qe5 Nd7
+15. Qe4 Nf6 16. Qe5 Nd7 17. Qe4 Nf6 18. Qe5 Nd7 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.21"]
+[White "Yu, Yangyi"]
+[Black "Puranik, Abhimanyu"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2714"]
+[BlackElo "2640"]
+[ECO "D35"]
+[Opening "QGD"]
+[Variation "exchange, positional line"]
+[WhiteFideId "8603820"]
+[BlackFideId "5061245"]
+[EventDate "2025.09.04"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 d5 4. cxd5 exd5 5. Bg5 Be7 6. e3 h6 7. Bh4 O-O 8. Bd3
+Re8 9. Nge2 c6 10. O-O Nbd7 11. f3 b5 12. Rc1 Bb7 13. Qd2 a6 14. Bf5 g6 15. Bh3
+Nb6 16. b3 Nh7 17. Bxe7 Qxe7 18. Nd1 Ng5 19. Nf4 a5 20. Re1 a4 21. Nf2 axb3 22.
+axb3 Ra3 23. e4 Qf8 24. Ng4 Kg7 25. exd5 Nxd5 26. Nxd5 cxd5 27. Qf4 Bc8 28. Nf6
+Rxe1+ 29. Rxe1 Bxh3 30. Re8 Ra2 31. Rxf8 Rxg2+ 32. Kh1 Kxf8 33. Qd6+ Kg7 34.
+Ne8+ Kg8 35. Nf6+ Kg7 36. Nd7 Nh7 37. Qe5+ Kg8 38. Qb8+ Kg7 39. Qe5+ Kg8 40.
+Qe8+ Kg7 41. Qe5+ 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.22"]
+[White "Harikrishna, Pentala"]
+[Black "Xiong, Jeffery"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2704"]
+[BlackElo "2640"]
+[ECO "B51"]
+[Opening "Sicilian"]
+[Variation "Canal-Sokolsky (Nimzovich-Rossolimo, Moscow) attack"]
+[WhiteFideId "5007003"]
+[BlackFideId "2047640"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 d6 3. Bb5+ Nd7 4. d4 cxd4 5. Qxd4 a6 6. Be2 Ngf6 7. O-O g6 8.
+e5 dxe5 9. Nxe5 Bg7 10. Nxd7 Bxd7 11. Bf3 O-O 12. Qh4 Rc8 13. c3 Bc6 14. Nd2
+Bd5 15. Re1 e6 16. Qh3 b5 17. Be2 Qb6 18. Nf3 b4 19. Be3 Qa5 20. Bd4 bxc3 21.
+bxc3 Nh5 22. Ne5 Nf4 23. Qg3 f6 24. Nd7 Nxe2+ 25. Rxe2 Qb5 26. Nxf8 Qxe2 27.
+Nd7 e5 28. Nb6 Rd8 29. Be3 Bxa2 30. Qf3 Qb2 31. Rf1 Qxc3 32. Qe2 Be6 33. Qxa6
+Qb3 34. h3 f5 35. Qa7 f4 36. Qe7 Rf8 37. Bc5 h6 38. Ra1 Rf7 39. Qe8+ Kh7 40.
+Kh2 Bf5 41. Ra8 Rb7 42. Qc6 Qf7 43. Bf8 Qc7 44. Qe8 Qf7 45. Bxg7 Qxe8 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.23"]
+[White "Liang, Awonder"]
+[Black "Aryan, Chopra"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2698"]
+[BlackElo "2619"]
+[ECO "B53"]
+[Opening "Sicilian, Chekhover variation"]
+[WhiteFideId "2056437"]
+[BlackFideId "5084423"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Qxd4 Nc6 5. Bb5 Bd7 6. Qd3 Nf6 7. c4 a6 8.
+Bxc6 Bxc6 9. Nc3 e6 10. O-O Be7 11. Nd4 Qc7 12. b3 O-O 13. Bb2 Rad8 14. Rac1
+Qa5 15. Rfe1 Nd7 16. Nxc6 bxc6 17. Na4 Bf6 18. Bxf6 Nxf6 19. h3 e5 20. Qc3 Qxc3
+21. Rxc3 Rfe8 22. Rd3 Kf8 23. Red1 Ke7 24. f3 c5 25. Kf2 h5 26. h4 Rh8 27. R1d2
+Rd7 28. Nb6 Rdd8 29. Ke1 a5 30. Kd1 Ne8 31. Nd5+ Kd7 32. Kc1 Rb8 33. Kb2 a4 34.
+Kc3 axb3 35. axb3 Rb7 36. b4 cxb4+ 37. Nxb4 Ke6 38. Rd5 Rc7 39. Rb5 Nf6 40. Rb6
+Rd8 41. Kb3 Rc5 42. Na6 Ra5 43. c5 Ne8 44. Rd5 Ra1 45. Kb2 Ra5 46. Nb4 Ra4 47.
+Nd3 Rd4 48. Rxd4 exd4 49. e5 Kd5 50. exd6 Nf6 51. Rb7 Kc4 52. Kc2 Ra8 53. d7
+Kd5 54. Rc7 1-0
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.24"]
+[White "Chigaev, Maksim"]
+[Black "Sevian, Samuel"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2638"]
+[BlackElo "2692"]
+[ECO "D38"]
+[Opening "QGD"]
+[Variation "Ragozin variation"]
+[WhiteFideId "4108116"]
+[BlackFideId "2040506"]
+[EventDate "2025.09.04"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Nf3 d5 5. cxd5 exd5 6. Bf4 Ne4 7. Rc1 Qe7 8.
+Nd2 Nxc3 9. bxc3 Ba3 10. Rb1 O-O 11. e3 g5 12. Bg3 f5 13. Be5 Nc6 14. f4 Nxe5
+15. fxe5 f4 16. exf4 c5 17. g3 cxd4 18. cxd4 Bf5 19. Rb5 Rac8 20. Qb3 gxf4 21.
+Bg2 Rc1+ 22. Ke2 Bg4+ 23. Nf3 Qc7 24. Rxc1 Qxc1 25. h3 Rc8 26. Rc5 Bxc5 27.
+hxg4 Bb4 28. Qxb4 Qe3+ 29. Kf1 fxg3 0-1
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.25"]
+[White "Van Foreest, Jorden"]
+[Black "Anton Guijarro, David"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2692"]
+[BlackElo "2625"]
+[ECO "C88"]
+[Opening "Ruy Lopez"]
+[Variation "closed, anti-Marshall 8.a4"]
+[WhiteFideId "1039784"]
+[BlackFideId "2285525"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 O-O 8. a4
+b4 9. d4 d6 10. dxe5 Nxe5 11. Nbd2 Nfd7 12. Nd4 Bb7 13. Nf1 Re8 14. Ng3 Bf8 15.
+f4 Ng6 16. c3 c5 17. Nf3 Nf6 18. cxb4 c4 19. Bc2 d5 20. e5 Bxb4 21. Nd4 Bxe1
+22. Qxe1 Rb8 23. Ngf5 Bc8 24. Be3 Bxf5 25. Bxf5 Rxb2 26. Qc3 Rb7 27. exf6 Qxf6
+28. Bd2 h5 29. Rf1 h4 30. Bc2 h3 31. gxh3 Nh4 32. Kh1 Rbe7 33. Rg1 Re4 34. Bxe4
+Rxe4 35. Nc2 d4 36. Qxc4 Qd8 37. Nb4 Qa8 38. Qd5 Qxd5 39. Nxd5 Re2 40. Ba5 d3
+41. Bc3 Kf8 42. Bxg7+ Ke8 43. Nc3 Rf2 44. Re1+ Kd7 45. Ne4 Rc2 46. Rd1 Ke6 47.
+Bf6 Kf5 48. Bxh4 Kxe4 49. f5 Rc5 50. Kg2 Rxf5 51. Bf2 Rg5+ 52. Kf1 Ra5 53. Ra1
+f5 54. Bb6 Rd5 55. Re1+ Kf4 56. Kf2 Kg5 57. Be3+ f4 58. Bd2 1-0
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.26"]
+[White "Volokitin, Andrei"]
+[Black "Dubov, Daniil"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2628"]
+[BlackElo "2691"]
+[ECO "C84"]
+[Opening "Ruy Lopez"]
+[Variation "closed defence"]
+[WhiteFideId "14107090"]
+[BlackFideId "24126055"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. d3 b5 7. Bb3 d6 8. a4
+Rb8 9. axb5 axb5 10. Nc3 O-O 11. h3 Nb4 12. Qe2 c5 13. Nd1 Be6 14. Bxe6 fxe6
+15. Ne3 Nc6 16. Bd2 Ra8 17. Rfb1 Rxa1 18. Rxa1 Qd7 19. Ng4 Nxg4 20. hxg4 Qb7
+21. g5 Ra8 22. Qf1 Rxa1 23. Qxa1 Qa7 24. Qb1 Kf7 25. g3 Qd7 26. Kg2 Bd8 27. Qa1
+Qb7 28. Qh1 Kg8 29. Qh3 Qf7 30. Qg4 Bb6 31. Be3 Nb4 32. Ne1 Nc6 33. Nf3 Nb4 34.
+Ne1 Nc6 35. Nf3 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.27"]
+[White "Eljanov, Pavel"]
+[Black "Ponomariov, Ruslan"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2682"]
+[BlackElo "2622"]
+[ECO "E39"]
+[Opening "Nimzo-Indian"]
+[Variation "classical, Pirc variation"]
+[WhiteFideId "14102951"]
+[BlackFideId "14103320"]
+[EventDate "2025.09.04"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 c5 5. dxc5 O-O 6. a3 Bxc5 7. Nf3 d5 8. Bg5
+dxc4 9. e3 h6 10. Bh4 Be7 11. Bxc4 Nh5 12. g4 Bxh4 13. gxh5 Bf6 14. Ne4 Qa5+
+15. Nfd2 Nd7 16. Be2 Be7 17. Rg1 Nf6 18. O-O-O Rd8 19. Nxf6+ Bxf6 20. Ne4 Be7
+21. Rxd8+ Bxd8 22. Rd1 Qc7 23. Bf3 Rb8 24. Nd6 Kf8 25. Qxc7 Bxc7 26. Nxc8 Rxc8
+27. Bxb7 Rb8 28. Bc6 Rd8 29. Rxd8+ Bxd8 30. b4 Ke7 31. Kd2 Kd6 32. Be8 f5 33.
+Kd3 a5 34. b5 Bb6 35. a4 e5 36. Bg6 f4 37. Ke4 fxe3 38. fxe3 Bc5 39. Bf7 Bb6
+40. Bb3 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.28"]
+[White "Deac, Bogdan-Daniel"]
+[Black "Matlakov, Maxim"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2674"]
+[BlackElo "2609"]
+[ECO "E41"]
+[Opening "Nimzo-Indian"]
+[Variation "4.e3 c5"]
+[WhiteFideId "1226380"]
+[BlackFideId "4168003"]
+[EventDate "2025.09.04"]
+
+1. c4 Nf6 2. d4 e6 3. Nc3 Bb4 4. e3 c5 5. Bd3 Nc6 6. Ne2 cxd4 7. exd4 d5 8.
+cxd5 Qxd5 9. O-O Qh5 10. Ne4 Nxe4 11. Bxe4 O-O 12. Bf3 Qa5 13. Be3 Ne7 14. a3
+Bd6 15. Qb3 Rb8 16. Nc3 Bd7 17. Ne4 Bc7 18. Rfc1 Nd5 19. Rc5 Qb6 20. Qc2 Bd8
+21. Ng5 Bxg5 22. Bxg5 Bc6 23. Rc1 Rfe8 24. b4 a6 25. Bxd5 exd5 26. Qd2 Re6 27.
+Re1 Rxe1+ 28. Qxe1 Re8 29. Qd2 Qc7 30. Rc1 Qd7 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.29"]
+[White "Tabatabaei, M. Amin"]
+[Black "Santos Latasa, Jaime"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2673"]
+[BlackElo "2620"]
+[ECO "A05"]
+[Opening "Reti opening"]
+[WhiteFideId "12521213"]
+[BlackFideId "2293307"]
+[EventDate "2025.09.04"]
+
+1. Nf3 Nf6 2. g3 c5 3. Bg2 Nc6 4. O-O e5 5. e4 d6 6. d3 g6 7. c4 Bg7 8. a3 Bg4
+9. h3 Bxf3 10. Qxf3 h5 11. h4 Nd4 12. Qd1 Bh6 13. Be3 Ng4 14. Bxd4 cxd4 15. Nd2
+O-O 16. Nf3 Qe7 17. Nh2 Nf6 18. Bh3 a5 19. b4 axb4 20. axb4 Qc7 21. Qb3 Rfb8
+22. Nf3 Rxa1 23. Rxa1 b5 24. cxb5 Qc3 25. Qxc3 dxc3 26. Ne1 d5 27. Ra6 Kg7 28.
+b6 dxe4 29. dxe4 Nxe4 30. Bg2 f5 31. Nc2 Kf7 32. Bxe4 fxe4 33. Kf1 Bf8 34. Ke2
+Be7 35. Ke3 Bd8 36. Kxe4 Bxb6 37. Kxe5 Re8+ 38. Kf4 Re2 39. Rxb6 Rxf2+ 40. Kg5
+Rxc2 41. Rf6+ Ke7 42. Rc6 Rc1 43. Kxg6 c2 44. Kxh5 Kd7 45. Rc5 Rg1 46. Rxc2
+Rxg3 47. Re2 Kd6 48. Rd2+ Ke5 49. Rb2 Rg8 50. b5 Rh8+ 51. Kg4 Rg8+ 52. Kh3 Rg7
+53. b6 Rb7 54. h5 Kf5 55. Rb5+ Kf6 56. Kh4 Kg7 57. Kg5 Kh7 58. Kf6 Kh6 59. Ke6
+1-0
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.30"]
+[White "Murzin, Volodar"]
+[Black "Narayanan, S.L."]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2670"]
+[BlackElo "2591"]
+[ECO "B30"]
+[Opening "Sicilian"]
+[Variation "Nimzovich-Rossolimo attack (without ...d6)"]
+[WhiteFideId "44155573"]
+[BlackFideId "5058422"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 Nc6 3. Bb5 e6 4. O-O Nge7 5. d4 cxd4 6. Nxd4 Ng6 7. Be3 Be7 8.
+c3 O-O 9. Nd2 Bg5 10. Qe1 a6 11. Bd3 Bxe3 12. Qxe3 e5 13. N4f3 d6 14. Rfd1 b5
+15. a4 Rb8 16. axb5 axb5 17. Bf1 Be6 18. Rdc1 h6 19. b4 Nge7 20. Ra6 Bc8 21.
+Ra3 Be6 22. Ra6 Bc8 23. Ra3 Be6 24. Ra6 Bc8 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.31"]
+[White "Sargissian, Gabriel"]
+[Black "Shankland, Sam"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2626"]
+[BlackElo "2670"]
+[ECO "E90"]
+[Opening "King's Indian"]
+[Variation "5.Nf3"]
+[WhiteFideId "13300881"]
+[BlackFideId "2004887"]
+[EventDate "2025.09.04"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. h3 e5 7. d5 a5 8. Be3 Na6
+9. g4 Nd7 10. Rg1 Ndc5 11. h4 c6 12. g5 Bd7 13. Nd2 a4 14. a3 Rb8 15. Qc2 cxd5
+16. Nxd5 Ne6 17. Bb6 Qe8 18. Nf3 Nac5 19. O-O-O Bc6 20. Kb1 Ra8 21. Bh3 Ra6 22.
+Bxc5 Nxc5 23. Nh2 Rb6 24. Ng4 Qd8 25. Rge1 Rb3 26. Ngf6+ Bxf6 27. Nxf6+ Kg7 28.
+Bg2 Qe7 29. Qd2 Nd3 30. Qxd3 Rxd3 31. Rxd3 b5 32. cxb5 Bxb5 33. Rd2 Rb8 34. Rc1
+Qb7 35. Rc3 h6 36. Rdc2 Qa6 37. Kc1 Bd3 38. Rd2 Bc4 39. Bf3 hxg5 40. hxg5 Rh8
+41. Kb1 Bb3 42. Rc1 Be6 43. Be2 Qb6 44. Bd1 Qb5 45. Rxd6 Rb8 46. Rd2 Qa5 47.
+Rd6 Qe1 48. Bxa4 Qxf2 49. Bc2 Qe3 50. Rd3 Ba2+ 51. Kxa2 Qxc1 52. Bb3 Qxg5 0-1
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.32"]
+[White "Oparin, Grigoriy"]
+[Black "Najer, Evgeniy"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2660"]
+[BlackElo "2613"]
+[ECO "B52"]
+[Opening "Sicilian"]
+[Variation "Canal-Sokolsky attack, 3...Bd7"]
+[WhiteFideId "24125890"]
+[BlackFideId "4118987"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 d6 3. Bb5+ Bd7 4. Bxd7+ Nxd7 5. O-O e6 6. Qe2 Ngf6 7. b3 Be7 8.
+Bb2 O-O 9. c4 e5 10. Ne1 Nb8 11. f4 Nc6 12. Nf3 exf4 13. Nc3 Nd7 14. Nd5 Nde5
+15. Kh1 Bf6 16. d3 Bg5 17. Nxg5 Qxg5 18. Rxf4 f5 19. Bxe5 dxe5 20. Rxf5 Rxf5
+21. exf5 Qxf5 22. Rf1 Qg6 23. a3 a5 24. h3 h6 25. Qe3 Qd6 26. Qe4 Rf8 27. Rxf8+
+Qxf8 28. Kg1 Qf7 29. Nc3 Kh8 30. Na4 Qe7 31. Qf5 Qd6 32. Kh1 Kg8 33. Qf3 Kh8
+34. Nc3 Kg8 35. Ne4 Qe7 36. Qf5 Kh8 37. Kh2 Kg8 38. Kg1 Nd4 39. Qc8+ Kh7 40.
+Qxc5 Qf7 41. Qxe5 Ne2+ 42. Kh2 Qf1 43. Qc5 Qf4+ 44. g3 Qf3 45. Qd5 Qf1 46. h4
+b6 47. h5 Nc1 48. c5 Qe2+ 49. Kg1 Qd1+ 50. Kg2 Qe2+ 51. Kh3 Qf1+ 52. Kh4 Qh1+
+53. Kg4 Qd1+ 54. Kf4 Qf1+ 55. Ke5 Nxd3+ 56. Ke6 Qh3+ 57. Qf5+ Qxf5+ 58. Kxf5
+bxc5 59. g4 Kg8 60. Ke6 Kf8 61. Kd6 Ke8 62. a4 c4 63. bxc4 Nb2 64. c5 Nxa4 65.
+c6 Nb6 66. c7 Nc8+ 67. Ke6 Kf8 68. Nd6 Ne7 69. Kd7 a4 70. Nf5 1-0
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.33"]
+[White "Sargsyan, Shant"]
+[Black "Madaminov, Mukhiddin"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2653"]
+[BlackElo "2560"]
+[ECO "C50"]
+[Opening "Giuoco Pianissimo"]
+[WhiteFideId "13306766"]
+[BlackFideId "14210703"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. d3 Nf6 5. O-O d6 6. c3 a5 7. Re1 O-O 8. h3
+Ba7 9. Na3 Ne7 10. d4 Ng6 11. Be3 c6 12. Bd3 Re8 13. Nc2 h6 14. c4 Nh7 15. d5
+Ng5 16. Nxg5 hxg5 17. Bf1 Nf8 18. Rc1 Bxe3 19. Nxe3 c5 20. Be2 g6 21. Bg4 Nd7
+22. Rc3 Kg7 23. Rb3 b6 24. Qd2 Rh8 25. Nd1 Rb8 26. Rg3 f6 27. Nc3 Ba6 28. Qd3
+Rb7 29. a3 Qc7 30. Bd1 b5 31. cxb5 c4 32. Qe2 Bxb5 33. Nxb5 Rxb5 34. Ba4 Rb6
+35. Rc1 Nc5 36. Rxc4 Qb8 37. b3 Rh4 38. Qc2 Rb7 39. Kh2 Rh8 40. Qd1 Rh4 41. Qc2
+Rh8 42. Rxc5 dxc5 43. Qxc5 Rc8 44. Bc6 Rxb3 45. Qe7+ Kh6 46. Rxb3 Qxb3 47. Be8
+Qb6 48. Qf8+ Kh7 49. Qf7+ Kh8 50. Qf8+ Kh7 51. Bxg6+ Kxg6 52. Qxc8 Qxf2 53.
+Qf5+ Qxf5 54. exf5+ Kxf5 55. g3 e4 56. h4 Ke5 57. h5 Kd4 58. d6 1-0
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.34"]
+[White "Shirov, Alexei"]
+[Black "Gelfand, Boris"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2616"]
+[BlackElo "2652"]
+[ECO "B30"]
+[Opening "Sicilian"]
+[Variation "Nimzovich-Rossolimo attack (without ...d6)"]
+[WhiteFideId "2209390"]
+[BlackFideId "2805677"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 Nc6 3. Bb5 d6 4. O-O Bd7 5. c3 a6 6. Ba4 Nf6 7. d4 cxd4 8. cxd4
+Nxe4 9. d5 Ne5 10. Nxe5 dxe5 11. Re1 Nf6 12. Bb3 g6 13. Bd2 Bg7 14. Bc3 e6 15.
+Bxe5 O-O 16. Nc3 exd5 17. Bxd5 Nxd5 18. Bxg7 Bg4 19. Qxg4 Kxg7 20. Rad1 Nf6 21.
+Qb4 Qc8 22. Re7 b5 23. h3 Re8 24. Ne4 Nxe4 25. Qxe4 Rxe7 26. Qxe7 Qe8 27. Qd6
+Qe2 28. Qd4+ Kg8 29. Rc1 Re8 30. a3 Qe5 31. Qxe5 Rxe5 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.35"]
+[White "Lagarde, Maxime"]
+[Black "Mamedov, Rauf"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2609"]
+[BlackElo "2651"]
+[ECO "B30"]
+[Opening "Sicilian"]
+[Variation "Nimzovich-Rossolimo attack (without ...d6)"]
+[WhiteFideId "662399"]
+[BlackFideId "13401653"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 Nc6 3. Bb5 Nf6 4. Bxc6 dxc6 5. d3 g6 6. O-O Bg7 7. Nc3 b6 8.
+Re1 O-O 9. Bd2 Ne8 10. e5 Nc7 11. h3 Ne6 12. Ne2 a5 13. Nf4 a4 14. Qe2 h6 15.
+Rad1 Ra7 16. c4 Nd4 17. Nxd4 Qxd4 18. Bc1 Bf5 19. e6 Kh7 20. g4 Bxe6 21. Nxe6
+fxe6 22. Kg2 e5 23. Qc2 e6 24. Re4 Qd8 25. Qe2 Raf7 26. Rf1 Rd7 27. Rd1 Rdf7
+28. Rf1 Rd7 29. Rd1 Rdf7 30. Rf1 Rd7 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.36"]
+[White "Bartel, Mateusz"]
+[Black "Yuffa, Daniil"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2581"]
+[BlackElo "2648"]
+[ECO "B45"]
+[Opening "Sicilian"]
+[Variation "Taimanov variation"]
+[WhiteFideId "1112635"]
+[BlackFideId "24131423"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 e6 3. d4 cxd4 4. Nxd4 Nc6 5. Nc3 Nf6 6. Qd3 Qc7 7. Ndb5 Qb8 8.
+Qg3 d6 9. Be3 a6 10. Nd4 e5 11. Nf3 b5 12. O-O-O h6 13. Nd2 Be6 14. Be2 Qc7 15.
+f4 Rc8 16. Kb1 exf4 17. Bxf4 Ne5 18. Rhe1 Ng6 19. Nd5 Bxd5 20. exd5 Be7 21. Bd3
+O-O 22. Bxg6 fxg6 23. Qxg6 Nxd5 24. Bxh6 Bf6 25. Qd3 Nb4 26. Qb3+ Kh8 27. Rc1
+gxh6 28. Qxb4 a5 29. Qb3 a4 30. Qb4 Qc5 31. Qxc5 dxc5 32. Nf3 b4 33. c4 a3 34.
+bxa3 bxa3 35. Kc2 Bb2 36. Rcd1 Rf4 37. Rd6 Rxc4+ 38. Kd3 Rg4 39. g3 Bg7 40. Ne5
+Rb4 41. Nc4 Rf8 42. Re7 Rf3+ 43. Ke2 Rf6 44. Rd8+ Rf8 45. Rxf8+ Bxf8 46. Re4
+Rb2+ 47. Kd3 Rxa2 48. Re8 Kg7 49. Ra8 Rxh2 50. Rxa3 Rh1 51. Ke4 Be7 52. Ra7 Kf6
+53. Ne3 Ke6 54. Ra6+ Bd6 55. g4 Re1 56. Kd3 Rg1 57. Nf5 Ke5 58. Nxh6 Kd5 59.
+Nf5 c4+ 60. Ke2 Bc5 61. Ne3+ Bxe3 62. Kxe3 Rd1 63. Ra5+ Kc6 64. g5 Kb6 65. Ra8
+Rd7 66. Rc8 Kb5 67. Ke4 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.37"]
+[White "Theodorou, Nikolas"]
+[Black "Nigmatov, Ortik"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2646"]
+[BlackElo "2488"]
+[ECO "D02"]
+[Opening "Queen's pawn game"]
+[WhiteFideId "4262875"]
+[BlackFideId "14202131"]
+[EventDate "2025.09.04"]
+
+1. d4 d5 2. Nf3 Nf6 3. g3 c5 4. Bg2 cxd4 5. O-O h6 6. Bf4 e6 7. Nxd4 Nbd7 8.
+Nf3 Be7 9. c4 O-O 10. Nc3 Nb6 11. cxd5 Nfxd5 12. Nxd5 Nxd5 13. Be5 Bd7 14. Rc1
+Rc8 15. Rxc8 Qxc8 16. Qb1 Qc4 17. e3 Rc8 18. Bd4 Qc2 19. Bxa7 Qxb1 20. Rxb1 Ra8
+21. Bd4 Rxa2 22. Ne5 Be8 23. Rc1 f6 24. Nd3 Bc6 25. Nf4 Nxf4 26. gxf4 Bxg2 27.
+Kxg2 Bd6 28. Rc3 Ra4 29. Rd3 Bf8 30. Bc3 Ra6 31. Rd7 Rb6 32. Kf3 Rb5 33. Ke4
+Bb4 34. Bd4 Bf8 35. Kd3 Rb3+ 36. Bc3 Rb5 37. b4 Rb6 38. Kc4 Rc6+ 39. Kb3 Rb6
+40. e4 h5 41. f3 h4 42. h3 Kh7 43. Rd8 Kg8 44. Rd7 Kh7 45. e5 Kg6 46. Rc7 fxe5
+47. fxe5 Kh7 48. Rf7 Kg8 49. Rd7 Kh7 50. Be1 Kg8 51. f4 Kh7 52. Rf7 Kg8 53. Rd7
+Kh7 54. Rd8 Kg8 55. Kc4 Rc6+ 56. Kb5 Kf7 57. Bxh4 Rc3 58. Rd7+ Kg6 59. Rxb7
+Rxh3 60. Bg5 Rb3 61. Kc4 Rb1 62. Rb8 Kf7 63. f5 Rg1 64. Rb7+ Kg8 65. Be3 Re1
+66. Kd3 exf5 67. Rb8 Kf7 68. e6+ Kxe6 69. Rxf8 Rb1 70. Kc4 1-0
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.38"]
+[White "Vokhidov, Shamsiddin"]
+[Black "Samunenkov, Ihor"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2645"]
+[BlackElo "2550"]
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "classical attack"]
+[WhiteFideId "14204223"]
+[BlackFideId "14187086"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Be7 7. O-O Bf5 8.
+Re1 O-O 9. Nbd2 Nd6 10. Nf1 c6 11. Bf4 Bxd3 12. Qxd3 Na6 13. b3 Nb4 14. Qe2 Ne4
+15. a3 Na6 16. Ne5 Nc7 17. f3 Ne6 18. Be3 Nd6 19. Bf2 Nf4 20. Qd2 Bg5 21. Be3
+Ne6 22. Ng3 Bxe3+ 23. Rxe3 Qb6 24. Rd1 Rad8 25. a4 Rfe8 26. Re2 a5 27. Ng4 Qb4
+28. Ree1 Qxd2 29. Rxd2 f6 30. Ne3 g6 31. Kf2 Kf7 32. Ne2 Re7 33. c4 dxc4 34.
+bxc4 Nf5 35. Nxf5 gxf5 36. Red1 Red7 37. d5 Nc5 38. Nc3 Re7 39. Rb1 Rde8 40.
+Re2 Rxe2+ 41. Nxe2 cxd5 42. cxd5 Nd3+ 43. Kf1 Nb4 44. Rd1 Ke7 45. Ng3 Kd7 46.
+f4 Re3 47. Kf2 Ra3 48. Nxf5 Rxa4 49. Ne3 Ra3 50. Ke2 b5 51. Ng4 f5 52. Ne5+ Kd6
+53. Nf7+ Ke7 54. Ne5 Kd6 55. Nf7+ Ke7 56. Ne5 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.39"]
+[White "Fedoseev, Vladimir3"]
+[Black "Martirosyan, Haik M."]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2731"]
+[BlackElo "2628"]
+[ECO "E32"]
+[Opening "Nimzo-Indian"]
+[Variation "classical variation"]
+[WhiteFideId "24130737"]
+[BlackFideId "13306553"]
+[EventDate "2025.09.04"]
+
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2 O-O 5. a3 Bxc3+ 6. Qxc3 d5 7. cxd5 Ne4 8.
+Qc2 exd5 9. Bf4 Nc6 10. e3 g5 11. Bg3 f5 12. f3 Nxg3 13. hxg3 Qe7 14. Qb3 Be6
+15. Bd3 Na5 16. Qb5 b6 17. Ne2 c5 18. dxc5 Bd7 19. Qb4 Qxe3 20. Rd1 Nc6 21. Qb3
+Qxc5 22. Bb1 Ne7 23. Rh5 h6 24. Rxh6 Kg7 25. Rh3 Rac8 26. Qd3 Bb5 27. Qd2 Ng6
+28. Qd4+ Qxd4 29. Nxd4 Bd7 30. Rh5 Kf6 31. f4 gxf4 32. Bxf5 Bxf5 33. Rxf5+ Ke7
+34. Rxd5 fxg3 35. Rg5 Rg8 36. Rxg3 Nh4 37. Kf2 Rcf8+ 38. Nf3 Rxg3 39. Kxg3 Nxf3
+40. gxf3 Rg8+ 41. Kf4 Rg2 42. b3 Rb2 43. Rd3 Ke6 44. Re3+ Kd5 45. Kf5 Kd4 46.
+Re4+ Kd5 47. Re5+ Kd4 48. Rb5 Rh2 49. a4 Ke3 50. f4 Kf3 51. Rb4 Rh8 52. Ke6
+Re8+ 53. Kd7 Rf8 54. Kc6 Rf7 55. Kb5 Kg4 56. Ka6 Rd7 57. Rc4 Kf5 58. b4 Ke6 59.
+b5 Kd5 60. Rc8 Rf7 61. f5 1-0
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.40"]
+[White "Dardha, Daniel"]
+[Black "Sindarov, Javokhir"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2624"]
+[BlackElo "2722"]
+[ECO "C72"]
+[Opening "Ruy Lopez"]
+[Variation "modern Steinitz defence, 5.O-O"]
+[WhiteFideId "240990"]
+[BlackFideId "14205483"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 d6 5. O-O Bd7 6. c3 g6 7. d4 Bg7 8. Re1
+Nf6 9. Nbd2 O-O 10. h3 exd4 11. cxd4 Nb4 12. Bxd7 Qxd7 13. Qb3 a5 14. a3 Nc6
+15. d5 Nb8 16. Nf1 Na6 17. Qc2 Nc5 18. Rb1 Rfe8 19. Ng3 Qb5 20. Re3 a4 21. Bd2
+Nfd7 22. Bc3 Bh6 23. Rbe1 Ne5 24. Nxe5 dxe5 25. Rf3 Nb3 26. Rd3 Rad8 27. Red1
+Rd7 28. Nf1 Qc4 29. f3 Qc5+ 30. Kh1 Bg5 31. Re1 Qb5 32. Ne3 c5 33. Rdd1 Qa6 34.
+Ng4 Nd4 35. Bxd4 cxd4 36. Nxe5 Rxe5 37. f4 d3 38. Qc8+ Rd8 39. Qc7 Bxf4 40.
+Qxd8+ Kg7 41. Qh4 g5 42. Qf2 Qc4 43. g3 d2 44. Rxd2 Bxd2 45. Qxd2 Kf8 46. Qe3
+h5 47. g4 hxg4 48. hxg4 Qc8 49. Qh3 Kg7 50. Qf3 f6 51. Rf1 Qd8 52. Rf2 Re8 53.
+Qf5 Re5 54. Qf3 Re8 55. Qf5 Re5 56. Qf3 Re8 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.41"]
+[White "Donchenko, Alexander"]
+[Black "Robson, Ray"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2624"]
+[BlackElo "2674"]
+[ECO "A20"]
+[Opening "English, Nimzovich, Flohr variation"]
+[WhiteFideId "24603295"]
+[BlackFideId "2023970"]
+[EventDate "2025.09.04"]
+
+1. c4 e5 2. Nf3 e4 3. Nd4 Nc6 4. e3 Nf6 5. Nc3 g6 6. d3 exd3 7. Bxd3 Bg7 8. Be2
+O-O 9. O-O Nxd4 10. Qxd4 Re8 11. Qd2 a5 12. Bf3 d6 13. b3 a4 14. Rb1 axb3 15.
+axb3 Bf5 16. e4 Nxe4 17. Nxe4 Bxe4 18. Bxe4 Rxe4 19. Qd5 Qe8 20. Qxb7 c6 21.
+Be3 Bc3 22. Rbd1 Re7 23. Qb6 Rb8 24. Qa6 Ra8 25. Qb6 Rb8 26. Qa6 Ra8 27. Qb6
+1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.42"]
+[White "Artemiev, Vladislav"]
+[Black "Hakobyan, Aram"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2664"]
+[BlackElo "2625"]
+[ECO "D37"]
+[Opening "QGD"]
+[Variation "4.Nf3"]
+[WhiteFideId "24101605"]
+[BlackFideId "13306677"]
+[EventDate "2025.09.04"]
+
+1. d4 Nf6 2. Nf3 d5 3. c4 e6 4. Nc3 dxc4 5. e4 Bb4 6. Bxc4 Nxe4 7. O-O Nf6 8.
+Qa4+ Nc6 9. Bb5 a5 10. Bg5 O-O 11. Bxc6 bxc6 12. Ne4 Ba6 13. Rfc1 Bd3 14. Nxf6+
+gxf6 15. Bh6 Re8 16. Qxc6 Bd6 17. Qc3 Bg6 18. Nd2 e5 19. dxe5 Bb4 20. Qh3 Rxe5
+21. Qf3 Rf5 22. Qe2 Re5 23. Qf3 Rf5 24. Qe2 Re5 25. Qf3 Rf5 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.43"]
+[White "Svane, Rasmus"]
+[Black "Wojtaszek, Radoslaw"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2620"]
+[BlackElo "2661"]
+[ECO "D37"]
+[Opening "QGD"]
+[Variation "classical variation (5.Bf4)"]
+[WhiteFideId "4657101"]
+[BlackFideId "1118358"]
+[EventDate "2025.09.04"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 Be7 5. Bf4 O-O 6. e3 c5 7. dxc5 Bxc5 8. a3
+Nc6 9. Bd3 dxc4 10. Bxc4 Nh5 11. Bg5 Be7 12. Bxe7 Qxe7 13. O-O Rd8 14. Qe2 Bd7
+15. Rfd1 Be8 16. h3 h6 17. Ne4 Nf6 18. Nxf6+ Qxf6 19. Bd3 Ne5 20. Be4 Bc6 21.
+Bxc6 Nxc6 22. Qb5 Qe7 23. Rac1 a6 24. Qb3 Rac8 25. Rxd8+ Rxd8 26. Rd1 Rxd1+ 27.
+Qxd1 Kf8 28. Qc2 Qd6 29. Nd4 Ne7 30. Nf3 Nc6 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.44"]
+[White "Hammer, Jon Ludvig"]
+[Black "Sadhwani, Raunak"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2618"]
+[BlackElo "2658"]
+[ECO "B30"]
+[Opening "Sicilian"]
+[Variation "Nimzovich-Rossolimo attack (without ...d6)"]
+[WhiteFideId "1503707"]
+[BlackFideId "35093487"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 Nc6 3. Bb5 e6 4. Bxc6 bxc6 5. e5 f6 6. d3 fxe5 7. Nxe5 Nf6 8.
+Ng4 d6 9. O-O h5 10. Nxf6+ gxf6 11. Be3 Rb8 12. Nd2 Rb7 13. Kh1 Rg7 14. f4 d5
+15. Bg1 Bd6 16. h3 Qc7 17. Bh2 Qf7 18. c4 h4 19. Rf2 Rh5 20. Qa4 Qd7 21. Re1
+Kf8 22. Nf1 Kg8 23. Ne3 Be7 24. Ng4 d4 25. Rfe2 Qb7 26. Rxe6 Bxe6 27. Rxe6 f5
+28. Ne5 Kh7 29. Qxc6 Qxc6 30. Nxc6 Rh6 31. Rxe7 Rxc6 32. Re2 Rgg6 33. Bg1 Rge6
+34. Rd2 Re1 35. Kh2 Rce6 36. b4 cxb4 37. Rb2 a5 38. a3 R6e2 39. Rb3 Ra1 40.
+axb4 Ree1 41. Bxd4 Rh1# 0-1
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.45"]
+[White "Grischuk, Alexander"]
+[Black "Daneshvar, Bardiya"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2657"]
+[BlackElo "2598"]
+[ECO "C65"]
+[Opening "Ruy Lopez"]
+[Variation "Berlin defence"]
+[WhiteFideId "4126025"]
+[BlackFideId "12576468"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. d3 d6 5. O-O Be7 6. c3 O-O 7. Re1 Bd7 8. Nbd2
+Re8 9. Nf1 h6 10. Ng3 Bf8 11. Ba4 Ne7 12. Bc2 c5 13. d4 cxd4 14. cxd4 Ng6 15.
+Be3 Ng4 16. Bd2 Nf6 17. Bc3 Rc8 18. h3 exd4 19. Bxd4 Ne5 20. Bb3 a5 21. a4 Bc6
+22. Bc3 Ned7 23. Nd4 Nc5 24. Nxc6 bxc6 25. Bc2 Ne6 26. Qd3 g6 27. Qa6 Nd7 28.
+Qxa5 Qxa5 29. Bxa5 Nd4 30. Bd1 Ra8 31. Bd2 Reb8 32. b4 c5 33. Ne2 Nxe2+ 34.
+Bxe2 cxb4 35. Bb5 Nc5 36. Bxb4 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.46"]
+[White "Jobava, Baadur"]
+[Black "Saric, Ivan"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2590"]
+[BlackElo "2655"]
+[ECO "B33"]
+[Opening "Sicilian"]
+[Variation "Pelikan (Lasker/Sveshnikov) variation"]
+[WhiteFideId "13601520"]
+[BlackFideId "14508150"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Ne2 Nc6 3. Nbc3 Nf6 4. d4 cxd4 5. Nxd4 e5 6. Ndb5 d6 7. Nd5 Nxd5 8.
+exd5 Nb8 9. a4 Be7 10. Be2 Nd7 11. b4 a6 12. Na3 a5 13. c3 O-O 14. O-O f5 15.
+Bb5 e4 16. Nc4 Ne5 17. Nxe5 dxe5 18. bxa5 f4 19. c4 Bf5 20. Ba3 Bxa3 21. Rxa3
+Qg5 22. d6 f3 23. Qd5+ Kh8 24. g3 Qg4 25. Kh1 Rf6 26. d7 Rd8 27. Qxe5 Qh3 28.
+Qe8+ Rf8 29. Rg1 h6 30. Re3 Kg8 31. c5 Bxd7 32. Qxe4 Bg4 33. Bd3 Bf5 34. Qc4+
+Kh8 35. Bf1 Qg4 36. Qxg4 Bxg4 37. Bd3 Bf5 38. Rd1 Rd5 39. a6 bxa6 40. c6 Rc8
+41. Be2 Rxd1+ 42. Bxd1 Rxc6 43. Bxf3 Rc4 44. a5 Ra4 45. g4 Bxg4 46. Bxg4 Rxg4
+47. Re6 Rg5 48. Rxa6 Kh7 49. h3 Rf5 50. Kg2 Rg5+ 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.47"]
+[White "Bjerre, Jonas Buhl"]
+[Black "Korobov, Anton"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2651"]
+[BlackElo "2616"]
+[ECO "B47"]
+[Opening "Sicilian"]
+[Variation "Taimanov (Bastrikov) variation"]
+[WhiteFideId "1444948"]
+[BlackFideId "14105730"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 e6 3. d4 cxd4 4. Nxd4 Nc6 5. Nc3 Qc7 6. g4 a6 7. Be3 b5 8. Nxc6
+Qxc6 9. Qd2 b4 10. Ne2 Qxe4 11. Rg1 Qc6 12. Bg2 d5 13. O-O-O Bb7 14. f4 Nf6 15.
+f5 e5 16. g5 Ng4 17. Bxd5 Qxd5 18. Qxd5 Bxd5 19. Rxd5 Nxe3 20. Rxe5+ Kd7 21.
+Rxe3 Bc5 22. Rd1+ Kc6 23. Nd4+ Kb6 24. c3 Rae8 25. Rh3 bxc3 26. bxc3 Re5 27.
+Rf1 h5 28. Kd2 Be7 29. f6 gxf6 30. gxf6 Bd8 31. Rg3 Rh6 32. Rg7 Rxf6 33. Rxf6+
+Bxf6 34. Rxf7 Bg5+ 35. Kc2 Be3 36. Rf6+ Kb7 37. Kd3 Bxd4 38. cxd4 Ra5 39. Rf2
+Kc6 40. Ke4 Ra3 41. h4 Rh3 42. Rf6+ Kc7 43. Kd5 Rxh4 44. Rxa6 Rh1 45. Ra7+ Kb8
+46. Rh7 Ra1 47. Kc6 Rxa2 48. Rh8+ Ka7 49. Rxh5 Rc2+ 50. Rc5 Rh2 51. Rb5 Rh6+
+52. Kc5 1-0
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.48"]
+[White "Indjic, Aleksandar"]
+[Black "Vakhidov, Jakhongir"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2650"]
+[BlackElo "2521"]
+[ECO "D85"]
+[Opening "Gruenfeld"]
+[Variation "modern exchange variation"]
+[WhiteFideId "911925"]
+[BlackFideId "14201801"]
+[EventDate "2025.09.04"]
+
+1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3 Bg7 7. Nf3 c5 8.
+Bb5+ Nc6 9. Rb1 O-O 10. d5 a6 11. Be2 Ne5 12. Nxe5 Bxe5 13. O-O f5 14. exf5 Qd6
+15. h3 b5 16. fxg6 Bxh3 17. Bd3 Bh2+ 18. Kh1 Qxd5 19. f3 Bc7 20. gxh3 Rad8 21.
+Qe2 Qxd3 22. Qe6+ Kh8 23. g7+ Kxg7 24. Bh6+ Kh8 25. Qxe7 Qg6 26. Bxf8 Rd2 27.
+Bg7+ Qxg7 28. Qxg7+ Kxg7 29. a4 bxa4 30. Rb7 Rd7 31. Ra1 Kf6 32. Rxa4 a5 33.
+Kg2 Rd2+ 34. Kf1 Bd6 35. Rxh7 Rd3 36. Rxa5 c4 37. Ke2 Bf4 38. Ra6+ 1-0
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.49"]
+[White "Warmerdam, Max"]
+[Black "Grandelius, Nils"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2591"]
+[BlackElo "2648"]
+[ECO "C55"]
+[Opening "Two knights defence (Modern bishop's opening)"]
+[WhiteFideId "1048104"]
+[BlackFideId "1710400"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d3 Be7 5. O-O O-O 6. Re1 d6 7. a3 Kh8 8. Nc3
+Nd7 9. Bd5 Nb6 10. d4 Nxd4 11. Nxd4 exd4 12. Qxd4 f5 13. exf5 Bf6 14. Qd1 Bxc3
+15. bxc3 Nxd5 16. Qxd5 Rxf5 17. Bg5 Qf8 18. Qd2 h6 19. Bh4 Bd7 20. Re7 Rf7 21.
+Rae1 Rxe7 22. Rxe7 Re8 23. Rxe8 Qxe8 24. f3 a6 25. Bf2 Qg6 26. h4 Kh7 27. Qe2
+Qe6 28. Qxe6 Bxe6 29. Ba7 d5 30. Bb8 c6 31. g4 h5 32. Kf2 hxg4 33. fxg4 Bxg4
+34. Ke3 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.50"]
+[White "Goryachkina, Aleksandra"]
+[Black "Kollars, Dmitrij"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2528"]
+[BlackElo "2647"]
+[ECO "B30"]
+[Opening "Sicilian"]
+[Variation "Nimzovich-Rossolimo attack (without ...d6)"]
+[WhiteFideId "4147103"]
+[BlackFideId "12909572"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 Nc6 3. Bb5 e6 4. O-O Nge7 5. Re1 Ng6 6. c3 Be7 7. d4 cxd4 8.
+cxd4 d5 9. exd5 exd5 10. Bg5 O-O 11. Bxe7 Ngxe7 12. h3 Be6 13. Nc3 Qd6 14. Qd2
+Rac8 15. Bxc6 Nxc6 16. Ne5 a6 17. Re3 f6 18. Nxc6 Rxc6 19. Rae1 Bf7 20. Re7 Rc7
+21. Rxc7 Qxc7 22. Na4 Rc8 23. Qb4 Re8 24. Rxe8+ Bxe8 25. Nc5 Bc6 26. Ne6 Qf7
+27. Qd6 Qe8 28. f4 g6 29. Kh2 h5 30. f5 gxf5 31. Qg3+ Kf7 32. Nf4 Qe4 33. Qg6+
+Ke7 34. Qg7+ Kd6 35. Qxf6+ Kc7 36. Nxh5 Kb6 37. Ng3 Qe3 38. Qe5 Qxe5 39. dxe5
+d4 40. Nxf5 Kc5 41. Kg3 Bd5 42. h4 Be6 43. Nd6 Bxa2 44. Kf4 Bd5 45. h5 1-0
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.51"]
+[White "Lu, Shanglei"]
+[Black "Muradli, Mahammad"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2647"]
+[BlackElo "2590"]
+[ECO "B52"]
+[Opening "Sicilian"]
+[Variation "Canal-Sokolsky attack, 3...Bd7"]
+[WhiteFideId "8603332"]
+[BlackFideId "13409301"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 d6 3. Bb5+ Bd7 4. Bxd7+ Nxd7 5. O-O e6 6. c3 Ngf6 7. Qe2 Be7 8.
+d4 O-O 9. Rd1 cxd4 10. cxd4 b5 11. Bg5 h6 12. Bh4 a6 13. Nbd2 Qb6 14. Nb3 Rac8
+15. Ne1 a5 16. f3 a4 17. Nc1 Nb8 18. Bf2 d5 19. e5 Nfd7 20. Ncd3 b4 21. f4 b3
+22. axb3 Qxb3 23. Rdc1 Rc4 24. f5 Rfc8 25. Rxc4 dxc4 26. Nf4 exf5 27. e6 Nf8
+28. exf7+ Kxf7 29. Qe5 Rd8 30. Nh5 Bf6 31. Nxf6 gxf6 32. Qxf5 Qxb2 33. Rxa4 Qb3
+34. Ra1 c3 35. Qh5+ Kg8 36. Qxh6 Nbd7 37. Rc1 Rc8 38. Nd3 Qd5 39. h3 Kf7 40.
+Nc5 Nxc5 41. Rxc3 Ra8 42. dxc5 Ra2 43. Rg3 Qe5 44. c6 Rc2 45. c7 Rxc7 46. Rg7+
+Ke8 47. Rxc7 Qxc7 48. Qxf6 Qc4 49. Kh2 Ne6 50. Qf5 Qe2 51. h4 Qc4 52. h5 Nf8
+53. g4 Qe2 54. Kg3 Qe7 55. g5 Ne6 56. g6 Qd6+ 57. Kh3 Qd7 58. h6 Nf4+ 59. Kg4
+Nxg6 60. Qxd7+ Kxd7 61. Kf5 Nf8 62. Ke4 1-0
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.52"]
+[White "Bacrot, Etienne"]
+[Black "Zemlyanskii, Ivan"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2637"]
+[BlackElo "2586"]
+[ECO "C92"]
+[Opening "Ruy Lopez"]
+[Variation "closed, Flohr-Zaitsev system (Lenzerheide variation)"]
+[WhiteFideId "605506"]
+[BlackFideId "24249971"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3
+O-O 9. h3 Bb7 10. d4 Re8 11. Nbd2 Bf8 12. a4 Na5 13. Bc2 exd4 14. cxd4 b4 15.
+b3 g6 16. Bb2 Bg7 17. Rc1 Rc8 18. d5 c6 19. dxc6 Rxc6 20. Bd3 Rxc1 21. Qxc1 Nd7
+22. Bxg7 Kxg7 23. Nc4 Nc5 24. Nxa5 Qxa5 25. Qc4 Nxd3 26. Qxd3 Qc5 27. Re3 a5
+28. Nd4 Re5 29. Nf3 Re7 30. Nd4 Re5 31. Nf3 Re7 32. Nd4 Re5 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.53"]
+[White "Suyarov, Mukhammadzokhid"]
+[Black "Gurel, Ediz"]
+[Result "1/2-1/2"]
+[WhiteTitle "IM"]
+[BlackTitle "GM"]
+[WhiteElo "2482"]
+[BlackElo "2631"]
+[ECO "B40"]
+[Opening "Sicilian"]
+[Variation "Anderssen variation"]
+[WhiteFideId "14210495"]
+[BlackFideId "44507356"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 e6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 Nc6 6. Nxc6 bxc6 7. e5 Nd5 8.
+Ne4 Bb7 9. Be2 c5 10. O-O Qc7 11. Nd6+ Bxd6 12. exd6 Qc6 13. f3 c4 14. Qd4 Qb6
+15. Qxb6 Nxb6 16. Be3 O-O 17. Bxb6 axb6 18. Bxc4 Rfc8 19. Bb3 f5 20. Rfd1 Kf7
+21. Rd4 Rc5 22. Rad1 Bc6 23. Rb4 b5 24. Kf2 Kf6 25. c3 g5 26. a3 h5 27. h3 h4
+28. Rd2 Rc8 29. Ke3 Re5+ 30. Kf2 Rc5 31. Ke3 Re5+ 32. Kf2 Rc5 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.54"]
+[White "Wagner, Dennis"]
+[Black "Sarana, Alexey"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2608"]
+[BlackElo "2686"]
+[ECO "D37"]
+[Opening "QGD"]
+[Variation "4.Nf3"]
+[WhiteFideId "24650684"]
+[BlackFideId "24133795"]
+[EventDate "2025.09.04"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 a6 5. cxd5 exd5 6. Bg5 Be6 7. Bxf6 Qxf6 8.
+Qb3 b5 9. a4 Nc6 10. axb5 Nxd4 11. Nxd4 Qxd4 12. bxa6 Qb4 13. Qxb4 Bxb4 14. e3
+Ke7 15. Be2 Rhb8 16. Kd2 c5 17. Kc2 Bf5+ 18. Bd3 Bxc3 19. bxc3 Bxd3+ 20. Kxd3
+Rb6 21. a7 Rb7 22. e4 Rbxa7 23. Rxa7+ Rxa7 24. exd5 Kd6 25. Rb1 Kxd5 26. Rb2 f5
+27. g3 g5 28. Rb8 Ra2 29. Rd8+ Ke5 30. Rh8 Rxf2 31. Rxh7 Rg2 32. Kc4 f4 33.
+gxf4+ gxf4 34. Re7+ Kf6 35. Re8 Rxh2 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.55"]
+[White "Karthikeyan, Murali"]
+[Black "Xu, Xiangyu"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2669"]
+[BlackElo "2615"]
+[ECO "C42"]
+[Opening "Petrov"]
+[Variation "classical attack"]
+[WhiteFideId "5074452"]
+[BlackFideId "8608288"]
+[EventDate "2025.09.04"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4 d5 6. Bd3 Bf5 7. O-O Be7 8.
+Re1 O-O 9. Nbd2 Nd6 10. Nf1 Bg6 11. Ne5 Bxd3 12. Nxd3 Nd7 13. Bf4 Re8 14. c3 a5
+15. Qb3 Nf6 16. a4 c6 17. Re2 Bf8 18. Be5 Nd7 19. Rae1 b5 20. Bxd6 Rxe2 21.
+Rxe2 Bxd6 22. axb5 Qb8 23. g3 Qxb5 24. Qxb5 cxb5 25. Ne3 Re8 26. Kf1 Nb6 27.
+Nf5 Rxe2 28. Kxe2 Bf8 29. Kd1 g6 30. Ne3 Bd6 31. Nc5 Be7 32. Na6 Bd6 33. Nc5
+Be7 34. Kc1 Kf8 35. Nc2 Na8 36. Nd7+ Ke8 37. Ne5 Bd6 38. Nc6 a4 39. Na7 Nc7 40.
+Kb1 g5 41. Ka2 Kd7 42. b3 axb3+ 43. Kxb3 g4 44. Na3 Bxa3 45. Kxa3 Ne6 46. Kb4
+Ng5 47. Nxb5 Ne4 48. c4 dxc4 49. Kxc4 Nxf2 50. Kd5 Nd1 51. Ke4 Kc6 52. Na3 Nf2+
+53. Ke3 Nh3 54. Nc2 f5 55. Nb4+ Kd6 56. Nd3 Ng5 57. Nf4 Ke7 1/2-1/2
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.56"]
+[White "Ivic, Velimir"]
+[Black "Abdisalimov, Abdimalik"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2630"]
+[BlackElo "2488"]
+[ECO "B90"]
+[Opening "Sicilian"]
+[Variation "Najdorf, Adams attack"]
+[WhiteFideId "950122"]
+[BlackFideId "14206323"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. h3 e6 7. g4 h6 8. a3 Nc6
+9. Be3 Nxd4 10. Qxd4 e5 11. Qd2 Be7 12. O-O-O b5 13. f4 Bb7 14. Bd3 O-O 15.
+Rhg1 Nh7 16. Nd5 exf4 17. Bxf4 Ng5 18. Qg2 Ne6 19. Bh2 Bxd5 20. exd5 Nc5 21.
+Kb1 Rb8 22. g5 hxg5 23. h4 b4 24. a4 b3 25. hxg5 Qa5 26. Rh1 Nxd3 27. Rxd3
+bxc2+ 28. Qxc2 Rfc8 29. Qe2 Rb4 30. Bxd6 Rxa4 31. Ba3 Rxa3 32. Rxa3 Bxa3 33.
+Qh2 f6 34. Qh8+ Kf7 35. g6+ Ke7 36. Qxc8 1-0
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.57"]
+[White "Amin, Bassem"]
+[Black "Divya, Deshmukh"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2636"]
+[BlackElo "2478"]
+[ECO "B30"]
+[Opening "Sicilian"]
+[Variation "Nimzovich-Rossolimo attack (without ...d6)"]
+[WhiteFideId "10601457"]
+[BlackFideId "35006916"]
+[EventDate "2025.09.04"]
+
+1. e4 c5 2. Nf3 Nc6 3. Bb5 e5 4. c3 a6 5. Ba4 b5 6. Bc2 Nf6 7. O-O Be7 8. d4 d6
+9. d5 Na5 10. b3 O-O 11. h3 Bd7 12. Be3 Ne8 13. Nbd2 Nb7 14. b4 cxb4 15. cxb4
+g6 16. a4 f5 17. exf5 gxf5 18. a5 Bf6 19. Ra3 Kh8 20. Re1 Ng7 21. Nf1 Rc8 22.
+Ng3 Qe8 23. Bh6 Qf7 24. Ng5 Bxg5 25. Bxg5 f4 26. Ne4 Bf5 27. Bf6 Qg6 28. Bxg7+
+Qxg7 29. g4 Rc4 30. Kh2 Bg6 31. Rc3 Rxb4 32. Rc6 f3 33. Ng3 Rxg4 34. hxg4 Qh6+
+35. Nh5 Bxh5 36. Qc1 Rf4 37. Rc8+ Kg7 38. Rc7+ Bf7+ 39. Kg3 Qg5 40. Bf5 Nc5 41.
+Rxc5 dxc5 42. d6 Bh5 43. Rg1 Bxg4 44. Bxg4 Rxg4+ 45. Kxf3 Rxg1 46. Qxg5+ Rxg5
+47. d7 Rf5+ 0-1
+
+[Event "FIDE Grand Swiss 2025"]
+[Site "Samarkand UZB"]
+[Date "2025.09.07"]
+[Round "4.58"]
+[White "Olisa, Tennyson Ewomazino"]
+[Black "Sjugirov, Sanan"]
+[Result "0-1"]
+[BlackTitle "GM"]
+[WhiteElo "2287"]
+[BlackElo "2627"]
+[ECO "A28"]
+[Opening "English"]
+[Variation "four knights, Romanishin variation"]
+[WhiteFideId "8511390"]
+[BlackFideId "4189302"]
+[EventDate "2025.09.04"]
+
+1. c4 e5 2. Nc3 Nf6 3. Nf3 Nc6 4. e3 Bb4 5. Qc2 Bxc3 6. Qxc3 Qe7 7. d3 d5 8.
+cxd5 Nxd5 9. Qc2 Ndb4 10. Qc3 Nd4 11. Nxd4 exd4 12. Qd2 Qc5 13. Rb1 Be6 14. b3
+Bg4 15. Rb2 O-O-O 16. e4 Rd6 17. f3 Rc6 18. Rb1 Be6 19. Be2 Qa5 20. a3 Nc2+ 21.
+Kf2 Qxd2 22. Bxd2 Nxa3 23. Rb2 Nb5 24. f4 f6 25. Bf3 Rd8 26. g4 Rc3 27. Be2 b6
+28. f5 Bf7 29. Rg1 a5 30. Rgb1 h6 31. h4 Kd7 32. Bd1 c5 33. Ke2 Re8 34. b4 axb4
+35. Ba4 Kc6 36. Bxc3 dxc3 37. Rxb4 cxb4 38. Rxb4 Ra8 39. d4 Ra5 40. Kd3 Be8 41.
+g5 hxg5 42. hxg5 fxg5 43. e5 g4 44. Rc4+ Kb7 45. d5 Na3 46. Rxg4 Bxa4 47. Rxg7+
+Ka6 48. Kxc3 Rxd5 49. Kb4 Nc2+ 50. Kxa4 Rd3 0-1

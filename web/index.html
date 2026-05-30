@@ -167,11 +167,8 @@
       <span class="tagline">engine-free positional features, move by move — click a feature to see why it changed</span>
     </div>
     <div class="controls">
-      <select id="gameSel">
-        <option value="opera">Morphy vs Allies, 1858 — sacrificial attack</option>
-        <option value="club">White vs Black, club ~1500 — a queen blunder</option>
-        <option value="paste">Paste your own PGN…</option>
-      </select>
+      <select id="tournamentSel" title="Tournament · section"></select>
+      <select id="gameSel" title="Round · game"></select>
       <button id="loadBtn">Load</button>
       <label class="modetoggle" title="Compute via the Python backend instead of in-browser">
         <input type="checkbox" id="backendToggle" checked> Backend

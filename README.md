@@ -38,8 +38,9 @@ testable feature pipeline for exactly that, on free public data.
 - **Two modes, one UI.** An instant **offline** mode computes the board‑tier features
   in the browser; a **backend** mode runs the full Python pipeline (richer features,
   persistence) over HTTP. Both render from the same JSON contract.
-- **A real games library.** The **2026 FIDE Candidates** (Open + Women, all 14 rounds,
-  112 games) is bundled and browsable from a grouped dropdown.
+- **A real games library.** ~760 master games bundled and browsable through two
+  cascading filters — **tournament · section** (FIDE Candidates 2026 Open/Women, FIDE
+  Grand Swiss 2025, Norway Chess 2026) then **round · game** — plus custom PGN paste.
 - **Parity as an invariant.** The Python engine is the source of truth; the JS engine
   must reproduce it exactly on golden positions — enforced by the test suite.
 
@@ -83,10 +84,10 @@ python3 -m venv .venv && .venv/bin/pip install -e ".[dev,pipeline]"
 .venv/bin/python -m uvicorn chesslab.api:app --port 8001
 ```
 
-Open **http://localhost:8000**. Pick a game (the Candidates rounds, two teaching
-samples, or paste your own PGN), step with **← / →**, and click any feature to see why
-it moved. Deep‑link a position with `#<game>@<ply>`, e.g.
-`http://localhost:8000/#open-r01-b1@30`.
+Open **http://localhost:8000**. Pick a tournament, then a round/game (or paste your own
+PGN), step with **← / →**, and click any feature to see why it moved. Deep‑link a
+position with `#<game-id>@<ply>`, e.g.
+`http://localhost:8000/#candidates-2026-open__r01b01@30`.
 
 > The **Backend** checkbox is on by default; if the backend isn't running the app
 > falls back to offline mode automatically.
@@ -121,18 +122,21 @@ web/                  interactive stepper (static)
   src/api.js          backend client (analysis mode)
   src/app.js          UI controller
   src/pieces.js       inlined lichess "cburnett" SVG pieces
-  data/               candidates2026.json (browsable games library)
+  data/library.json   tournament index (first filter)
+  data/t/<slug>.json  per-tournament games, lazy-loaded (second filter)
   test/               module / parser / analysis / library / parity tests
 engine/chesslab/      canonical engine + analysis backend (see Architecture)
-data/candidates2026/  raw Candidates PGNs (source for the library)
-scripts/              build_candidates.py (PGNs → library JSON)
+data/raw/             original tournament PGNs (source)
+data/tournaments/     extracted, per-round PGNs (one folder per tournament)
+scripts/build_library.py   raw PGNs → data/tournaments/ + web/data library
 CLAUDE.md             project spec & engineering standards
 FEATURE_CATALOG.md    the full T0–T6 feature ladder + metadata schema
 ```
 
 ## Data
 
-- **2026 FIDE Candidates** (Open + Women) — bundled under `data/candidates2026/`.
+- Bundled tournaments under `data/raw/` → extracted to `data/tournaments/`: FIDE
+  Candidates 2026 (Open + Women), FIDE Grand Swiss 2025, Norway Chess 2026.
 - Free / public sources by design: Lichess Open DB & cached cloud‑eval, the Chess.com
   published‑data API, TWIC / Caissabase. No paid feeds, no local engine in the core path.
 

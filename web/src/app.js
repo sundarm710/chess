@@ -13,25 +13,6 @@ import { analyzeGame } from './api.js';
 
 const engine = new FeatureEngine();
 
-/* ---------- sample games (validated) ---------- */
-const GAMES = {
-  opera: {
-    w: 'Paul Morphy',
-    b: 'Duke & Count (allies)',
-    pgn: `[Event "Paris"]
-1.e4 e5 2.Nf3 d6 3.d4 Bg4 4.dxe5 Bxf3 5.Qxf3 dxe5 6.Bc4 Nf6 7.Qb3 Qe7
-8.Nc3 c6 9.Bg5 b5 10.Nxb5 cxb5 11.Bxb5+ Nbd7 12.O-O-O Rd8
-13.Rxd7 Rxd7 14.Rd1 Qe6 15.Bxd7+ Nxd7 16.Qb8+ Nxb8 17.Rd8# 1-0`,
-  },
-  club: {
-    w: 'White (~1500)',
-    b: 'Black (~1500)',
-    pgn: `[Event "Club"]
-1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.O-O Nf6 5.d3 d6 6.Bg5 h6 7.Bh4 Bg4
-8.Nbd2 Nh5 9.Bxd8 Rxd8 10.h3 Bxf3 11.Nxf3 Nf4 12.g3 Ne6 1-0`,
-  },
-};
-
 /* ---------- state ---------- */
 const S = {
   boards: [],
@@ -42,7 +23,9 @@ const S = {
   ply: 0,
   name: { w: 'White', b: 'Black' },
   selectedId: 'MAT.hanging',
-  library: {}, // id -> {id, white, black, welo, belo, pgn, label, ...} (Candidates games)
+  index: [], // [{slug, label, ...}] from web/data/library.json
+  tournaments: {}, // slug -> {games:[...]} (lazy-fetched, cached)
+  byId: {}, // game id -> game record (across loaded tournaments)
   backend: true, // analyze via the Python backend by default
   backendUrl: 'http://localhost:8001',
   lastLoad: null, // {pgn, wn, bn}
@@ -93,65 +76,81 @@ function finishLoad(wn, bn) {
   render();
 }
 
-// ---- games library (Candidates 2026) ----
-const TOUR_NAME = { open: 'Open', women: 'Women' };
+// ---- games library (two-level filter: tournament · section → round/game) ----
 const fmtName = (name, elo) => (elo ? `${name} (${elo})` : name);
+const opt = (val, text) => {
+  const o = document.createElement('option');
+  o.value = val;
+  o.textContent = text;
+  return o;
+};
 
-async function loadLibrary() {
-  try {
-    const resp = await fetch('./data/candidates2026.json');
-    if (!resp.ok) return;
-    const data = await resp.json();
-    for (const g of data.games) S.library[g.id] = g;
-    buildGameSelect(data.games);
-  } catch {
-    /* no library — the built-in samples remain available */
-  }
+// Fetch the index and populate the tournament filter (+ a custom-PGN option).
+async function loadIndex() {
+  const resp = await fetch('./data/library.json');
+  if (!resp.ok) throw new Error('library index not found');
+  S.index = (await resp.json()).tournaments;
+  const sel = $('tournamentSel');
+  sel.innerHTML = '';
+  for (const t of S.index) sel.appendChild(opt(t.slug, t.label));
+  sel.appendChild(opt('custom', 'Custom PGN…'));
 }
 
-function buildGameSelect(games) {
+// Lazy-fetch one tournament's games (cached), index them by id.
+async function loadTournament(slug) {
+  if (!S.tournaments[slug]) {
+    const resp = await fetch(`./data/t/${slug}.json`);
+    if (!resp.ok) throw new Error(`tournament ${slug} not found`);
+    const doc = await resp.json();
+    S.tournaments[slug] = doc;
+    for (const g of doc.games) S.byId[g.id] = g;
+  }
+  return S.tournaments[slug];
+}
+
+// Populate the round/game filter for a tournament, grouped by round.
+function buildGameSelect(doc) {
   const sel = $('gameSel');
   sel.innerHTML = '';
-  const opt = (val, text) => {
-    const o = document.createElement('option');
-    o.value = val;
-    o.textContent = text;
-    return o;
-  };
-  const samples = document.createElement('optgroup');
-  samples.label = 'Samples';
-  samples.appendChild(opt('opera', 'Morphy vs Allies, 1858 — sacrificial attack'));
-  samples.appendChild(opt('club', 'White vs Black, club ~1500 — a queen blunder'));
-  sel.appendChild(samples);
-
-  let key = null;
+  let round = null;
   let group = null;
-  for (const g of games) {
-    const k = g.tour + '·' + g.round;
-    if (k !== key) {
+  for (const g of doc.games) {
+    if (g.round !== round) {
       group = document.createElement('optgroup');
-      group.label = `${TOUR_NAME[g.tour] || g.tour} · Round ${g.round}`;
+      group.label = `Round ${g.round}`;
       sel.appendChild(group);
-      key = k;
+      round = g.round;
     }
     group.appendChild(opt(g.id, g.label));
   }
-  sel.appendChild(opt('paste', 'Paste your own PGN…'));
 }
 
-// Load by select value / deep-link id (sample key or library id), updating the dropdown.
-function loadById(id) {
-  if (GAMES[id]) {
-    $('gameSel').value = id;
-    return loadGame(GAMES[id].pgn, GAMES[id].w, GAMES[id].b);
+// Tournament filter changed: custom → paste box; otherwise load games + the first one.
+async function selectTournament(slug, gameId) {
+  if (slug === 'custom') {
+    $('pgnbox').style.display = 'block';
+    $('gameSel').disabled = true;
+    return;
   }
-  if (S.library[id]) {
-    const g = S.library[id];
-    $('gameSel').value = id;
-    return loadGame(g.pgn, fmtName(g.white, g.welo), fmtName(g.black, g.belo));
+  $('pgnbox').style.display = 'none';
+  $('gameSel').disabled = false;
+  try {
+    const doc = await loadTournament(slug);
+    buildGameSelect(doc);
+    const target = gameId && S.byId[gameId] ? gameId : doc.games[0]?.id;
+    if (target) {
+      $('gameSel').value = target;
+      await loadGameById(target);
+    }
+  } catch (e) {
+    $('err').textContent = e.message || String(e);
   }
-  $('gameSel').value = 'opera';
-  return loadGame(GAMES.opera.pgn, GAMES.opera.w, GAMES.opera.b);
+}
+
+function loadGameById(id) {
+  const g = S.byId[id];
+  if (!g) return;
+  return loadGame(g.pgn, fmtName(g.white, g.welo), fmtName(g.black, g.belo));
 }
 
 async function loadGame(pgn, wn, bn) {
@@ -384,17 +383,18 @@ function goto(p) {
 
 /* ---------- events ---------- */
 function wireEvents() {
-  $('gameSel').addEventListener('change', (e) => {
-    $('pgnbox').style.display = e.target.value === 'paste' ? 'block' : 'none';
-  });
+  // First filter: tournament · section (or Custom PGN).
+  $('tournamentSel').addEventListener('change', (e) => selectTournament(e.target.value));
+  // Second filter: picking a game loads it immediately.
+  $('gameSel').addEventListener('change', (e) => loadGameById(e.target.value));
+  // Load button: only needed for the custom-PGN path.
   $('loadBtn').addEventListener('click', () => {
-    const sel = $('gameSel').value;
-    if (sel === 'paste') {
+    if ($('tournamentSel').value === 'custom') {
       const t = $('pgnIn').value.trim();
       if (!t) { $('err').textContent = 'Paste a PGN first.'; return; }
       loadGame(t, 'White', 'Black');
     } else {
-      loadById(sel);
+      loadGameById($('gameSel').value);
     }
   });
   $('first').onclick = () => goto(0);
@@ -417,10 +417,10 @@ function wireEvents() {
 }
 
 /* ---------- boot ---------- */
-// Optional deep link: #<id>@<ply> — a sample key (opera/club) or a library id
-// (e.g. #open-r01-b1@20).
+// Optional deep link: #<game-id>@<ply>, e.g. #candidates-2026-open__r01b01@20.
+// The slug (tournament) is the part before "__".
 function parseHash() {
-  const m = (location.hash || '').match(/^#([\w-]+)(?:@(\d+))?$/);
+  const m = (location.hash || '').match(/^#([\w-]+__r\d+b\d+)(?:@(\d+))?$/);
   return m ? { game: m[1], ply: Number(m[2] || 0) } : null;
 }
 
@@ -429,13 +429,28 @@ async function boot() {
   $('backendUrl').disabled = !S.backend;
   if (!window.Chess) {
     $('err').textContent = 'Chess library failed to load — check your network/CDN access.';
-    $('pgnbox').style.display = 'block';
     return;
   }
-  await loadLibrary();
+  try {
+    await loadIndex();
+  } catch (e) {
+    $('err').textContent = 'Could not load the games library — ' + (e.message || e);
+    return;
+  }
   const h = parseHash();
-  await loadById(h ? h.game : 'opera');
-  if (h && h.ply) goto(h.ply);
+  if (h) {
+    const slug = h.game.split('__')[0];
+    $('tournamentSel').value = slug;
+    await selectTournament(slug, h.game);
+    if (h.ply) goto(h.ply);
+  } else {
+    // Default to the first tournament's first game.
+    const first = S.index[0];
+    if (first) {
+      $('tournamentSel').value = first.slug;
+      await selectTournament(first.slug);
+    }
+  }
 }
 
 boot();

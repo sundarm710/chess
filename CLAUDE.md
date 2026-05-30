@@ -350,6 +350,44 @@ Do not leave finished work uncommitted. If a change set spans several edits, it'
 one change-log entry + one commit at the end. Regenerate `features.yaml` (run the suite)
 before committing so it stays in sync.
 
+## 16. Games library & data layout — HARDCODED
+
+On-disk layout (two tiers, by intent):
+
+```
+data/
+  raw/                         # original tournament PGNs, exactly as downloaded — never edited
+    candidates2026/{open,women}/round-*/games.pgn
+    fidegrandsw25.pgn
+    norway26.pgn
+  tournaments/                 # GENERATED extract: one folder per tournament·section
+    <slug>/round-NN.pgn         # games split by round (clocks preserved)
+web/data/
+  library.json                 # GENERATED index — the first filter (small; always fetched)
+  t/<slug>.json                # GENERATED per-tournament games (+pgn) — lazy-fetched on select
+```
+
+**Source of truth for *what tournaments exist* is the `SOURCES` manifest in
+`scripts/build_library.py`** — one row per tournament·section:
+`{slug, tournament, year, section, format, kind:"dir"|"file", path}` (path is relative
+to `data/raw/`). `build_library.py` reads `raw/`, writes `data/tournaments/` and the
+`web/data` library, and is re-run by hand when sources change (then commit the output;
+`web/test/library.test.mjs` validates it).
+
+**Metadata model.** Index entry per tournament: `slug, tournament, year, section,
+format, label, rounds, count, has_clock`. Game record: `id, round, board, white, black,
+welo, belo, result, eco, opening, label, pgn`.
+- **Game id = `<slug>__r<RR>b<BB>`** (zero-padded). The slug (and thus tournament file)
+  is recoverable as `id.split("__")[0]` — used by deep links `#<id>@<ply>`.
+- **Category label = `"{tournament} {year} — {Open|Women}"`** (e.g. `Norway Chess 2026 — Open`).
+- `slug` is hyphenated, no underscores (so `__` is an unambiguous id delimiter).
+
+**Frontend filtering (two cascading selects).** `#tournamentSel` (categories from
+`library.json`, plus a `Custom PGN…` option) → on change, lazy-fetch `t/<slug>.json` and
+populate `#gameSel` grouped by round; picking a game loads it. There are **no built-in
+sample games** — the library + custom paste are the only sources. To add a tournament:
+drop its PGN under `data/raw/`, add a `SOURCES` row, run `build_library.py`, commit.
+
 ## 12. Glossary
 
 - **en prise** — a piece sitting where it can be profitably captured (attacked and

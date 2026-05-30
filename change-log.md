@@ -6,6 +6,25 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-05-30 10:24 IST — Multi-tournament library, data reorg, two-level filter
+
+- **What:**
+  - Reorganized `data/` into `raw/` (untouched source PGNs) and `tournaments/<slug>/`
+    (generated per-round extracts). Added **FIDE Grand Swiss 2025** (638 games) and
+    **Norway Chess 2026** (12) alongside the Candidates; moved `norway26.pgn` into `raw/`.
+  - New `scripts/build_library.py` (replaces `build_candidates.py`) with a hardcoded
+    `SOURCES` manifest → emits `web/data/library.json` (tournament index) + lazy-loaded
+    `web/data/t/<slug>.json` per tournament. Game ids now `<slug>__r<RR>b<BB>`.
+  - Frontend: **two cascading filters** — tournament · section → round · game — plus a
+    Custom PGN option. **Removed the two built-in sample games.** Deep links use the new
+    id format. CLAUDE.md §16 documents the layout, metadata schema, and id format.
+  - Fixed a build bug: a reused `StringExporter` accumulated across games (440 MB blow-up)
+    → fresh exporter per game.
+- **Why:** Scale the games library beyond one tournament and make it navigable by the
+  metadata that matters (tournament/section, then round/game), the way a user actually
+  browses. Splitting index from per-tournament files keeps the initial load tiny while
+  supporting hundreds of games. Removing samples makes the library the single source.
+
 ## 2026-05-30 10:14 IST — Fix CI install + change-log What/Why format
 
 - **What:** `.github/workflows/tests.yml` now installs `.[dev,pipeline]` (was `.[dev]`).

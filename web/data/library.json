@@ -1,0 +1,48 @@
+{
+  "tournaments": [
+    {
+      "slug": "candidates-2026-open",
+      "tournament": "FIDE Candidates",
+      "year": 2026,
+      "section": "open",
+      "format": "round-robin",
+      "label": "FIDE Candidates 2026 \u2014 Open",
+      "rounds": 14,
+      "count": 56,
+      "has_clock": true
+    },
+    {
+      "slug": "candidates-2026-women",
+      "tournament": "FIDE Candidates",
+      "year": 2026,
+      "section": "women",
+      "format": "round-robin",
+      "label": "FIDE Candidates 2026 \u2014 Women",
+      "rounds": 14,
+      "count": 56,
+      "has_clock": true
+    },
+    {
+      "slug": "grand-swiss-2025",
+      "tournament": "FIDE Grand Swiss",
+      "year": 2025,
+      "section": "open",
+      "format": "swiss",
+      "label": "FIDE Grand Swiss 2025 \u2014 Open",
+      "rounds": 11,
+      "count": 638,
+      "has_clock": false
+    },
+    {
+      "slug": "norway-chess-2026",
+      "tournament": "Norway Chess",
+      "year": 2026,
+      "section": "open",
+      "format": "round-robin",
+      "label": "Norway Chess 2026 \u2014 Open",
+      "rounds": 4,
+      "count": 12,
+      "has_clock": false
+    }
+  ]
+}
