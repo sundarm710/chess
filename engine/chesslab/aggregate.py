@@ -228,7 +228,8 @@ def tournament_profile(
     leaderboards = _leaderboards(player_docs, manifest, n_min)
     meta = {
         fid: {"name": m.get("name", fid), "category": m.get("category", ""),
-              "higher": m.get("higher", "neutral"), "requires": m.get("requires", [])}
+              "higher": m.get("higher", "neutral"), "requires": m.get("requires", []),
+              "description": m.get("description", "")}
         for fid, m in manifest.items()
     }
     return {

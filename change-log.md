@@ -6,6 +6,25 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-05-30 13:59 IST — Profiles depth: radar, scatter, feature description
+
+- **What:**
+  - **Player radar** — checkboxes pick players (top 3 by default); a Chart.js radar
+    compares them across a curated 8-feature set (Space, Mobility, Coordination,
+    Initiative, Prophylaxis, Tension-holding, King-zone pressure, Hanging), min-max
+    normalized so outward = better (bad features inverted).
+  - **Feature × feature scatter** — pick X/Y features; every qualified player a dot
+    (Chart.js), tooltip names them. Defaults to Initiative × Prophylaxis.
+  - **Feature description** now shown under the focused leaderboard (e.g. Space →
+    "Territory you control in the opponent's half"); `description` added to the profile
+    `meta` map and profiles rebuilt.
+  - Charts reuse the already-loaded Chart.js; instances destroyed/recreated on re-render.
+- **Why:** The matrix shows everything at once but flat; radar makes head-to-head player
+  comparison legible, and the scatter exposes 2-D style planes (e.g. forcing vs
+  prophylactic). The description answers "what does this metric mean?" in place.
+- Remaining depth (next): opponent-Elo normalization toggle (off by default) + the
+  DuckDB corpus store (queryable engine-of-record).
+
 ## 2026-05-30 12:15 IST — Profiles fixes: women data, scroll, value wrap
 
 - **What:**
