@@ -6,6 +6,20 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-05-30 12:01 IST — Profiles overview matrix (all features at a glance)
+
+- **What:** Reworked the Profiles view (`web/src/profiles.js`) from a single-feature
+  leaderboard into an **overview matrix** — every player a row, every available feature a
+  column, each cell colour-coded by the player's standing within that column (green good →
+  red bad, respecting `higher`; neutral features uncoloured). Leading Pts/TPR columns,
+  category-grouped feature columns with separators, sticky player column + header,
+  horizontal/vertical scroll. Clicking a column header drills into that feature's ranked
+  leaderboard (kept below). Min-n players shown faint and excluded from the colour scale.
+- **Why:** Viewing one metric at a time buried the comparison; a player×feature heatmap
+  lets you scan the whole field across all features at once and spot patterns (who's green
+  on space but red on king safety, etc.). All client-side from the existing profile JSON —
+  no data/backend change.
+
 ## 2026-05-30 11:45 IST — Tournament profiles (cross-player aggregation) — MVP
 
 - **What:**

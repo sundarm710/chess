@@ -1,16 +1,17 @@
-// Tournament profiles view: cross-player leaderboards for a tournament.
+// Tournament profiles view: an at-a-glance overview matrix (players × features) plus
+// a focused single-feature leaderboard.
 //
-// Consumes the precomputed web/data/profiles/<slug>.json (built by
-// scripts/build_profiles.py). "Who is most X" = pick feature X → players ranked.
-// Leaderboards are pre-sorted server-side (by each feature's `higher` direction); this
-// module just renders bars + an n / CI badge, greys sub-min-n entries, and disables
-// features whose data the tournament lacks (e.g. clocks). MVP: leaderboard + player
-// table; radar/scatter/drill-through come later.
+// Consumes the precomputed web/data/profiles/<slug>.json (scripts/build_profiles.py).
+// The matrix colour-codes each cell by where the player ranks within that feature's
+// column (green = good, red = bad, respecting the feature's `higher`), so you scan the
+// whole field across all features at once. Click a column header to drill into that
+// feature's ranked leaderboard below. Capability-gated (clockless tournaments omit
+// clock columns); min-n players are shown faint and excluded from the colour scale.
 
 import { CATEGORY_LABEL, ORDER } from './catalog.js';
 
 const $ = (id) => document.getElementById(id);
-let current = null; // loaded profile doc
+let current = null;
 let featureId = null;
 
 const fmt = (x) => (x == null ? '–' : Number.isInteger(x) ? String(x) : String(Math.round(x * 100) / 100));
@@ -30,18 +31,31 @@ export async function loadProfiles(slug) {
   render();
 }
 
-function orderedFeatureIds(p) {
+function availableFeatures(p) {
   const present = new Set(Object.keys(p.leaderboards));
   const seen = new Set();
   const ids = [];
-  for (const id of ORDER) if (present.has(id)) { ids.push(id); seen.add(id); }
-  for (const id of Object.keys(p.leaderboards)) if (!seen.has(id)) ids.push(id);
+  for (const id of ORDER) if (present.has(id) && p.leaderboards[id].available) { ids.push(id); seen.add(id); }
+  for (const id of Object.keys(p.leaderboards)) {
+    if (!seen.has(id) && p.leaderboards[id].available) ids.push(id);
+  }
   return ids;
 }
 
 function pickDefault(p) {
-  if (p.leaderboards['SPC.space']?.available) return 'SPC.space';
-  return orderedFeatureIds(p).find((id) => p.leaderboards[id].available) || orderedFeatureIds(p)[0];
+  const avail = availableFeatures(p);
+  return avail.includes('SPC.space') ? 'SPC.space' : avail[0];
+}
+
+function playersByScore(p) {
+  return Object.entries(p.players).sort((a, b) => b[1].score - a[1].score);
+}
+
+// goodness in [0,1] (1 = best for this feature) → a red→pale→green cell background.
+function cellColor(goodness) {
+  const hue = goodness * 120; // 0 red … 120 green
+  const light = 91 - Math.abs(goodness - 0.5) * 14;
+  return `hsl(${hue}, 55%, ${light}%)`;
 }
 
 function render() {
@@ -51,38 +65,87 @@ function render() {
 
   const head = document.createElement('div');
   head.className = 'phead';
-  head.innerHTML = `<h2>${p.label} — player profiles</h2>` +
-    `<span class="psub">${Object.keys(p.players).length} players · rank by</span>`;
-  head.appendChild(featureSelect(p));
+  head.innerHTML = `<h2>${p.label}</h2><span class="psub">${Object.keys(p.players).length} players · ` +
+    `${availableFeatures(p).length} features · click a column to rank by it</span>`;
   root.appendChild(head);
 
-  root.appendChild(leaderboard(p, featureId));
-  root.appendChild(playerTable(p));
+  root.appendChild(matrix(p));
+
+  const focus = document.createElement('div');
+  focus.className = 'focuswrap';
+  focus.appendChild(leaderboard(p, featureId));
+  root.appendChild(focus);
 }
 
-function featureSelect(p) {
-  const sel = document.createElement('select');
-  sel.className = 'featpick';
-  let cat = null;
-  let group = null;
-  for (const id of orderedFeatureIds(p)) {
-    const m = p.meta[id] || { name: id, category: '' };
-    if (m.category !== cat) {
-      group = document.createElement('optgroup');
-      group.label = CATEGORY_LABEL[m.category] || m.category;
-      sel.appendChild(group);
-      cat = m.category;
-    }
-    const o = document.createElement('option');
-    o.value = id;
-    const avail = p.leaderboards[id].available;
-    o.textContent = m.name + (avail ? '' : ' — no data');
-    o.disabled = !avail;
-    if (id === featureId) o.selected = true;
-    group.appendChild(o);
+function matrix(p) {
+  const wrap = document.createElement('div');
+  wrap.className = 'matrix-wrap';
+  const feats = availableFeatures(p);
+  const players = playersByScore(p);
+  const nMin = p.n_min || 3;
+
+  // Leading result columns + one column per available feature.
+  const cols = [
+    { id: 'score', label: 'Pts', higher: 'good', get: (d) => d.score },
+    { id: 'perf', label: 'TPR', higher: 'good', get: (d) => d.performance_elo },
+    ...feats.map((id) => ({
+      id, label: (p.meta[id] || {}).name || id, higher: (p.meta[id] || {}).higher || 'neutral',
+      cat: (p.meta[id] || {}).category || '', feature: true,
+      get: (d) => (d.rollups[id] ? d.rollups[id].mean : null),
+      n: (d) => (d.rollups[id] ? d.rollups[id].n : 0),
+    })),
+  ];
+
+  // Per-column min/max over qualified values (for the colour scale).
+  for (const c of cols) {
+    const vals = players
+      .filter(([, d]) => !c.feature || (c.n(d) >= nMin))
+      .map(([, d]) => c.get(d))
+      .filter((v) => v != null);
+    c.min = Math.min(...vals);
+    c.max = Math.max(...vals);
   }
-  sel.addEventListener('change', (e) => { featureId = e.target.value; render(); });
-  return sel;
+
+  const goodness = (c, v) => {
+    if (v == null || c.higher === 'neutral' || c.max === c.min) return null;
+    const t = (v - c.min) / (c.max - c.min);
+    return c.higher === 'bad' ? 1 - t : t;
+  };
+
+  // Mark the first feature column of each category (for a vertical separator).
+  let prevCat = null;
+  for (const c of cols) {
+    if (c.feature) { c.catstart = c.cat !== prevCat; prevCat = c.cat; }
+  }
+  const cls = (c) =>
+    (c.feature ? 'mx-h' : 'mx-res') + (c.id === featureId ? ' sel' : '') + (c.catstart ? ' catstart' : '');
+
+  const header = cols.map((c) =>
+    `<th class="${cls(c)}" data-id="${c.id}" title="${c.feature ? CATEGORY_LABEL[c.cat] + ' · ' : ''}${c.label}">${c.label}</th>`
+  ).join('');
+
+  let body = '';
+  for (const [name, d] of players) {
+    body += `<tr><th class="mx-name" title="${name}">${name}</th>`;
+    for (const c of cols) {
+      const v = c.get(d);
+      const low = c.feature && c.n(d) < nMin;
+      const g = goodness(c, v);
+      const bg = g == null ? '' : `background:${cellColor(g)}`;
+      body += `<td class="mx-cell${low ? ' low' : ''}${c.catstart ? ' catstart' : ''}" style="${bg}">${fmt(v)}</td>`;
+    }
+    body += '</tr>';
+  }
+
+  wrap.innerHTML =
+    `<table class="matrix"><thead><tr>` +
+    `<th class="mx-name">Player</th>${header}</tr></thead><tbody>${body}</tbody></table>`;
+
+  // Click a feature column header → focus that feature's leaderboard.
+  wrap.querySelectorAll('th.mx-h').forEach((th) => {
+    th.addEventListener('click', () => { featureId = th.dataset.id; render(); });
+  });
+  return wrap;
 }
 
 function leaderboard(p, id) {
@@ -95,11 +158,9 @@ function leaderboard(p, id) {
     return wrap;
   }
   const nMin = p.n_min || 3;
-  const vals = board.entries.map((e) => Math.abs(e[1] || 0));
-  const max = Math.max(1e-9, ...vals);
-  const dirNote = board.higher === 'good' ? 'higher is better'
-    : board.higher === 'bad' ? 'lower is better' : 'neutral';
-  wrap.innerHTML = `<div class="lbhead"><b>${m.name}</b> <span class="psub">${dirNote}</span></div>`;
+  const max = Math.max(1e-9, ...board.entries.map((e) => Math.abs(e[1] || 0)));
+  const dir = board.higher === 'good' ? 'higher is better' : board.higher === 'bad' ? 'lower is better' : 'neutral';
+  wrap.innerHTML = `<div class="lbhead"><b>${m.name}</b> <span class="psub">${dir} · click a matrix column to change</span></div>`;
   for (const [name, value, n] of board.entries) {
     const ci = p.players[name]?.rollups?.[id]?.ci;
     const pct = Math.max(2, (Math.abs(value || 0) / max) * 100);
@@ -112,22 +173,5 @@ function leaderboard(p, id) {
       `<span class="lbn">n=${n}</span></span>`;
     wrap.appendChild(row);
   }
-  return wrap;
-}
-
-function playerTable(p) {
-  const wrap = document.createElement('div');
-  wrap.className = 'ptable';
-  const rows = Object.entries(p.players)
-    .sort((a, b) => b[1].score - a[1].score)
-    .map(([name, d]) => {
-      const perf = d.performance_elo != null ? d.performance_elo : '–';
-      return `<tr><td class="pt-name">${name}</td><td>${fmt(d.score)}/${d.games}</td>` +
-        `<td>${d.wins}–${d.draws}–${d.losses}</td><td>${perf}</td></tr>`;
-    })
-    .join('');
-  wrap.innerHTML =
-    '<h3>Standings</h3><table class="ptab"><thead><tr><th class="pt-name">Player</th>' +
-    '<th>Score</th><th>W–D–L</th><th>Perf</th></tr></thead><tbody>' + rows + '</tbody></table>';
   return wrap;
 }
