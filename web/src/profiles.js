@@ -18,14 +18,60 @@ const fmt = (x) => (x == null ? '–' : Number.isInteger(x) ? String(x) : String
 const PALETTE =['#9A3B2E', '#1F5673', '#0F6E56', '#B0522A', '#7d3b56', '#5d6a37', '#4b3b7d', '#2f6f6a'];
 const MAX_RADAR_PLAYERS = 8;
 const CLUSTER_MAX = 8; // features per radar (<= 10)
+const PHASES = ['opening', 'middlegame', 'endgame'];
+const PHASE_LABEL = { opening: 'Opening', middlegame: 'Middlegame', endgame: 'Endgame' };
 
 let current = null;
 let featureId = null;
 let selectedPlayers = null; // Set of player names for the radar
 let scatterX = null;
 let scatterY = null;
+let phaseFilter = 'all';    // 'all' | 'opening' | 'middlegame' | 'endgame'
+let colorFilter = 'all';    // 'all' | 'w' | 'b'
+let fpPlayer = null;        // fingerprint / white-vs-black player
+let pcView = 'trajectory';  // phase-&-colour sub-view
 let radarCharts = []; // one Chart per feature cluster
 let scatterChart = null;
+let pcCharts = []; // phase-&-colour sub-view charts (trajectory / white-vs-black)
+let corrChart = null; // feature ↔ result correlation bar
+
+const curSlice = () => ({ phase: phaseFilter, color: colorFilter });
+
+// Resolve one player's value for a feature under a {phase,color} slice → {mean, n, approx}.
+// Falls back to the phase marginal when a phase×colour cross cell isn't stored.
+function sliceValue(d, fid, { phase, color }) {
+  const r = d && d.rollups && d.rollups[fid];
+  if (!r) return { mean: null, n: 0 };
+  if (phase === 'all' && color === 'all') return { mean: r.mean, n: r.n };
+  if (phase !== 'all' && color === 'all') return r.phases?.[phase] || { mean: null, n: 0 };
+  if (phase === 'all' && color !== 'all') {
+    return color === 'w'
+      ? { mean: r.mean_white, n: r.n_white }
+      : { mean: r.mean_black, n: r.n_black };
+  }
+  const cell = r.cross?.[`${phase}:${color}`];
+  if (cell) return cell;
+  const m = r.phases?.[phase]; // no cross stored → approximate with the phase marginal
+  return m ? { mean: m.mean, n: m.n, approx: true } : { mean: null, n: 0 };
+}
+
+// Client-side ranked [[name, mean, n]] for a feature under a slice (sub-min-n pushed down).
+function rankedEntries(p, id, slice) {
+  const higher = (p.meta[id] || {}).higher || 'neutral';
+  const min = nMin(p);
+  const rows = [];
+  for (const [name, d] of Object.entries(p.players)) {
+    const { mean, n } = sliceValue(d, id, slice);
+    if (mean != null) rows.push([name, mean, n]);
+  }
+  const asc = higher === 'bad';
+  rows.sort((a, b) => (a[2] < min) - (b[2] < min) || (asc ? a[1] - b[1] : b[1] - a[1]));
+  return rows;
+}
+
+const sliceLabel = () =>
+  (phaseFilter === 'all' ? 'All phases' : PHASE_LABEL[phaseFilter]) +
+  ' · ' + (colorFilter === 'all' ? 'both colours' : colorFilter === 'w' ? 'White' : 'Black');
 
 export async function loadProfiles(slug) {
   const root = $('profilesRoot');
@@ -43,6 +89,10 @@ export async function loadProfiles(slug) {
   selectedPlayers = new Set(playersByScore(current).slice(0, 3).map(([n]) => n));
   scatterX = avail.includes('DYN.initiative') ? 'DYN.initiative' : avail[0];
   scatterY = avail.includes('DEC.prophylaxis') ? 'DEC.prophylaxis' : avail[1] || avail[0];
+  phaseFilter = 'all';
+  colorFilter = 'all';
+  pcView = 'trajectory';
+  fpPlayer = playersByScore(current)[0]?.[0] || null;
   render();
 }
 
@@ -66,7 +116,10 @@ function cellColor(goodness) {
 function destroyCharts() {
   radarCharts.forEach((c) => c.destroy());
   radarCharts = [];
+  pcCharts.forEach((c) => c.destroy());
+  pcCharts = [];
   if (scatterChart) { scatterChart.destroy(); scatterChart = null; }
+  if (corrChart) { corrChart.destroy(); corrChart = null; }
 }
 
 function render() {
@@ -81,14 +134,39 @@ function render() {
     `${availableFeatures(p).length} features · click a column to rank by it</span>`;
   root.appendChild(head);
 
+  root.appendChild(controlRow(p));
   root.appendChild(matrix(p));
   root.appendChild(leaderboard(p, featureId));
 
   root.appendChild(radarSection(p));
   root.appendChild(scatterCard(p));
+  root.appendChild(phaseColourCard(p));
+  root.appendChild(correlationCard(p));
 
   drawRadars();
   drawScatter();
+  drawPhaseColour();
+  drawCorrelation();
+}
+
+// ---- phase / colour filter row ----------------------------------------------
+function controlRow(p) {
+  const row = document.createElement('div');
+  row.className = 'pfilters';
+  const hasCross = p.emit_cross;
+  const phaseOpts = ['all', ...PHASES].map((v) =>
+    `<option value="${v}" ${v === phaseFilter ? 'selected' : ''}>${v === 'all' ? 'All phases' : PHASE_LABEL[v]}</option>`).join('');
+  const colorOpts = [['all', 'Both colours'], ['w', 'White'], ['b', 'Black']].map(([v, t]) =>
+    `<option value="${v}" ${v === colorFilter ? 'selected' : ''}>${t}</option>`).join('');
+  const approx = (phaseFilter !== 'all' && colorFilter !== 'all' && !hasCross)
+    ? `<span class="fnote">approx — no phase×colour data this field; showing the ${PHASE_LABEL[phaseFilter]} marginal</span>` : '';
+  row.innerHTML =
+    `<label>Phase <select class="fphase">${phaseOpts}</select></label>` +
+    `<label>Colour <select class="fcolor">${colorOpts}</select></label>` +
+    `<span class="fslice">${sliceLabel()}</span>${approx}`;
+  row.querySelector('.fphase').addEventListener('change', (e) => { phaseFilter = e.target.value; render(); });
+  row.querySelector('.fcolor').addEventListener('change', (e) => { colorFilter = e.target.value; render(); });
+  return row;
 }
 
 // ---- overview matrix --------------------------------------------------------
@@ -105,8 +183,8 @@ function matrix(p) {
     ...feats.map((id) => ({
       id, label: (p.meta[id] || {}).name || id, higher: (p.meta[id] || {}).higher || 'neutral',
       cat: (p.meta[id] || {}).category || '', feature: true,
-      get: (d) => (d.rollups[id] ? d.rollups[id].mean : null),
-      n: (d) => (d.rollups[id] ? d.rollups[id].n : 0),
+      get: (d) => sliceValue(d, id, curSlice()).mean,
+      n: (d) => sliceValue(d, id, curSlice()).n,
     })),
   ];
   for (const c of cols) {
@@ -151,6 +229,7 @@ function focusFeature(id) {
   if (th) th.classList.add('sel');
   const old = root.querySelector('.lboard');
   if (old) old.replaceWith(leaderboard(current, id));
+  if (pcView === 'trajectory') drawPhaseColour(); // trajectory tracks the focused feature
 }
 
 // ---- focused leaderboard (with description) ---------------------------------
@@ -163,13 +242,16 @@ function leaderboard(p, id) {
     wrap.innerHTML = `<p class="perr">“${m.name}” needs data this tournament doesn't have.</p>`;
     return wrap;
   }
+  const slice = curSlice();
+  const entries = rankedEntries(p, id, slice);
   const dir = board.higher === 'good' ? 'higher is better' : board.higher === 'bad' ? 'lower is better' : 'neutral';
-  const max = Math.max(1e-9, ...board.entries.map((e) => Math.abs(e[1] || 0)));
-  let html = `<div class="lbhead"><b>${m.name}</b> <span class="psub">${dir}</span></div>`;
+  const max = Math.max(1e-9, ...entries.map((e) => Math.abs(e[1] || 0)));
+  const isAll = slice.phase === 'all' && slice.color === 'all';
+  let html = `<div class="lbhead"><b>${m.name}</b> <span class="psub">${dir} · ${sliceLabel()}</span></div>`;
   if (m.description) html += `<p class="lbdesc">${m.description}</p>`;
   wrap.innerHTML = html;
-  for (const [name, value, n] of board.entries) {
-    const ci = p.players[name]?.rollups?.[id]?.ci;
+  for (const [name, value, n] of entries) {
+    const ci = isAll ? p.players[name]?.rollups?.[id]?.ci : null; // CI only on the all/all slice
     const pct = Math.max(2, (Math.abs(value || 0) / max) * 100);
     const row = document.createElement('div');
     row.className = 'lbrow' + (n < nMin(p) ? ' lowsample' : '');
@@ -259,29 +341,36 @@ function radarSection(p) {
   return card;
 }
 
-function axisMinMax(p, ids) {
+function axisMinMax(p, ids, slice = { phase: 'all', color: 'all' }) {
   const min = nMin(p);
   const stats = {};
   for (const id of ids) {
     const vals = Object.values(p.players)
-      .filter((d) => d.rollups[id] && d.rollups[id].n >= min && d.rollups[id].mean != null)
-      .map((d) => d.rollups[id].mean);
+      .map((d) => sliceValue(d, id, slice))
+      .filter((s) => s.n >= min && s.mean != null)
+      .map((s) => s.mean);
     stats[id] = { lo: Math.min(...vals), hi: Math.max(...vals) };
   }
   return stats;
+}
+
+// Normalize a value to 0..1 goodness (bad features inverted) given an axis range.
+function goodnessFn(p, stats) {
+  return (id, v) => {
+    const s = stats[id];
+    if (!s || s.hi === s.lo || v == null) return 0.5;
+    const t = (v - s.lo) / (s.hi - s.lo);
+    return p.meta[id]?.higher === 'bad' ? 1 - t : t;
+  };
 }
 
 function drawRadars() {
   const p = current;
   radarCharts.forEach((c) => c.destroy());
   radarCharts = [];
-  const stats = axisMinMax(p, availableFeatures(p));
-  const goodness = (id, v) => {
-    const s = stats[id];
-    if (!s || s.hi === s.lo || v == null) return 0.5;
-    const t = (v - s.lo) / (s.hi - s.lo);
-    return p.meta[id]?.higher === 'bad' ? 1 - t : t;
-  };
+  const slice = curSlice();
+  const stats = axisMinMax(p, availableFeatures(p), slice);
+  const goodness = goodnessFn(p, stats);
   const plotted = plottedPlayers(p);
 
   const leg = $('radarLegend');
@@ -299,7 +388,7 @@ function drawRadars() {
       const d = p.players[name];
       return {
         label: name,
-        data: ids.map((id) => Math.round(goodness(id, d?.rollups?.[id]?.mean) * 100) / 100),
+        data: ids.map((id) => Math.round(goodness(id, sliceValue(d, id, slice).mean) * 100) / 100),
         borderColor: color, backgroundColor: color + '22', borderWidth: 1.5, pointRadius: 2,
       };
     });
@@ -335,9 +424,11 @@ function drawScatter() {
   const p = current;
   if (scatterChart) { scatterChart.destroy(); scatterChart = null; }
   const min = nMin(p);
+  const slice = curSlice();
   const pts = playersByScore(p)
-    .filter(([, d]) => d.rollups[scatterX]?.n >= min && d.rollups[scatterY]?.n >= min)
-    .map(([name, d]) => ({ x: d.rollups[scatterX].mean, y: d.rollups[scatterY].mean, name }));
+    .map(([name, d]) => ({ name, sx: sliceValue(d, scatterX, slice), sy: sliceValue(d, scatterY, slice) }))
+    .filter((o) => o.sx.n >= min && o.sy.n >= min && o.sx.mean != null && o.sy.mean != null)
+    .map((o) => ({ x: o.sx.mean, y: o.sy.mean, name: o.name }));
   scatterChart = new window.Chart($('pscatter'), {
     type: 'scatter',
     data: { datasets: [{ data: pts, backgroundColor: '#9A3B2E', pointRadius: 4 }] },
@@ -351,6 +442,171 @@ function drawScatter() {
         legend: { display: false },
         tooltip: { callbacks: { label: (c) => `${c.raw.name}: ${fmt(c.raw.x)}, ${fmt(c.raw.y)}` } },
       },
+    },
+  });
+}
+
+// ---- phase & colour card (trajectory / fingerprint / white-vs-black) --------
+function phaseColourCard(p) {
+  const card = document.createElement('div');
+  card.className = 'pcard';
+  const tabs = [['trajectory', 'Phase trajectory'], ['fingerprint', 'Phase fingerprint'], ['wvb', 'White vs Black']];
+  const seg = tabs.map(([v, t]) => `<button class="seg-btn ${v === pcView ? 'on' : ''}" data-pc="${v}" type="button">${t}</button>`).join('');
+  const playerOpts = playersByScore(p).map(([n]) => `<option value="${n}" ${n === fpPlayer ? 'selected' : ''}>${n}</option>`).join('');
+  card.innerHTML = `<h3>Phase &amp; colour</h3>` +
+    `<div class="pcontrols"><div class="seg">${seg}</div>` +
+    `<label class="fpplayer">Player <select class="fpsel">${playerOpts}</select></label></div>` +
+    `<div class="pchost" id="pcHost"></div>`;
+  card.querySelectorAll('.seg-btn').forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.pc === pcView) return;
+    pcView = b.dataset.pc;
+    card.querySelectorAll('.seg-btn').forEach((x) => x.classList.toggle('on', x.dataset.pc === pcView));
+    drawPhaseColour();
+  }));
+  card.querySelector('.fpsel').addEventListener('change', (e) => { fpPlayer = e.target.value; drawPhaseColour(); });
+  return card;
+}
+
+function drawPhaseColour() {
+  pcCharts.forEach((c) => c.destroy());
+  pcCharts = [];
+  const host = $('pcHost');
+  if (!host) return;
+  if (pcView === 'trajectory') drawTrajectory(host);
+  else if (pcView === 'fingerprint') drawFingerprint(host);
+  else drawWvB(host);
+}
+
+function drawTrajectory(host) {
+  const p = current;
+  const min = nMin(p);
+  const cname = (p.meta[featureId] || {}).name || featureId;
+  const cside = colorFilter === 'all' ? 'both colours' : colorFilter === 'w' ? 'White' : 'Black';
+  host.innerHTML = `<p class="psub"><b>${cname}</b> across phases — one line per selected radar player (${cside}). ` +
+    `Click a matrix column to change the feature. Low-sample points are dropped.</p>` +
+    `<div class="chartbox"><canvas id="pcTraj"></canvas></div>`;
+  const plotted = plottedPlayers(p);
+  const datasets = plotted.map((name, i) => {
+    const color = PALETTE[i % PALETTE.length];
+    const d = p.players[name];
+    return {
+      label: name, borderColor: color, backgroundColor: color + '22', borderWidth: 2, pointRadius: 3, spanGaps: false,
+      data: PHASES.map((ph) => {
+        const s = sliceValue(d, featureId, { phase: ph, color: colorFilter });
+        return s.n >= min && s.mean != null ? s.mean : null;
+      }),
+    };
+  });
+  pcCharts.push(new window.Chart($('pcTraj'), {
+    type: 'line',
+    data: { labels: PHASES.map((ph) => PHASE_LABEL[ph]), datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
+      scales: { y: { title: { display: true, text: cname } } },
+    },
+  }));
+}
+
+function drawFingerprint(host) {
+  const p = current;
+  const d = p.players[fpPlayer];
+  const min = nMin(p);
+  const feats = availableFeatures(p);
+  const goodness = goodnessFn(p, axisMinMax(p, feats, { phase: 'all', color: 'all' }));
+  let body = '';
+  for (const id of feats) {
+    const nm = (p.meta[id] || {}).name || id;
+    body += `<tr><th class="mx-name" title="${nm}">${nm}</th>`;
+    for (const ph of PHASES) {
+      const s = sliceValue(d, id, { phase: ph, color: colorFilter });
+      const low = s.mean == null || s.n < min;
+      const g = low ? null : goodness(id, s.mean);
+      body += `<td class="mx-cell${low ? ' low' : ''}" style="${g == null ? '' : `background:${cellColor(g)}`}">${low ? '—' : fmt(s.mean)}</td>`;
+    }
+    body += '</tr>';
+  }
+  host.innerHTML = `<p class="psub"><b>${fpPlayer}</b> — value per phase ` +
+    `(${colorFilter === 'all' ? 'both colours' : colorFilter === 'w' ? 'White' : 'Black'}; ` +
+    `colour = standing vs the field, — = too few games)</p>` +
+    `<div class="matrix-wrap"><table class="matrix"><thead><tr><th class="mx-name">Feature</th>` +
+    `${PHASES.map((ph) => `<th class="mx-h">${PHASE_LABEL[ph]}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+
+function drawWvB(host) {
+  const p = current;
+  const d = p.players[fpPlayer];
+  const goodness = goodnessFn(p, axisMinMax(p, availableFeatures(p), { phase: 'all', color: 'all' }));
+  const cls = clusters(p);
+  host.innerHTML = `<p class="psub"><b>${fpPlayer}</b> — White vs Black profile (outward = better; the gap is colour asymmetry)</p>` +
+    `<div class="radarlegend"><span class="rchip"><span class="rdot" style="background:${PALETTE[1]}"></span>White</span>` +
+    `<span class="rchip"><span class="rdot" style="background:${PALETTE[0]}"></span>Black</span></div>` +
+    `<div class="radargrid">${cls.map((ids, i) =>
+      `<div class="radaritem"><div class="radartitle">${clusterTitle(p, ids)}</div>` +
+      `<div class="chartbox"><canvas id="pcWvb${i}"></canvas></div></div>`).join('')}</div>`;
+  cls.forEach((ids, i) => {
+    const mk = (key) => ids.map((id) =>
+      Math.round(goodness(id, key === 'w' ? d?.rollups?.[id]?.mean_white : d?.rollups?.[id]?.mean_black) * 100) / 100);
+    pcCharts.push(new window.Chart($('pcWvb' + i), {
+      type: 'radar',
+      data: {
+        labels: ids.map((id) => (p.meta[id] || {}).name || id),
+        datasets: [
+          { label: 'White', data: mk('w'), borderColor: PALETTE[1], backgroundColor: PALETTE[1] + '22', borderWidth: 1.5, pointRadius: 2 },
+          { label: 'Black', data: mk('b'), borderColor: PALETTE[0], backgroundColor: PALETTE[0] + '22', borderWidth: 1.5, pointRadius: 2 },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false,
+        scales: { r: { min: 0, max: 1, ticks: { display: false }, pointLabels: { font: { size: 9 } } } },
+        plugins: { legend: { display: false } },
+      },
+    }));
+  });
+}
+
+// ---- what wins — feature ↔ result correlation -------------------------------
+function correlationCard(p) {
+  const card = document.createElement('div');
+  card.className = 'pcard';
+  card.innerHTML = `<h3>What wins — feature ↔ result</h3>` +
+    `<p class="psub">Correlation of each feature with the game result (win 1 · draw 0.5 · loss 0) across every game. ` +
+    `+ means more of it goes with winning. Pooled across players — a field-level signal, not proof of cause. ` +
+    `Follows the phase filter.</p>` +
+    `<div class="chartbox" id="pcCorrBox"><canvas id="pcCorr"></canvas></div>`;
+  return card;
+}
+
+function drawCorrelation() {
+  if (corrChart) { corrChart.destroy(); corrChart = null; }
+  const p = current;
+  const host = $('pcCorr');
+  if (!host || !p.result_correlation) return;
+  const ph = phaseFilter;
+  const rows = [];
+  for (const id of availableFeatures(p)) {
+    const rc = p.result_correlation[id];
+    if (!rc) continue;
+    const r = ph === 'all' ? rc.r : rc.phases?.[ph]?.r;
+    if (r == null) continue;
+    rows.push([id, r]);
+  }
+  rows.sort((a, b) => b[1] - a[1]);
+  const box = $('pcCorrBox');
+  if (box) box.style.height = Math.max(160, rows.length * 16 + 46) + 'px';
+  corrChart = new window.Chart(host, {
+    type: 'bar',
+    data: {
+      labels: rows.map(([id]) => (p.meta[id] || {}).name || id),
+      datasets: [{ data: rows.map(([, r]) => Math.round(r * 1000) / 1000), backgroundColor: rows.map(([, r]) => (r >= 0 ? '#0F6E56' : '#9A3B2E')) }],
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: false,
+      scales: {
+        x: { min: -1, max: 1, title: { display: true, text: `Pearson r with result${ph === 'all' ? '' : ' · ' + PHASE_LABEL[ph]}` } },
+        y: { ticks: { font: { size: 9 } } },
+      },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `r = ${fmt(c.raw)}` } } },
     },
   });
 }

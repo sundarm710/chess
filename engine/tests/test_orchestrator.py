@@ -3,7 +3,8 @@
 import pytest
 
 from chesslab import build_default_registry
-from chesslab.orchestrator import Orchestrator
+from chesslab.features import Board
+from chesslab.orchestrator import Orchestrator, classify_phase
 from chesslab.pipeline import parse_pgn
 
 from .golden_fens import GOLDEN
@@ -70,6 +71,37 @@ class TestStickyCastled:
         last = analysis["plies"][-1]  # white king now on h1
         castled_w = _feature(last, "KSF.castle", "w")
         assert castled_w["value"] == 1  # sticky: once castled, stays castled
+
+
+class TestPhaseClassifier:
+    START = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+
+    def test_start_is_opening(self):
+        assert classify_phase(Board.from_fen(self.START), 0) == "opening"
+
+    def test_full_material_past_move_12_is_middlegame(self):
+        # Same full set (phase_value 24) but at move 15 (ply 30) → no longer opening.
+        assert classify_phase(Board.from_fen(self.START), 30) == "middlegame"
+
+    def test_bare_rook_endgame(self):
+        # 4 rooks total → phase_value 8 → endgame (boundary, <=8).
+        fen = "r3k2r/8/8/8/8/8/8/R3K2R w - - 0 1"
+        assert classify_phase(Board.from_fen(fen), 40) == "endgame"
+
+    def test_phase_value_9_is_middlegame(self):
+        # 4 rooks + 1 knight → phase_value 9 → just above the endgame threshold.
+        fen = "r3k2r/8/8/8/8/8/8/R2NK2R w - - 0 1"
+        assert classify_phase(Board.from_fen(fen), 40) == "middlegame"
+
+    def test_endgame_overrides_early_move(self):
+        # Few pieces even on an early move → endgame, not opening.
+        fen = "4k3/8/8/8/8/8/8/4K2R w - - 0 1"
+        assert classify_phase(Board.from_fen(fen), 6) == "endgame"
+
+    def test_every_ply_has_valid_phase(self):
+        analysis = Orchestrator(build_default_registry()).run(parse_pgn(MORPHY))
+        assert all(p["phase"] in {"opening", "middlegame", "endgame"} for p in analysis["plies"])
+        assert analysis["plies"][0]["phase"] == "opening"
 
 
 class TestOrchestratorGoldenAgreement:

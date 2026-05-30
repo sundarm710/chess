@@ -17,7 +17,7 @@ import math
 import statistics
 from collections import Counter
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple
 
 # --- Layer A: per-ply-series → one game scalar -------------------------------
 # Each reducer takes the list of OK (non-null) per-ply values for one (feature, side).
@@ -44,6 +44,9 @@ def resolve_reducer(meta_entry: Dict[str, Any]) -> str:
 
 SCORE = {"1-0": (1.0, 0.0), "0-1": (0.0, 1.0), "1/2-1/2": (0.5, 0.5)}
 
+# Game phases (CLAUDE.md §17); each game's per-ply series is reduced within each.
+PHASES = ("opening", "middlegame", "endgame")
+
 
 def _elo(s: Any) -> Optional[int]:
     try:
@@ -54,13 +57,19 @@ def _elo(s: Any) -> Optional[int]:
 
 @dataclass(frozen=True)
 class FeatureCell:
-    """One (feature, side) reduced to a single number for one game."""
+    """One (feature, side) reduced to a single number for one game.
+
+    ``value`` is the reduction over the whole game; ``phase_values`` is the same
+    reducer applied within each phase ("opening"/"middlegame"/"endgame"), ``None``
+    where a phase had no OK plies.
+    """
 
     feature_id: str
     side: str  # "w" | "b" | "shared"
     value: Optional[float]
     status: str  # "ok" | "unavailable" | "na"
     reducer: str
+    phase_values: Mapping[str, Optional[float]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -89,19 +98,27 @@ def summarize(analysis: Dict[str, Any], *, slug: str, game: Dict[str, Any]) -> G
     no headers); per-ply cells and capability flags come from `analysis`.
     """
     meta = analysis["meta"]
-    series: Dict[Tuple[str, str], List[Tuple[Optional[float], str]]] = {}
+    # Per (feature, side): the per-ply (value, status, phase) series, in ply order.
+    series: Dict[Tuple[str, str], List[Tuple[Optional[float], str, str]]] = {}
     for ply in analysis["plies"]:
+        phase = ply.get("phase", "middlegame")
         for f in ply["features"]:
-            series.setdefault((f["id"], f["side"]), []).append((f["value"], f["status"]))
+            series.setdefault((f["id"], f["side"]), []).append((f["value"], f["status"], phase))
 
     cells: List[FeatureCell] = []
     for (fid, side), vals in series.items():
         reducer = resolve_reducer(meta.get(fid, {}))
-        ok = [v for v, s in vals if v is not None and s == "ok"]
+        red = REDUCERS[reducer]
+        ok = [v for v, s, _ in vals if v is not None and s == "ok"]
+        # Same reducer within each phase (order preserved → "end"/"last" = last in phase).
+        phase_values: Dict[str, Optional[float]] = {}
+        for ph in PHASES:
+            okp = [v for v, s, p in vals if v is not None and s == "ok" and p == ph]
+            phase_values[ph] = float(red(okp)) if okp else None
         if ok:
-            cells.append(FeatureCell(fid, side, float(REDUCERS[reducer](ok)), "ok", reducer))
+            cells.append(FeatureCell(fid, side, float(red(ok)), "ok", reducer, phase_values))
         else:
-            cells.append(FeatureCell(fid, side, None, "unavailable", reducer))
+            cells.append(FeatureCell(fid, side, None, "unavailable", reducer, phase_values))
 
     return GameSummary(
         game_id=game.get("id", analysis.get("game_id", "")), slug=slug, round=int(game.get("round", 0)),
@@ -114,17 +131,21 @@ def summarize(analysis: Dict[str, Any], *, slug: str, game: Dict[str, Any]) -> G
 
 
 # --- Layer B: per-game scalars → player rollups → tournament profile ----------
-@dataclass(frozen=True)
-class PlayerFeatureRollup:
-    feature_id: str
-    n: int
-    mean: Optional[float]
-    stdev: Optional[float]
-    ci: Optional[float]  # 95% CI half-width
-    mean_white: Optional[float]
-    mean_black: Optional[float]
-    mean_won: Optional[float]
-    n_unavailable: int
+# Cross-eligibility (store the full phase×colour cross only for small, dense fields):
+CROSS_MAX_PLAYERS = 16
+CROSS_MIN_GAMES = 8
+# Minimum observations for a feature↔result correlation to be reported.
+CORR_MIN_N = 10
+
+
+def _new_feat() -> Dict[str, Any]:
+    """A per-player, per-feature value accumulator: overall + colour + phase + cross."""
+    d: Dict[str, Any] = {"all": [], "white": [], "black": [], "unavail": 0}
+    for ph in PHASES:
+        d[ph] = []
+        d[f"{ph}:w"] = []
+        d[f"{ph}:b"] = []
+    return d
 
 
 @dataclass
@@ -136,7 +157,6 @@ class _Acc:
     losses: int = 0
     opp_elos: List[int] = field(default_factory=list)
     eco: "Counter[str]" = field(default_factory=Counter)
-    # feature_id -> {"all":[], "white":[], "black":[], "won":[], "unavail":int}
     feats: Dict[str, Dict[str, Any]] = field(default_factory=dict)
 
 
@@ -144,18 +164,54 @@ def _mean(xs: List[float]) -> Optional[float]:
     return statistics.fmean(xs) if xs else None
 
 
-def _rollup(fid: str, d: Dict[str, Any]) -> PlayerFeatureRollup:
+def _slice(xs: List[float]) -> Optional[Dict[str, Any]]:
+    """A compact ``{mean, n}`` for a slice (2 dp — slices are display-only), or ``None``."""
+    return {"mean": round(statistics.fmean(xs), 2), "n": len(xs)} if xs else None
+
+
+def _pearson(pairs: List[Tuple[float, float]]) -> Optional[float]:
+    """Pearson r between a feature value and the game score (0/0.5/1), or None."""
+    n = len(pairs)
+    if n < CORR_MIN_N:
+        return None
+    xs = [p[0] for p in pairs]
+    ys = [p[1] for p in pairs]
+    sx, sy = statistics.pstdev(xs), statistics.pstdev(ys)
+    if sx == 0 or sy == 0:  # a constant feature or all-drawn → undefined
+        return None
+    mx, my = statistics.fmean(xs), statistics.fmean(ys)
+    cov = sum((x - mx) * (y - my) for x, y in pairs) / n
+    return round(cov / (sx * sy), 3)
+
+
+def _rollup_doc(d: Dict[str, Any], emit_cross: bool) -> Dict[str, Any]:
+    """Serialize one player-feature accumulator to the SPA rollup dict."""
     xs = d["all"]
     n = len(xs)
     stdev = statistics.pstdev(xs) if n >= 2 else None
     ci = (1.96 * stdev / math.sqrt(n)) if (stdev is not None and n) else None
-    return PlayerFeatureRollup(
-        feature_id=fid, n=n, mean=_mean(xs),
-        stdev=round(stdev, 3) if stdev is not None else None,
-        ci=round(ci, 3) if ci is not None else None,
-        mean_white=_mean(d["white"]), mean_black=_mean(d["black"]), mean_won=_mean(d["won"]),
-        n_unavailable=d["unavail"],
-    )
+
+    def m(key: str) -> Optional[float]:
+        avg = _mean(d[key])
+        return round(avg, 3) if avg is not None else None
+
+    doc: Dict[str, Any] = {
+        "n": n, "mean": m("all"),
+        "stdev": round(stdev, 3) if stdev is not None else None,
+        "ci": round(ci, 3) if ci is not None else None,
+        "mean_white": m("white"), "n_white": len(d["white"]),
+        "mean_black": m("black"), "n_black": len(d["black"]),
+        "n_unavailable": d["unavail"],
+    }
+    phases = {ph: _slice(d[ph]) for ph in PHASES if d[ph]}
+    if phases:
+        doc["phases"] = phases
+    if emit_cross:
+        cross = {f"{ph}:{s}": _slice(d[f"{ph}:{s}"])
+                 for ph in PHASES for s in ("w", "b") if d[f"{ph}:{s}"]}
+        if cross:
+            doc["cross"] = cross
+    return doc
 
 
 def _performance_elo(acc: _Acc) -> Optional[float]:
@@ -172,6 +228,8 @@ def tournament_profile(
 ) -> Dict[str, Any]:
     """Build the per-tournament profile dict (the SPA contract) from game summaries."""
     players: Dict[str, _Acc] = {}
+    # Tournament-level feature↔result observations: fid -> slice -> [(value, score)].
+    corr: Dict[str, Dict[str, List[Tuple[float, float]]]] = {}
 
     for g in summaries:
         ws, bs = SCORE.get(g.result, (0.0, 0.0))
@@ -191,39 +249,50 @@ def tournament_profile(
             for cell in g.cells:
                 if cell.side not in (side_char, "shared"):
                     continue
-                fa = acc.feats.setdefault(
-                    cell.feature_id, {"all": [], "white": [], "black": [], "won": [], "unavail": 0}
-                )
+                fa = acc.feats.setdefault(cell.feature_id, _new_feat())
                 if cell.status != "ok" or cell.value is None:
                     fa["unavail"] += 1
                     continue
                 fa["all"].append(cell.value)
-                fa[("white" if side_char == "w" else "black")].append(cell.value)
-                if score == 1.0:
-                    fa["won"].append(cell.value)
+                fa["white" if side_char == "w" else "black"].append(cell.value)
+                co = corr.setdefault(cell.feature_id, {k: [] for k in ("all", *PHASES)})
+                co["all"].append((cell.value, score))
+                for ph in PHASES:
+                    pv = cell.phase_values.get(ph)
+                    if pv is not None:
+                        fa[ph].append(pv)
+                        fa[f"{ph}:{side_char}"].append(pv)
+                        co[ph].append((pv, score))
+
+    # Store the full phase×colour cross only for small, dense fields (else marginals only).
+    games_per_player = [a.games for a in players.values()]
+    median_gpp = statistics.median(games_per_player) if games_per_player else 0
+    emit_cross = len(players) <= CROSS_MAX_PLAYERS and median_gpp >= CROSS_MIN_GAMES
 
     # Per-player profile dicts.
     player_docs: Dict[str, Any] = {}
     for name, acc in players.items():
-        rollups = {fid: _rollup(fid, d) for fid, d in acc.feats.items()}
         player_docs[name] = {
             "games": acc.games, "score": acc.score,
             "wins": acc.wins, "draws": acc.draws, "losses": acc.losses,
             "performance_elo": _performance_elo(acc),
             "avg_opp_elo": round(statistics.fmean(acc.opp_elos), 1) if acc.opp_elos else None,
             "eco_distribution": dict(acc.eco),
-            "rollups": {
-                fid: {
-                    "n": r.n, "mean": round(r.mean, 3) if r.mean is not None else None,
-                    "stdev": r.stdev, "ci": r.ci,
-                    "mean_white": round(r.mean_white, 3) if r.mean_white is not None else None,
-                    "mean_black": round(r.mean_black, 3) if r.mean_black is not None else None,
-                    "mean_won": round(r.mean_won, 3) if r.mean_won is not None else None,
-                    "n_unavailable": r.n_unavailable,
-                }
-                for fid, r in rollups.items()
-            },
+            "rollups": {fid: _rollup_doc(d, emit_cross) for fid, d in acc.feats.items()},
         }
+
+    # Tournament-level: which features correlate with winning (overall + per phase).
+    result_correlation: Dict[str, Any] = {}
+    for fid, obs in corr.items():
+        r_all = _pearson(obs["all"])
+        if r_all is None:
+            continue
+        entry: Dict[str, Any] = {"r": r_all, "n": len(obs["all"])}
+        phases = {ph: {"r": _pearson(obs[ph]), "n": len(obs[ph])}
+                  for ph in PHASES if _pearson(obs[ph]) is not None}
+        if phases:
+            entry["phases"] = phases
+        result_correlation[fid] = entry
 
     leaderboards = _leaderboards(player_docs, manifest, n_min)
     meta = {
@@ -234,8 +303,9 @@ def tournament_profile(
     }
     return {
         "slug": slug, "label": label, "has_clock": has_clock, "has_eval": has_eval,
-        "feature_set_version": feature_set_version, "n_min": n_min,
+        "feature_set_version": feature_set_version, "n_min": n_min, "emit_cross": emit_cross,
         "meta": meta, "players": player_docs, "leaderboards": leaderboards,
+        "result_correlation": result_correlation,
     }
 
 

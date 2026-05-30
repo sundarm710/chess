@@ -400,12 +400,31 @@ Tournament-wide, cross-player views ("who is most X") are computed **generically
   Overrides set so far: `TIM.clock`=min (low-water = time trouble), `TIM.move_time`=max
   (biggest think), `TAC.density`=mean, `MAT.swing`=max, `KSF.castle`=max.
 - **Rollups.** `tournament_profile(...)` aggregates each player's per-game scalars across
-  their games → `mean, stdev, ci (95%), mean_white/black/won, n, n_unavailable` + standings
-  (score, W-D-L, linear TPR). Shared features (density, swing, tension) attribute to BOTH
-  players of a game. **Leaderboards are pre-sorted server-side** by the manifest's `higher`.
-- **Honest stats (MVP).** Raw means + n-badge + CI; a **min-n gate** (`n_min`, default 3)
-  pushes low-sample players below qualified ones (Swiss tail never ranks #1). Opponent-Elo
-  normalization / by-colour-result / per-phase are a later, **off-by-default** sub-phase.
+  their games → `mean, stdev, ci (95%), n, n_unavailable` + colour marginals
+  `mean_white/black` with `n_white/black` + standings (score, W-D-L, linear TPR). Shared
+  features (density, swing, tension) attribute to BOTH players of a game. **Leaderboards are
+  pre-sorted server-side** by the manifest's `higher` (the default all/all slice; the SPA
+  re-sorts client-side for other slices).
+- **Phase axis (§17a).** Each ply is tagged `opening | middlegame | endgame` by
+  `orchestrator.classify_phase(board, ply)` — a material+move hybrid: tapered material
+  `phase_value = 1·minors + 2·rooks + 4·queens` (start = 24); **opening** = move ≤ 12 and
+  `phase_value ≥ 20`; **endgame** = `phase_value ≤ 8`; else **middlegame** (constants
+  `OPENING_MAX_MOVE`/`OPENING_MIN_PHASE`/`ENDGAME_MAX_PHASE`). `summarize` applies each
+  feature's reducer **within each phase** → `FeatureCell.phase_values` (an "end"/"max"
+  feature reads cumulatively to the last ply of the phase; "mean" averages only that phase).
+  Rollups carry `phases:{opening|middlegame|endgame:{mean,n}}` (n>0 keys only, 2 dp).
+- **Phase × colour cross (hybrid by field size).** The full 6-cell cross
+  `cross:{"opening:w"…"endgame:b":{mean,n}}` is stored only for small dense fields
+  (`n_players ≤ 16 and median games/player ≥ 8` → Candidates; not the big Swiss); the doc
+  carries `emit_cross`. The SPA uses the cross when present, else falls back to the phase
+  marginal (flagged "approx").
+- **What-wins correlation.** `result_correlation:{fid:{r,n,phases:{…}}}` — tournament-level
+  Pearson r between each feature value and the game result (win 1 · draw 0.5 · loss 0),
+  pooled across all player-games (overall + per phase, `CORR_MIN_N=10`). A field-level
+  association signal (not causal; confounded by player strength).
+- **Honest stats.** Raw means + n-badge + CI; a **min-n gate** (`n_min`, default 3) pushes
+  low-sample players below qualified ones (Swiss tail never ranks #1), applied **per slice**.
+  Opponent-Elo normalization is the remaining off-by-default sub-phase.
 - **Capability gating.** `status` propagates upward: a clockless game's clock cells are
   `unavailable` (excluded from means, counted in `n_unavailable`); a `Leaderboard` is
   `available:false` when *every* game lacks the capability (Grand Swiss/Norway → `TIM.*`
@@ -418,8 +437,11 @@ Tournament-wide, cross-player views ("who is most X") are computed **generically
   `player_feature_rollup` view, "any number of games, queryable") is the planned
   fast-follow; the JSON becomes its materialized view.
 - **Frontend.** A "Game / Profiles" tab (`#viewTabs`) flips `S.view`; `web/src/profiles.js`
-  renders the **generic leaderboard** (pick any feature → players ranked) + standings into
-  `#profilesRoot`. Deep link `#profiles/<slug>`. Radar/scatter/drill-through are later.
+  renders into `#profilesRoot`: an overview **matrix**, a focused **leaderboard**, a
+  clustered **player radar**, a feature×feature **scatter**, a **Phase & colour** card
+  (trajectory line / phase-fingerprint heatmap / White-vs-Black radars), and a **What-wins**
+  correlation bar. A **Phase + Colour filter row** re-slices the matrix/leaderboard/radar/
+  scatter via one `sliceValue(d, fid, {phase,color})` accessor. Deep link `#profiles/<slug>`.
 
 ## 12. Glossary
 

@@ -6,6 +6,35 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-05-30 — Profiles: game-phase & colour dimensions + what-wins correlation
+
+- **What:**
+  - **Phase axis.** `orchestrator.classify_phase(board, ply)` tags every ply
+    `opening|middlegame|endgame` (material+move hybrid: tapered `1·minors+2·rooks+4·queens`,
+    start 24; opening = move ≤12 & ≥20, endgame = ≤8, else middlegame). `summarize` applies
+    each feature's reducer *within* each phase (`FeatureCell.phase_values`); rollups now carry
+    `phases:{…:{mean,n}}`.
+  - **Colour axis.** Colour marginals promoted to `mean_white/black` + `n_white/n_black`.
+  - **Phase × colour cross**, hybrid by field size: full 6-cell `cross` stored only for small
+    dense fields (`emit_cross`: Candidates yes, Grand Swiss no); SPA falls back to the phase
+    marginal ("approx") where absent.
+  - **What-wins correlation.** `result_correlation:{fid:{r,n,phases}}` — tournament-level
+    Pearson r between each feature and the game result (win 1·draw 0.5·loss 0), overall + per
+    phase. Answers "which features go with winning."
+  - **Frontend.** A Phase + Colour **filter row** re-slices matrix/leaderboard/radar/scatter
+    via one `sliceValue` accessor (per-slice min-n; client-side re-sort); a new **Phase &
+    colour** card (phase-trajectory lines / phase-fingerprint heatmap / White-vs-Black radars)
+    and a **What-wins** correlation bar chart.
+  - Dropped the now-redundant `mean_won` (superseded by `result_correlation`); slice means at
+    2 dp. Rebuilt all profiles. Tests: phase classifier + per-phase reducers (`test_orchestrator`
+    /`test_aggregate`), marginals/cross/correlation shape (`profiles.test.mjs`, 641 checks).
+- **Why:** A single whole-game mean hides *when* and *with which colour* a player shows a
+  trait. Phase + colour slicing lets you see how a player navigates opening→endgame and
+  White vs Black, and the result-correlation surfaces which style traits actually track wins
+  in a field — all falling out of the generic reducer spine, no per-question code. Cross is
+  field-size-gated so thin (n≈3–5) cells never masquerade as signal. Grand-Swiss JSON ~1.07MB
+  (no cross; gzips ~180KB), lazy-loaded per tournament.
+
 ## 2026-05-30 14:06 IST — Profiles charts: fix scatter update, multi-radar over all features
 
 - **What:**

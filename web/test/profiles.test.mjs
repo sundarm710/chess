@@ -54,8 +54,49 @@ check(gsw.leaderboards['TIM.clock'].available === false, 'grand-swiss TIM.clock 
 // EVAL absent everywhere (no %eval, no cloud-eval yet).
 check(cand.leaderboards['EVAL.acpl'].available === false, 'EVAL unavailable (no eval data)');
 
+// --- Phase & colour slices ---------------------------------------------------
+const PHASES = ['opening', 'middlegame', 'endgame'];
+// A populated player carries phase marginals; each phase n <= the overall n.
+let sawPhases = false;
+for (const p of Object.values(cand.players)) {
+  const r = p.rollups['SPC.space'];
+  if (!r || r.mean == null) continue;
+  check('phases' in r, 'populated rollup carries phases');
+  for (const ph of Object.keys(r.phases || {})) {
+    check(PHASES.includes(ph), `phase key ${ph} valid`);
+    check(r.phases[ph].n <= r.n, `phase ${ph} n <= overall n`);
+    check(Number.isFinite(r.phases[ph].mean), `phase ${ph} mean finite`);
+    sawPhases = true;
+  }
+  // Colour marginal n splits the total (per-side or shared feature).
+  check(r.n_white + r.n_black === r.n, 'n_white + n_black === n');
+}
+check(sawPhases, 'at least one populated phase slice seen');
+
+// Cross is field-size gated: present for the dense Candidates, absent for the big Swiss.
+check(cand.emit_cross === true, 'candidates emit_cross true');
+check(gsw.emit_cross === false, 'grand-swiss emit_cross false');
+const withCross = Object.values(cand.players).find((p) => p.rollups['SPC.space']?.cross);
+check(!!withCross, 'candidates has a cross slice');
+for (const p of Object.values(gsw.players)) {
+  check(!('cross' in (p.rollups['SPC.space'] || {})), 'grand-swiss has no cross');
+}
+
+// Result correlation: present, bounded in [-1,1], with valid (optional) per-phase entries.
+check(cand.result_correlation && Object.keys(cand.result_correlation).length > 0, 'result_correlation present');
+for (const [fid, rc] of Object.entries(cand.result_correlation)) {
+  check(rc.r >= -1 && rc.r <= 1, `${fid} r in [-1,1]`);
+  check(rc.n >= 10, `${fid} correlation n >= CORR_MIN_N`);
+  for (const ph of Object.keys(rc.phases || {})) {
+    check(PHASES.includes(ph) && rc.phases[ph].r >= -1 && rc.phases[ph].r <= 1, `${fid} phase ${ph} r valid`);
+  }
+}
+
+// The default (all/all) leaderboards are still pre-sorted as the SPA expects (regression lock).
+check(qual.every((v, i) => i === 0 || qual[i - 1] >= v), 'default leaderboard sort intact');
+
 console.log(
   process.exitCode
     ? `\nprofiles tests: failures above (${passed} ok).`
-    : `profiles OK — ${passed} checks across 2 tournaments`,
+    : `profiles OK — ${passed} checks (phase/colour/correlation) across 2 tournaments`,
 );
