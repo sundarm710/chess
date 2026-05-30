@@ -31,7 +31,7 @@ class TestFeaturesEndpoint:
         resp = client.get("/features")
         assert resp.status_code == 200
         body = resp.json()
-        assert len(body["features"]) == 25
+        assert len(body["features"]) == 34
         assert "feature_set_version" in body
         assert body["features"]["MAT.balance"]["tier"] == "T0"
 

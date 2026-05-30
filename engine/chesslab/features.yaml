@@ -152,6 +152,28 @@
   viz: trend
   higher: good
   version: 1
+- id: DEC.trade_discipline
+  name: Trade discipline
+  tier: T3
+  scope: game
+  category: DEC
+  description: Trading toward safety — simplifying when ahead, avoiding it when behind.
+  computation: 'Running net: +1 per capture made while ahead (>=+1), -1 while behind
+    (<=-1).'
+  inputs: M/G
+  engine: none
+  requires: []
+  output_type: count
+  aggregation: ''
+  normalization: ''
+  saturation: ~2300
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: good
+  version: 1
 - id: DEV.count
   name: Developed minors
   tier: T1
@@ -173,6 +195,28 @@
   viz: trend
   higher: neutral
   version: 1
+- id: DEV.tempo_waste
+  name: Tempo waste
+  tier: T1
+  scope: game
+  category: DEV
+  description: Lost time — early queen sorties or re-moving already-developed pieces.
+  computation: Running count of moves that bring the queen out before 3 minors are
+    developed, or re-move a developed minor before development is complete.
+  inputs: M/G
+  engine: none
+  requires: []
+  output_type: count
+  aggregation: ''
+  normalization: ''
+  saturation: ~1700
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: bad
+  version: 1
 - id: DYN.initiative
   name: Initiative
   tier: T3
@@ -193,6 +237,51 @@
   status: implemented
   viz: trend
   higher: good
+  version: 1
+- id: EVAL.acpl
+  name: Avg centipawn loss
+  tier: T6
+  scope: game
+  category: EVAL
+  description: Average accuracy proxy — mean eval lost per move (lower is better).
+  computation: Running mean of per-move centipawn loss from the side's perspective
+    (needs %eval).
+  inputs: M/E
+  engine: cached-eval-optional
+  requires:
+  - eval
+  output_type: scalar
+  aggregation: ''
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: bad
+  version: 1
+- id: EVAL.consistency
+  name: Error consistency
+  tier: T6
+  scope: game
+  category: EVAL
+  description: Spread of your errors — low variance late in games is the 2700 signal.
+  computation: Running standard deviation of per-move centipawn loss (needs %eval).
+  inputs: M/E
+  engine: cached-eval-optional
+  requires:
+  - eval
+  output_type: scalar
+  aggregation: ''
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: bad
   version: 1
 - id: KSF.castle
   name: Castled
@@ -321,6 +410,27 @@
   residualize_on: ''
   status: implemented
   viz: board
+  higher: neutral
+  version: 1
+- id: MAT.swing
+  name: Material swing
+  tier: T0
+  scope: game
+  category: MAT
+  description: How much material changed hands on this move — volatility.
+  computation: Absolute change in the material balance from the previous position.
+  inputs: M
+  engine: none
+  requires: []
+  output_type: scalar
+  aggregation: ''
+  normalization: ''
+  saturation: ~2200
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
   higher: neutral
   version: 1
 - id: SPC.center_control
@@ -514,6 +624,28 @@
   viz: trend
   higher: neutral
   version: 1
+- id: STR.tension_hold
+  name: Tension holding
+  tier: T3
+  scope: game
+  category: STR
+  description: Maturity with pawn tension — declining to resolve pawn captures reflexively.
+  computation: Running count of the side's moves made while an own pawn could capture
+    an enemy pawn but the side chose not to.
+  inputs: M/G
+  engine: none
+  requires: []
+  output_type: count
+  aggregation: ''
+  normalization: ''
+  saturation: ~2500
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: neutral
+  version: 1
 - id: TAC.density
   name: Tactical density
   tier: T2
@@ -529,6 +661,72 @@
   aggregation: ''
   normalization: ''
   saturation: ~2600
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: neutral
+  version: 1
+- id: TAC.exposure
+  name: Exposure events
+  tier: T0
+  scope: game
+  category: TAC
+  description: How often you leave material hanging — sacrifices and blunders alike.
+  computation: Running count of the side's moves that increased its own en-prise value.
+  inputs: M/G
+  engine: none
+  requires: []
+  output_type: count
+  aggregation: ''
+  normalization: ''
+  saturation: ~2200
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: bad
+  version: 1
+- id: TIM.clock
+  name: Clock remaining
+  tier: T4
+  scope: game
+  category: TIM
+  description: Each side's remaining time on the clock.
+  computation: The %clk after the side's last move, in seconds.
+  inputs: K
+  engine: none
+  requires:
+  - clock
+  output_type: scalar
+  aggregation: ''
+  normalization: ''
+  saturation: ~2700
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: neutral
+  version: 1
+- id: TIM.move_time
+  name: Move time
+  tier: T4
+  scope: game
+  category: TIM
+  description: Seconds spent on each side's most recent move (from the clock).
+  computation: The %emt of the side's last move (time spent), carried forward between
+    moves.
+  inputs: K
+  engine: none
+  requires:
+  - clock
+  output_type: scalar
+  aggregation: ''
+  normalization: ''
+  saturation: ~2700
   confounders: ''
   depends_on: []
   residualize_on: ''

@@ -87,7 +87,11 @@
   .seg-btn+.seg-btn{border-left:1px solid var(--line);}
   .seg-btn.on{background:var(--ink);color:var(--paper);}
   table{width:100%;border-collapse:collapse;}
+  /* The feature list scrolls within its column so the dashboard stays one screen,
+     however many features there are; the board and trends stay fixed. */
+  .ftable-wrap{max-height:calc(100vh - 150px);overflow-y:auto;}
   .ftable{table-layout:fixed;}
+  .ftable thead th{position:sticky;top:0;background:var(--paper);z-index:1;}
   .c-val{width:98px;} .c-cmp{width:24px;}
   th{font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink2);
     border-bottom:1px solid var(--line);padding:3px 6px;text-align:right;}
@@ -202,11 +206,13 @@
         <span class="ptag" id="ptag">starting position</span>
         <span class="fav" id="favSummary" title="features favouring each side"></span>
       </div>
-      <table class="ftable">
-        <colgroup><col class="c-feat"><col class="c-val"><col class="c-val"><col class="c-cmp"></colgroup>
-        <thead><tr><th class="feat">Feature</th><th class="colw">White</th><th class="colb">Black</th><th class="cmp" title="who it favours">±</th></tr></thead>
-        <tbody id="ftbody"></tbody>
-      </table>
+      <div class="ftable-wrap">
+        <table class="ftable">
+          <colgroup><col class="c-feat"><col class="c-val"><col class="c-val"><col class="c-cmp"></colgroup>
+          <thead><tr><th class="feat">Feature</th><th class="colw">White</th><th class="colb">Black</th><th class="cmp" title="who it favours">±</th></tr></thead>
+          <tbody id="ftbody"></tbody>
+        </table>
+      </div>
     </section>
 
     <!-- trends + aggregates -->

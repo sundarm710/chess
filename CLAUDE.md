@@ -222,6 +222,8 @@ Python-first → JS-mirror → golden-test workflow. Exact algorithms:
 - DO add a golden value for any new feature before wiring it into the UI.
 - DO write all code object-oriented and to best practices — see §13, it's non-negotiable.
 - DO let tests run automatically; don't ship a change the suite hasn't validated.
+- DO finish every change set the same way (see §15): append a timestamped entry to
+  `change-log.md`, then commit and push.
 - DON'T introduce a charting/board library that pulls from a non-allowlisted CDN;
   the app must stay openable as a static file.
 - DON'T use browser storage (localStorage/sessionStorage) in the web app — keep
@@ -293,15 +295,24 @@ Key structural facts (don't re-derive):
   coordination, colour_complex` (batch 2), and `in_check`. Mobility is cross-checked
   against a python-chess oracle in `tests/test_structure.py`. The **board-tier T0–T3
   set is complete.**
-- **MOVE/GAME tier (backend-only, 3 features so far):** `DYN.initiative` (running
-  forcing-move fraction), `TAC.density` (legal captures+checks+tension), `DEC.prophylaxis`
-  (quiet moves that shrink the opponent's legal replies). These are computed in the
-  orchestrator's **assembly pass** (running state over the move sequence + per-position
-  legal-move stats the pipeline captures), not by the per-position engine. They're
-  declared in `catalog/move.py` (`AssemblyFeature`, scope GAME) for the manifest; their
-  `compute` is never called. **Not mirrored in JS** — they appear only in backend mode.
-  Remaining MOVE-tier (material swing, one-move exposure, tempo_waste, tension_hold,
-  trade_discipline) still pending; exposure needs SEE, the others need history tracking.
+- **MOVE/GAME/CLOCK/EVAL tier (backend-only, 12 features):** computed by
+  `chesslab/assembly.py::MoveAssembler` (running state over the move sequence +
+  per-position legal-move stats + clocks the pipeline captures), driven by the
+  orchestrator — NOT the per-position engine. Declared in `catalog/move.py`
+  (`AssemblyFeature`, scope GAME) for the manifest; their `compute` is never called.
+  **Not mirrored in JS** — backend mode only.
+  - MOVE: `DYN.initiative`, `DEC.prophylaxis`, `DEC.trade_discipline`, `DEV.tempo_waste`,
+    `STR.tension_hold`, `TAC.density`, `TAC.exposure` (own-hang-increase count — a cheap
+    proxy, not SEE), `MAT.swing` (|Δ material balance|).
+  - CLOCK (`requires={CLOCK}`): `TIM.move_time` (%emt), `TIM.clock` (%clk remaining).
+    The pipeline parses `%clk` AND `%emt`; the Candidates library JSON is built WITH
+    comments so clocks survive to the backend.
+  - EVAL (`requires={EVAL}`, `engine=cached-eval-optional`): `EVAL.acpl` (mean centipawn
+    loss), `EVAL.consistency` (stdev of loss), consuming PGN `%eval`. Capability-gated:
+    emit `status=unavailable` + value `None` when the game lacks the data (the Candidates
+    PGNs have clocks but no `%eval`, so EVAL shows "needs eval data" for them).
+  - Still pending: filling EVAL via cached cloud-eval for games without `%eval`
+    (`cloud_eval.py`, batch-only); SEE-based exposure; corpus/profiles.
 - `FeatureMeta.higher` (good|bad|neutral) feeds the UI's favour/comparison column; the
   JS `HIGHER` map covers board features, the manifest's `higher` covers backend-only ones.
 - **Sticky features** (`orchestrator.STICKY_MAX` / `analysis.js STICKY_MAX`): `KSF.castle`
@@ -320,6 +331,22 @@ Key structural facts (don't re-derive):
   the Python pipeline parser MUST preserve `%clk`/`%eval` into the moves data. The JS
   engine mirrors only the BOARD tier (offline quick mode); MOVE/GAME/CORPUS/EVAL/CLOCK
   features are backend-only by design — do not port them to JS.
+
+## 15. Change log & delivery workflow — DO THIS EVERY TIME
+
+Every **set of changes** ends the same way — this is mandatory, not optional:
+
+1. **Tests green.** `./run_tests.sh` passes (the suite is the gate, §13).
+2. **Append to `change-log.md`.** Add a new entry at the **top** (newest first) with a
+   timestamp (`date '+%Y-%m-%d %H:%M %Z'`) and a short, scannable summary of what
+   changed and why. One entry per change set.
+3. **Commit and push.** Stage everything, write a clear commit message (end with the
+   `Co-Authored-By: Claude` trailer), and `git push` to `origin/main`
+   (`git@github.com:sundarm710/chess.git`).
+
+Do not leave finished work uncommitted. If a change set spans several edits, it's still
+one change-log entry + one commit at the end. Regenerate `features.yaml` (run the suite)
+before committing so it stays in sync.
 
 ## 12. Glossary
 

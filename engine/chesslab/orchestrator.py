@@ -12,6 +12,7 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import Any, Dict, List, Optional, Tuple
 
+from .assembly import MoveAssembler
 from .features import Board
 from .manifest import build_manifest
 from .pipeline import ParsedGame
@@ -74,16 +75,13 @@ class Orchestrator:
         plies: List[Dict[str, Any]] = []
         # (feature_id, side) -> last value, for server-side delta computation.
         prev: Dict[Tuple[str, str], Optional[float]] = {}
-        # Running state for the MOVE/GAME assembly features.
-        forcing: Dict[str, int] = {"w": 0, "b": 0}
-        played: Dict[str, int] = {"w": 0, "b": 0}
-        prophylaxis: Dict[str, int] = {"w": 0, "b": 0}
+        assembler = MoveAssembler(game)  # MOVE/GAME running features
 
-        def emit_assembly(feats: List[Dict[str, Any]], fid: str, side: str, value: float) -> None:
-            key = (fid, side)
+        def emit(result: FeatureResult, value: Optional[float]) -> None:
+            key = (result.feature_id, result.side)
             pv = prev.get(key)
-            delta = value - pv if pv is not None else None
-            feats.append(_serialize(FeatureResult(fid, side, value, delta=delta)))
+            delta = value - pv if (value is not None and pv is not None) else None
+            feats.append(_serialize(replace(result, value=value, delta=delta)))
             prev[key] = value
 
         for pos in game.positions:
@@ -93,36 +91,16 @@ class Orchestrator:
             feats: List[Dict[str, Any]] = []
             for feature in self._position_features:
                 for result in feature.compute(ctx):
-                    key = (result.feature_id, result.side)
-                    pv = prev.get(key)
                     value = result.value
+                    pv = prev.get((result.feature_id, result.side))
                     # Carry the max forward for sticky features (e.g. castled stays yes).
                     if result.feature_id in STICKY_MAX and value is not None and pv is not None and pv > value:
                         value = pv
-                    delta: Optional[float] = None
-                    if value is not None and pv is not None:
-                        delta = value - pv
-                    feats.append(_serialize(replace(result, value=value, delta=delta)))
-                    prev[key] = value
+                    emit(result, value)
 
             # --- MOVE/GAME assembly features (backend-only) ---
-            if pos.ply >= 1:
-                mv = game.moves[pos.ply - 1]
-                played[mv.mover] += 1
-                if mv.is_capture or mv.is_check:
-                    forcing[mv.mover] += 1
-                # Prophylaxis: a quiet move after which the opponent (now to move) has
-                # fewer legal replies than the last time it was their turn (2 plies ago).
-                if not mv.is_capture and not mv.is_check and pos.ply >= 2:
-                    if pos.legal_count < game.positions[pos.ply - 2].legal_count:
-                        prophylaxis[mv.mover] += 1
-            tension = ctx.position_features.tension
-            emit_assembly(feats, "TAC.density", "shared",
-                          pos.legal_captures + pos.legal_checks + tension)
-            for side in ("w", "b"):
-                rate = forcing[side] / played[side] if played[side] else 0.0
-                emit_assembly(feats, "DYN.initiative", side, rate)
-                emit_assembly(feats, "DEC.prophylaxis", side, float(prophylaxis[side]))
+            for result in assembler.step(pos.ply, ctx.board, ctx.position_features):
+                emit(result, result.value)
 
             move = game.moves[pos.ply - 1] if pos.ply > 0 else None
             plies.append(

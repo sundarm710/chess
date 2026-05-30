@@ -174,11 +174,15 @@ export const CATEGORY_LABEL = {
 // the finer judgment features (activity, bishops, outposts) lower. Ids not listed
 // here fall to the bottom in manifest order. Includes backend-only MOVE/GAME ids.
 export const ORDER = [
-  'MAT.balance', 'MAT.hanging',
+  'MAT.balance', 'MAT.hanging', 'MAT.swing',
   'SPC.space', 'SPC.center_control', 'SPC.center_occ',
   'KSF.in_check', 'KSF.castle', 'KSF.shield', 'KSF.zone_pressure',
-  'STR.islands', 'STR.isolated', 'STR.doubled', 'STR.passed', 'STR.colour_complex', 'STR.tension',
-  'DEV.count',
+  'STR.islands', 'STR.isolated', 'STR.doubled', 'STR.passed', 'STR.colour_complex', 'STR.tension', 'STR.tension_hold',
+  'DEV.count', 'DEV.tempo_waste',
   'ACT.control', 'ACT.mobility', 'ACT.coordination', 'ACT.rook_open', 'ACT.outpost', 'ACT.bishop_quality',
-  'DYN.initiative', 'TAC.density', 'DEC.prophylaxis',
+  'DYN.initiative',
+  'TAC.density', 'TAC.exposure',
+  'DEC.prophylaxis', 'DEC.trade_discipline',
+  'TIM.move_time', 'TIM.clock',
+  'EVAL.acpl', 'EVAL.consistency',
 ];

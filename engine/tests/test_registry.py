@@ -46,20 +46,21 @@ class TestRegistryStructure:
     def test_builds_and_validates(self, registry):
         # build_default_registry already calls validate(); re-assert idempotency.
         registry.validate()
-        assert len(registry) == 25
+        assert len(registry) == 34
 
     def test_scopes(self, registry):
         # Board features are POSITION-scope; the MOVE/GAME assembly features are GAME.
-        game_ids = {"DYN.initiative", "TAC.density", "DEC.prophylaxis"}
         for f in registry.all():
-            expected = Scope.GAME if f.id in game_ids else Scope.POSITION
-            assert f.scope is expected, f"{f.id} scope"
+            assert f.scope in (Scope.POSITION, Scope.GAME)
+        assert sum(1 for f in registry.all() if f.scope is Scope.POSITION) == 22
+        assert sum(1 for f in registry.all() if f.scope is Scope.GAME) == 12
 
-    def test_core_features_require_no_capabilities(self, registry):
-        # The hard wall: no board feature may require eval/clock/ref.
+    def test_position_features_require_no_capabilities(self, registry):
+        # The hard wall: no board (POSITION) feature may require eval/clock/ref.
         for feat in registry.all():
-            assert feat.requires == frozenset(), f"{feat.id} unexpectedly requires data"
-            assert feat.meta.engine == "none"
+            if feat.scope is Scope.POSITION:
+                assert feat.requires == frozenset(), f"{feat.id} unexpectedly requires data"
+                assert feat.meta.engine == "none"
 
     def test_ids_sorted_and_unique(self, registry):
         ids = [f.id for f in registry.all()]

@@ -33,11 +33,14 @@ class TestOrchestratorShape:
         assert len(analysis["plies"]) == 34
         assert analysis["meta"]["MAT.balance"]["name"] == "Material"
 
-    def test_each_ply_has_all_features(self, orchestrator):
+    def test_every_feature_present_each_ply(self, orchestrator):
         analysis = orchestrator.run(parse_pgn(MORPHY))
-        # 21 per-side (×2) + 1 shared + 5 MOVE-tier (density + initiative w/b + prophylaxis w/b) = 48.
+        manifest_ids = set(analysis["meta"])
+        counts = set()
         for ply in analysis["plies"]:
-            assert len(ply["features"]) == 48
+            assert {f["id"] for f in ply["features"]} == manifest_ids
+            counts.add(len(ply["features"]))
+        assert len(counts) == 1  # same number of result rows on every ply
 
     def test_first_ply_has_null_deltas(self, orchestrator):
         analysis = orchestrator.run(parse_pgn(MORPHY))

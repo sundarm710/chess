@@ -20,6 +20,7 @@ import chess.pgn
 from .features import Color
 
 _CLK_RE = re.compile(r"\[%clk\s+(\d+):(\d{1,2}):(\d{1,2}(?:\.\d+)?)\]")
+_EMT_RE = re.compile(r"\[%emt\s+(\d+):(\d{1,2}):(\d{1,2}(?:\.\d+)?)\]")
 _EVAL_RE = re.compile(r"\[%eval\s+(#?-?\d+(?:\.\d+)?)\]")
 
 
@@ -53,7 +54,8 @@ class ParsedMove:
     is_check: bool
     is_mate: bool
     is_castle: bool
-    clk_seconds: Optional[float] = None
+    clk_seconds: Optional[float] = None  # clock remaining after the move (%clk)
+    emt_seconds: Optional[float] = None  # time spent on the move (%emt)
     eval_cp: Optional[int] = None
     eval_mate: Optional[int] = None
 
@@ -81,12 +83,18 @@ def game_id_for(pgn: str) -> str:
     return hashlib.sha256(normalized.encode()).hexdigest()[:12]
 
 
+def _hms(m: "re.Match[str]") -> float:
+    return int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3))
+
+
 def _parse_clock(comment: str) -> Optional[float]:
     m = _CLK_RE.search(comment)
-    if not m:
-        return None
-    hours, minutes, seconds = int(m.group(1)), int(m.group(2)), float(m.group(3))
-    return hours * 3600 + minutes * 60 + seconds
+    return _hms(m) if m else None
+
+
+def _parse_emt(comment: str) -> Optional[float]:
+    m = _EMT_RE.search(comment)
+    return _hms(m) if m else None
 
 
 def _parse_eval(comment: str) -> tuple[Optional[int], Optional[int]]:
@@ -140,8 +148,9 @@ def parse_pgn(pgn: str) -> ParsedGame:
         ply += 1
 
         clk = _parse_clock(nxt.comment)
+        emt = _parse_emt(nxt.comment)
         eval_cp, eval_mate = _parse_eval(nxt.comment)
-        has_clock = has_clock or clk is not None
+        has_clock = has_clock or clk is not None or emt is not None
         has_eval = has_eval or eval_cp is not None or eval_mate is not None
 
         moves.append(
@@ -155,6 +164,7 @@ def parse_pgn(pgn: str) -> ParsedGame:
                 is_mate=board.is_checkmate(),
                 is_castle=is_castle,
                 clk_seconds=clk,
+                emt_seconds=emt,
                 eval_cp=eval_cp,
                 eval_mate=eval_mate,
             )

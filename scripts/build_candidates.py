@@ -57,7 +57,9 @@ def main() -> None:
                 gid = f"{tour}-r{rnd:02d}-b{board}"
             seen_ids.add(gid)
 
-            exporter = chess.pgn.StringExporter(headers=False, variations=False, comments=False)
+            # Keep comments so %clk / %emt survive (the CLOCK features need them); the
+            # JS quick-mode parser strips them anyway, the backend pipeline reads them.
+            exporter = chess.pgn.StringExporter(headers=False, variations=False, comments=True)
             pgn = game.accept(exporter).strip()
             white, black, result = h.get("White", "?"), h.get("Black", "?"), h.get("Result", "*")
             games.append({
