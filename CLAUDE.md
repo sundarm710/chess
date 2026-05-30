@@ -338,8 +338,10 @@ Every **set of changes** ends the same way — this is mandatory, not optional:
 
 1. **Tests green.** `./run_tests.sh` passes (the suite is the gate, §13).
 2. **Append to `change-log.md`.** Add a new entry at the **top** (newest first) with a
-   timestamp (`date '+%Y-%m-%d %H:%M %Z'`) and a short, scannable summary of what
-   changed and why. One entry per change set.
+   timestamp (`date '+%Y-%m-%d %H:%M %Z'`) and a title. Every entry states both:
+   - **What** — the concrete change (files/features/behavior).
+   - **Why** — the reason or trigger (the problem it fixes, the request, the goal).
+   One entry per change set; keep it scannable.
 3. **Commit and push.** Stage everything, write a clear commit message (end with the
    `Co-Authored-By: Claude` trailer), and `git push` to `origin/main`
    (`git@github.com:sundarm710/chess.git`).

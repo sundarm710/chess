@@ -1,38 +1,46 @@
 # Change log
 
 Running log of what changed, newest first. One entry per set of changes (see
-`CLAUDE.md` §15 — every change set appends here and is committed + pushed).
+`CLAUDE.md` §15). Every entry states **What** (the change) and **Why** (the reason),
+and each set is committed + pushed.
 
 ---
 
+## 2026-05-30 10:14 IST — Fix CI install + change-log What/Why format
+
+- **What:** `.github/workflows/tests.yml` now installs `.[dev,pipeline]` (was `.[dev]`).
+  CLAUDE.md §15 updated to require an explicit **What** and **Why** per entry; existing
+  entries reformatted to match.
+- **Why:** GitHub Actions was failing — the suite gained backend/pipeline dependencies
+  (`PyYAML` for `features.yaml` generation, `python-chess`/`fastapi` for the
+  orchestrator/API tests), but CI only installed the `dev` extra, so imports failed.
+  Verified the fix by running the suite in a clean venv with `python3` fallback (green).
+
 ## 2026-05-30 09:59 IST — MOVE / CLOCK / EVAL feature tier + change-log workflow
 
-- **New MOVE features** (backend-only, via the new `chesslab/assembly.py::MoveAssembler`):
-  `MAT.swing`, `TAC.exposure`, `DEV.tempo_waste`, `STR.tension_hold`, `DEC.trade_discipline`
-  — refactored the existing `DYN.initiative` / `TAC.density` / `DEC.prophylaxis` into the
-  same assembler.
-- **CLOCK tier** (`requires={CLOCK}`): `TIM.move_time` (`%emt`) and `TIM.clock` (`%clk`
-  remaining). Pipeline now parses `%emt`; the Candidates library JSON was rebuilt **with
-  comments** so clocks reach the backend.
-- **EVAL scaffold** (`requires={EVAL}`, capability-gated): `EVAL.acpl` (mean centipawn
-  loss) and `EVAL.consistency` (stdev of loss), consuming PGN `%eval`. Show "needs eval
-  data" for the Candidates games (no `%eval`); cloud-eval filling is the follow-up.
-- **34 features total.** `FeatureMeta.higher` added (drives the UI favour column for
-  backend-only features). UI: feature list now scrolls within its column (sticky header)
-  so the dashboard stays one screen.
-- **New file `change-log.md`**; CLAUDE.md §15 added — every change set updates this log
-  and is committed + pushed.
-- Tests: `assembly`/clock/eval cases added; per-ply orchestrator test made robust
-  (asserts every manifest feature present + constant row count). Suite green
-  (85 Python · 26 module · 7 parser · 5 analysis · 339 library · 84 parity); mypy clean.
+- **What:**
+  - New MOVE features via `chesslab/assembly.py::MoveAssembler` (backend-only):
+    `MAT.swing`, `TAC.exposure`, `DEV.tempo_waste`, `STR.tension_hold`,
+    `DEC.trade_discipline` — with `DYN.initiative`/`TAC.density`/`DEC.prophylaxis`
+    refactored into the same assembler.
+  - CLOCK tier (`requires={CLOCK}`): `TIM.move_time` (`%emt`), `TIM.clock` (`%clk`).
+    Pipeline parses `%emt`; the Candidates library JSON rebuilt **with comments** so
+    clocks reach the backend.
+  - EVAL scaffold (`requires={EVAL}`, gated): `EVAL.acpl`, `EVAL.consistency` from
+    `%eval`. 34 features total; `FeatureMeta.higher` added. UI feature list scrolls
+    within its column (sticky header). New `change-log.md`; CLAUDE.md §15 added.
+- **Why:** Round out the feature catalog beyond the board tier — capture behavioral
+  (initiative, prophylaxis, tension-holding) and time-usage signals that distinguish
+  strong play, using the clocks already present in the Candidates PGNs. The change-log
+  workflow was requested to track work and keep `origin/main` current.
 
 ## 2026-05-29 — Project baseline (initial commit `bc83ad8`)
 
-- Engine-free positional feature engine (Python `chesslab`) + parity-tested JS mirror;
-  feature registry + orchestrator → per-ply explainability JSON; FastAPI backend;
-  `FileFeatureStore`.
-- ~22 board-tier features (T0–T3); 3 initial MOVE features.
-- Frontend: registry-driven feature table, explanation panel (plain + technical), trend
-  chart following the selection, comparison column + favour tally, lichess cburnett pieces.
-- 2026 FIDE Candidates games library (112 games) with a grouped picker + deep links.
-- Automatic test suite + README + first push to GitHub.
+- **What:** Engine-free positional feature engine (Python `chesslab`) + parity-tested JS
+  mirror; feature registry + orchestrator → per-ply explainability JSON; FastAPI backend;
+  `FileFeatureStore`. ~22 board-tier features (T0–T3) + 3 initial MOVE features. Frontend:
+  registry-driven feature table, explanation panel, trend chart, comparison/favour tally,
+  lichess cburnett pieces. 2026 FIDE Candidates library (112 games) with grouped picker +
+  deep links. Automatic test suite + README; first push to GitHub.
+- **Why:** Establish a reproducible, tested foundation for measuring chess *style* (how a
+  player plays) rather than strength — on free public data, engine-minimal.
