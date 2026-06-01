@@ -96,6 +96,27 @@ def move_features() -> List[AssemblyFeature]:
             saturation="~2200",
         ),
         _f(
+            id="MAT.deficit", name="Worst deficit", tier="T1", category="MAT",
+            inputs="M/G", output_type="scalar", viz="trend", higher="bad", aggregation="max",
+            description="The most material the side was ever behind by — the fight/defence signal.",
+            computation="Running maximum of (opponent material − own material), floored at 0.",
+            saturation="—",
+        ),
+        _f(
+            id="MAT.lead", name="Best lead", tier="T1", category="MAT",
+            inputs="M/G", output_type="scalar", viz="trend", higher="good", aggregation="max",
+            description="The most material the side was ever ahead by — what they built up.",
+            computation="Running maximum of (own material − opponent material), floored at 0.",
+            saturation="—",
+        ),
+        _f(
+            id="MAT.on_board", name="Material on board", tier="T1", category="MAT",
+            inputs="M/G", output_type="scalar", viz="trend", higher="neutral", aggregation="min",
+            description="Total non-king material left on the board — low = simplified.",
+            computation="Sum of both sides' material; aggregated as the game minimum (most simplified).",
+            saturation="—",
+        ),
+        _f(
             id="TIM.move_time", name="Move time", tier="T4", category="TIM",
             inputs="K", output_type="scalar", viz="trend", higher="neutral", aggregation="max",
             requires=frozenset({Capability.CLOCK}),
@@ -110,6 +131,14 @@ def move_features() -> List[AssemblyFeature]:
             description="Each side's remaining time on the clock; aggregated as the lowest it dropped to (time trouble).",
             computation="The %clk after the side's last move, in seconds; rolled up as the game minimum.",
             saturation="~2700",
+        ),
+        _f(
+            id="TIM.trouble", name="Time-trouble moves", tier="T4", category="TIM",
+            inputs="K", output_type="count", viz="trend", higher="bad", aggregation="max",
+            requires=frozenset({Capability.CLOCK}),
+            description="How many moves the side made with under a minute on the clock.",
+            computation="Running count of the side's moves whose %clk was below 60 seconds.",
+            saturation="—",
         ),
         _f(
             id="EVAL.acpl", name="Avg centipawn loss", tier="T6", category="EVAL",

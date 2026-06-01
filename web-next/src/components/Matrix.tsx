@@ -9,11 +9,13 @@ import {
 } from '@tanstack/react-table';
 import type { Profile } from '../types';
 import {
+  type FightStats,
   type SliceSel,
   availableFeatures,
   cellColor,
   columnRange,
   featuresByCategory,
+  fightStats,
   goodness,
   isOk,
   playersByScore,
@@ -24,8 +26,11 @@ interface Row {
   name: string;
   score: number;
   perf: number | null;
+  fight: FightStats;
   vals: Record<string, { mean: number; n: number; approx?: boolean }>;
 }
+
+const pct = (v: number | null | undefined) => (v == null ? '–' : `${Math.round(v * 100)}%`);
 
 const fmt = (v: number | null | undefined) =>
   v == null || !Number.isFinite(v) ? '–' : Number.isInteger(v) ? String(v) : (Math.round(v * 100) / 100).toFixed(2);
@@ -60,6 +65,7 @@ export function Matrix({
         name,
         score: d.score,
         perf: d.performance_elo,
+        fight: fightStats(d),
         vals: Object.fromEntries(feats.map((fid) => [fid, sliceValue(d, fid, sel)])),
       })),
     [p, feats, sel],
@@ -75,6 +81,17 @@ export function Matrix({
       },
       { id: 'score', header: 'Pts', accessorKey: 'score', cell: (c) => fmt(c.getValue<number>()) },
       { id: 'perf', header: 'TPR', accessorFn: (r) => r.perf ?? undefined, cell: (c) => fmt(c.getValue<number>()) },
+      // Fight & defence (whole-game outcome stats; independent of the phase/colour filter).
+      {
+        id: 'resil', header: 'Resil', accessorFn: (r) => r.fight.resilience ?? undefined, sortUndefined: 'last',
+        cell: (c) => <span title={`saved ${c.row.original.fight.nBehind} games behind ≥3`}>{pct(c.row.original.fight.resilience)}</span>,
+      },
+      {
+        id: 'conv', header: 'Conv', accessorFn: (r) => r.fight.conversion ?? undefined, sortUndefined: 'last',
+        cell: (c) => <span title={`from ${c.row.original.fight.nAhead} games ahead ≥3`}>{pct(c.row.original.fight.conversion)}</span>,
+      },
+      { id: 'cmbk', header: 'CmBk', accessorFn: (r) => r.fight.comeback, cell: (c) => c.getValue<number>() || '–' },
+      { id: 'clps', header: 'Clps', accessorFn: (r) => r.fight.collapse, cell: (c) => c.getValue<number>() || '–' },
     ];
     const featCol = (fid: string): ColumnDef<Row> => ({
       id: fid,

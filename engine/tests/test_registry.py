@@ -46,14 +46,14 @@ class TestRegistryStructure:
     def test_builds_and_validates(self, registry):
         # build_default_registry already calls validate(); re-assert idempotency.
         registry.validate()
-        assert len(registry) == 34
+        assert len(registry) == 38
 
     def test_scopes(self, registry):
         # Board features are POSITION-scope; the MOVE/GAME assembly features are GAME.
         for f in registry.all():
             assert f.scope in (Scope.POSITION, Scope.GAME)
         assert sum(1 for f in registry.all() if f.scope is Scope.POSITION) == 22
-        assert sum(1 for f in registry.all() if f.scope is Scope.GAME) == 12
+        assert sum(1 for f in registry.all() if f.scope is Scope.GAME) == 16
 
     def test_position_features_require_no_capabilities(self, registry):
         # The hard wall: no board (POSITION) feature may require eval/clock/ref.

@@ -26,6 +26,7 @@ _MINOR_HOME = {
     "b": {(1, 7), (6, 7), (2, 7), (5, 7)},
 }
 _QUEEN_HOME = {"w": (3, 0), "b": (3, 7)}
+_TIME_TROUBLE_SECS = 60  # a move made with under a minute left counts as time trouble
 
 
 def _uci_from(uci: str) -> tuple[int, int]:
@@ -47,6 +48,9 @@ class MoveAssembler:
         self.exposure: Dict[str, int] = {"w": 0, "b": 0}
         self.move_time: Dict[str, Optional[float]] = {"w": None, "b": None}
         self.clock: Dict[str, Optional[float]] = {"w": None, "b": None}
+        self.worst_deficit: Dict[str, int] = {"w": 0, "b": 0}  # most ever behind
+        self.best_lead: Dict[str, int] = {"w": 0, "b": 0}        # most ever ahead
+        self.time_trouble: Dict[str, int] = {"w": 0, "b": 0}     # moves made under a minute
         self.eval_losses: Dict[str, List[float]] = {"w": [], "b": []}
         self._prev_pf: Optional[PositionFeatures] = None
         self._prev_board: Optional[Board] = None
@@ -101,6 +105,8 @@ class MoveAssembler:
 
         if mv.clk_seconds is not None:
             self.clock[s] = mv.clk_seconds
+            if mv.clk_seconds < _TIME_TROUBLE_SECS:
+                self.time_trouble[s] += 1
         if mv.emt_seconds is not None:
             self.move_time[s] = mv.emt_seconds
 
@@ -158,15 +164,26 @@ class MoveAssembler:
             status = ResultStatus.OK if available else ResultStatus.UNAVAILABLE
             out.append(FeatureResult(fid, side, value if available else None, status=status))
 
+        # Material trajectory extremes (updated every ply, for both sides).
+        for side in ("w", "b"):
+            other = "b" if side == "w" else "w"
+            diff = getattr(pf, side).mat - getattr(pf, other).mat
+            self.worst_deficit[side] = max(self.worst_deficit[side], -diff)
+            self.best_lead[side] = max(self.best_lead[side], diff)
+
         # Shared, always available.
         add("TAC.density", "shared", float(pos.legal_captures + pos.legal_checks + pf.tension))
         balance = pf.w.mat - pf.b.mat
         prev_balance = (self._prev_pf.w.mat - self._prev_pf.b.mat) if self._prev_pf else balance
         add("MAT.swing", "shared", float(abs(balance - prev_balance)))
+        add("MAT.on_board", "shared", float(pf.w.mat + pf.b.mat))
 
         for side in ("w", "b"):
             rate = self.forcing[side] / self.played[side] if self.played[side] else 0.0
             add("DYN.initiative", side, rate)
+            add("MAT.deficit", side, float(self.worst_deficit[side]))
+            add("MAT.lead", side, float(self.best_lead[side]))
+            add("TIM.trouble", side, float(self.time_trouble[side]), available=game.has_clock)
             add("DEC.prophylaxis", side, float(self.prophylaxis[side]))
             add("DEV.tempo_waste", side, float(self.tempo_waste[side]))
             add("STR.tension_hold", side, float(self.tension_hold[side]))

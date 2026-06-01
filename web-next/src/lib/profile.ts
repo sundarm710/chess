@@ -3,6 +3,46 @@
 
 import type { Higher, PlayerDoc, Profile, Slice } from '../types';
 
+// Material gap (points) that counts as "behind" / "ahead" for the fight-and-defence stats.
+export const FIGHT_THRESHOLD = 3;
+
+export interface FightStats {
+  nBehind: number;
+  nAhead: number;
+  resilience: number | null; // share of games-behind not lost
+  conversion: number | null; // share of games-ahead won
+  comeback: number; // games behind ≥threshold then won
+  collapse: number; // games ahead ≥threshold then lost
+}
+
+/** Fight & defence record for a player, derived from per-game worst-deficit / best-lead
+ *  (the MAT.deficit / MAT.lead features) and the game result. */
+export function fightStats(d: PlayerDoc): FightStats {
+  let nBehind = 0, saved = 0, comeback = 0, nAhead = 0, convWon = 0, collapse = 0;
+  for (const r of d.game_rows) {
+    const deficit = r.vals['MAT.deficit'] ?? 0;
+    const lead = r.vals['MAT.lead'] ?? 0;
+    if (deficit >= FIGHT_THRESHOLD) {
+      nBehind++;
+      if (r.score > 0) saved++;
+      if (r.score === 1) comeback++;
+    }
+    if (lead >= FIGHT_THRESHOLD) {
+      nAhead++;
+      if (r.score === 1) convWon++;
+      if (r.score === 0) collapse++;
+    }
+  }
+  return {
+    nBehind,
+    nAhead,
+    resilience: nBehind ? saved / nBehind : null,
+    conversion: nAhead ? convWon / nAhead : null,
+    comeback,
+    collapse,
+  };
+}
+
 export const PHASES = ['opening', 'middlegame', 'endgame'] as const;
 export const PHASE_LABEL: Record<string, string> = {
   opening: 'Opening',

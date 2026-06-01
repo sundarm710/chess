@@ -6,6 +6,25 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-01 — Fight & defence features + Game-view backend on by default
+
+- **What:**
+  - **New backend features** (assembler + `catalog/move.py`, 38 total now): `MAT.deficit`
+    (worst material a side fell behind, running max), `MAT.lead` (most ahead), `MAT.on_board`
+    (total material left, min = most simplified), `TIM.trouble` (moves made under a minute,
+    CLOCK-gated). They flow into the matrix / breakdown / correlation / phase slices for free.
+  - **Fight & defence record** (`fightStats` in `lib/profile.ts`, derived on the frontend from
+    per-game `MAT.deficit`/`MAT.lead` + result): **Resilience** (% of games behind ≥3 not
+    lost), **Conversion** (% of games ahead ≥3 won), **Comebacks**, **Collapses** — added as
+    sortable leading columns in the Profiles matrix (sort by Resil to find the best defenders).
+  - **Game view defaults to Backend on**, so the MOVE/CLOCK/EVAL features (initiative,
+    prophylaxis, deficit, time-trouble, …) compute on the stepper, not just board features.
+  - Regenerated `features.yaml`; rebuilt profiles; updated registry/manifest/api counts (38)
+    and added assembler tests (deficit/lead/on_board, time-trouble).
+- **Why:** First tranche of the "free, high-reward" feature ideas — turns material-trajectory
+  + result into a real *fight & defence* read (who falls behind and saves it, who converts,
+  who collapses) at near-zero cost from data we already had.
+
 ## 2026-06-01 — `DEV.tempo_waste` only counts in the opening
 
 - **What:** Tempo waste was counting "re-moving a developed minor / early queen" on *every*

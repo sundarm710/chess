@@ -94,6 +94,23 @@ class TestHeavyMoveFeatures:
         last = _run(MORPHY)["plies"][-1]
         assert isinstance(_feat(last, "DEC.trade_discipline", "w")["value"], (int, float))
 
+    def test_deficit_and_lead(self):
+        # Morphy sacrifices into a winning attack: White falls behind, Black builds a lead.
+        last = _run(MORPHY)["plies"][-1]
+        assert _feat(last, "MAT.deficit", "w")["value"] >= 1   # White was down material
+        assert _feat(last, "MAT.lead", "b")["value"] >= 1      # Black was up material
+        # deficit/lead are floored at 0 and never negative
+        assert _feat(last, "MAT.deficit", "b")["value"] >= 0
+        # material on board only ever decreases from the start (78 = 2×39)
+        assert _feat(_run(MORPHY)["plies"][0], "MAT.on_board", "shared")["value"] == 78
+
+    def test_time_trouble_counts_under_a_minute(self):
+        # A clock that dips under 60s should register a time-trouble move.
+        pgn = "1. e4 {[%clk 0:00:30]} e5 {[%clk 0:09:00]} 2. Nf3 {[%clk 0:00:20]} *"
+        last = _run(pgn)["plies"][-1]
+        assert _feat(last, "TIM.trouble", "w")["value"] == 2   # both White moves under 60s
+        assert _feat(last, "TIM.trouble", "b")["value"] == 0
+
 
 class TestClockFeatures:
     def test_move_time_and_remaining(self):

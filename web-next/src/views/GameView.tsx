@@ -29,7 +29,7 @@ export function GameView({
   const [gameId, setGameId] = useState<string | null>(initialGameId ?? null);
   const [customPgn, setCustomPgn] = useState('');
   const [submittedCustom, setSubmittedCustom] = useState('');
-  const [backend, setBackend] = useState(false);
+  const [backend, setBackend] = useState(true); // default on so MOVE/CLOCK features compute
   const [url, setUrl] = useState('http://localhost:8001');
   const [ply, setPly] = useState(initialPly);
   const [selectedId, setSelectedId] = useState('MAT.hanging');

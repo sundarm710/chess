@@ -392,6 +392,27 @@
   viz: trend
   higher: good
   version: 1
+- id: MAT.deficit
+  name: Worst deficit
+  tier: T1
+  scope: game
+  category: MAT
+  description: The most material the side was ever behind by — the fight/defence signal.
+  computation: Running maximum of (opponent material − own material), floored at 0.
+  inputs: M/G
+  engine: none
+  requires: []
+  output_type: scalar
+  aggregation: max
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: bad
+  version: 1
 - id: MAT.hanging
   name: Hanging (en prise)
   tier: T0
@@ -413,6 +434,48 @@
   status: implemented
   viz: board
   higher: bad
+  version: 1
+- id: MAT.lead
+  name: Best lead
+  tier: T1
+  scope: game
+  category: MAT
+  description: The most material the side was ever ahead by — what they built up.
+  computation: Running maximum of (own material − opponent material), floored at 0.
+  inputs: M/G
+  engine: none
+  requires: []
+  output_type: scalar
+  aggregation: max
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: good
+  version: 1
+- id: MAT.on_board
+  name: Material on board
+  tier: T1
+  scope: game
+  category: MAT
+  description: Total non-king material left on the board — low = simplified.
+  computation: Sum of both sides' material; aggregated as the game minimum (most simplified).
+  inputs: M/G
+  engine: none
+  requires: []
+  output_type: scalar
+  aggregation: min
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: neutral
   version: 1
 - id: MAT.swing
   name: Material swing
@@ -737,4 +800,26 @@
   status: implemented
   viz: trend
   higher: neutral
+  version: 1
+- id: TIM.trouble
+  name: Time-trouble moves
+  tier: T4
+  scope: game
+  category: TIM
+  description: How many moves the side made with under a minute on the clock.
+  computation: Running count of the side's moves whose %clk was below 60 seconds.
+  inputs: K
+  engine: none
+  requires:
+  - clock
+  output_type: count
+  aggregation: max
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: bad
   version: 1
