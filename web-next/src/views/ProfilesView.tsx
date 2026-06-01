@@ -6,6 +6,7 @@ import { FilterBar } from '../components/FilterBar';
 import { Matrix } from '../components/Matrix';
 import { WinningDNA } from '../components/WinningDNA';
 import { FocusPanel } from '../components/FocusPanel';
+import { PlayerGames } from '../components/PlayerGames';
 import { PlayerRadar } from '../components/PlayerRadar';
 import { FeatureScatter } from '../components/FeatureScatter';
 import { PhaseColourCard } from '../components/PhaseColourCard';
@@ -15,6 +16,7 @@ export function ProfilesView({ slug }: { slug: string }) {
   const [sel, setSel] = useState<SliceSel>({ phase: 'all', color: 'all' });
   const [focused, setFocused] = useState<string | null>('SPC.space');
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [drillPlayer, setDrillPlayer] = useState<string | null>(null);
 
   // Default the radar to the top 3 by score whenever a new profile loads.
   useEffect(() => {
@@ -55,10 +57,17 @@ export function ProfilesView({ slug }: { slug: string }) {
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_330px]">
         <div className="min-w-0">
-          <Matrix p={p} sel={sel} focused={focused} onFocus={setFocused} />
+          <Matrix
+            p={p}
+            sel={sel}
+            focused={focused}
+            onFocus={setFocused}
+            selectedPlayer={drillPlayer}
+            onSelectPlayer={(name) => setDrillPlayer((cur) => (cur === name ? null : name))}
+          />
           <p className="mt-1.5 text-[11px] text-ink2">
             Each cell is a player’s mean for that feature; colour ranks them within the column (green = better, red =
-            worse), faint = below {p.n_min} games. Headers sort.
+            worse), faint = below {p.n_min} games. Headers sort; click a player name for their per-game breakdown.
           </p>
         </div>
         <aside className="flex min-w-0 flex-col gap-4">
@@ -66,6 +75,8 @@ export function ProfilesView({ slug }: { slug: string }) {
           <FocusPanel p={p} fid={focused} sel={sel} />
         </aside>
       </div>
+
+      {drillPlayer && <PlayerGames p={p} player={drillPlayer} sel={sel} onClose={() => setDrillPlayer(null)} />}
 
       <div className="mt-5 flex flex-col gap-5">
         <PlayerRadar p={p} sel={sel} selected={selected} onToggle={toggle} />

@@ -35,11 +35,15 @@ export function Matrix({
   sel,
   focused,
   onFocus,
+  selectedPlayer,
+  onSelectPlayer,
 }: {
   p: Profile;
   sel: SliceSel;
   focused: string | null;
   onFocus: (fid: string) => void;
+  selectedPlayer?: string | null;
+  onSelectPlayer?: (name: string) => void;
 }) {
   const nMin = p.n_min;
   const feats = useMemo(() => availableFeatures(p), [p]);
@@ -161,26 +165,31 @@ export function Matrix({
           ))}
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover:bg-paper/60">
-              {row.getVisibleCells().map((cell) => {
-                const isName = cell.column.id === 'name';
-                return (
-                  <td
-                    key={cell.id}
-                    className={[
-                      'whitespace-nowrap border-b border-line/60 px-2 py-1 text-right tabular-nums',
-                      isName ? 'sticky left-0 z-10 bg-white text-left' : '',
-                      catStart.has(cell.column.id) ? 'border-l border-line' : '',
-                      cell.column.id === focused ? 'ring-1 ring-inset ring-w/30' : '',
-                    ].join(' ')}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
+          {table.getRowModel().rows.map((row) => {
+            const isSelPlayer = row.original.name === selectedPlayer;
+            return (
+              <tr key={row.id} className={isSelPlayer ? 'bg-paper' : 'hover:bg-paper/60'}>
+                {row.getVisibleCells().map((cell) => {
+                  const isName = cell.column.id === 'name';
+                  return (
+                    <td
+                      key={cell.id}
+                      onClick={isName ? () => onSelectPlayer?.(row.original.name) : undefined}
+                      title={isName ? 'Show this player’s per-game breakdown' : undefined}
+                      className={[
+                        'whitespace-nowrap border-b border-line/60 px-2 py-1 text-right tabular-nums',
+                        isName ? `sticky left-0 z-10 cursor-pointer text-left ${isSelPlayer ? 'bg-paper font-semibold text-w' : 'bg-white'}` : '',
+                        catStart.has(cell.column.id) ? 'border-l border-line' : '',
+                        cell.column.id === focused ? 'ring-1 ring-inset ring-w/30' : '',
+                      ].join(' ')}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

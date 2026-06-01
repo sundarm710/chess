@@ -215,6 +215,19 @@ class TestPhaseAndColourRollups:
         assert prof["emit_cross"] is False
         assert "cross" not in prof["players"]["A"]["rollups"]["SPC.space"]
 
+    def test_game_rows_reconcile_with_mean(self):
+        sums = [
+            _summary("g1", "A", "B", "1-0", [_cell("SPC.space", "w", 10)]),
+            _summary("g2", "A", "B", "1-0", [_cell("SPC.space", "w", 6)]),
+        ]
+        doc = self._profile(sums)["players"]["A"]
+        rows = doc["game_rows"]
+        assert len(rows) == 2
+        assert [r["vals"]["SPC.space"] for r in rows] == [10, 6]
+        # mean of the per-game values equals the rollup mean shown in the matrix
+        assert doc["rollups"]["SPC.space"]["mean"] == pytest.approx(8.0)
+        assert rows[0]["opp"] == "B" and rows[0]["color"] == "w"
+
     def test_result_correlation_positive_when_feature_tracks_wins(self):
         # White (more space) always wins; black (less space) always loses → strong +r.
         sums = [_summary(f"g{i}", "A", "B", "1-0",

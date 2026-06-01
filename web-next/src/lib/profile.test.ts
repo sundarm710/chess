@@ -6,6 +6,7 @@ import { goodness, sliceValue } from './profile';
 const doc: PlayerDoc = {
   games: 14, score: 8, wins: 4, draws: 8, losses: 2,
   performance_elo: 2800, avg_opp_elo: 2750,
+  game_rows: [],
   rollups: {
     'SPC.space': {
       n: 14, mean: 8.46, stdev: 1.4, ci: 0.7,

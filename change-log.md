@@ -6,6 +6,25 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-01 — Player per-game drill-down (Profiles)
+
+- **What:** Clicking a player name in the Profiles matrix now opens a **per-game breakdown**
+  in the space between the matrix and the player radar: one row per game (round · opponent ·
+  W/D/L · colour), every feature a column (colour-coded vs the field, like the matrix), and a
+  bold **Mean** row that equals that player's value in the matrix above. Respects the colour
+  filter (filters to White/Black games so the mean still reconciles); notes when a phase
+  filter is active that per-game values are whole-game.
+  - **Data:** `aggregate.tournament_profile` now emits `game_rows` per player (id, round,
+    colour, opponent, result, score, and per-feature whole-game values, 2 dp). Rebuilt all
+    profiles. New `test_aggregate` check that the per-game values' mean reconciles with the
+    rollup mean.
+  - **web-next:** new `PlayerGames` component; matrix player names are clickable + highlight.
+- **Why:** The matrix shows one number per player·feature with no way to see how it was
+  reached — a club player can't tell a consistent trait from one outlier game. The breakdown
+  is the "show your work" that makes each cell trustworthy and turns "scan the field" into
+  "study a player". Note: Grand-Swiss profile JSON grows to ~2 MB (per-game data; ~300 KB
+  gzipped, lazy-loaded per tournament); Candidates ~230 KB.
+
 ## 2026-06-01 — `web-next/` full parity with the vanilla app (Game view + Profiles charts)
 
 - **What:** Ported every remaining piece of `web/` into the React/TS spike.

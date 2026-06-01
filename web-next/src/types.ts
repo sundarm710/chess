@@ -33,6 +33,16 @@ export interface Rollup {
   cross?: Record<string, Slice>; // "opening:w" … "endgame:b"
 }
 
+export interface GameRow {
+  id: string;
+  round: number;
+  color: 'w' | 'b';
+  opp: string;
+  result: string;
+  score: number;
+  vals: Record<string, number>;
+}
+
 export interface PlayerDoc {
   games: number;
   score: number;
@@ -42,6 +52,7 @@ export interface PlayerDoc {
   performance_elo: number | null;
   avg_opp_elo: number | null;
   rollups: Record<string, Rollup>;
+  game_rows: GameRow[];
 }
 
 export interface Leaderboard {
