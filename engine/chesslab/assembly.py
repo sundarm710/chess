@@ -29,6 +29,7 @@ _QUEEN_HOME = {"w": (3, 0), "b": (3, 7)}
 _TIME_TROUBLE_SECS = 60  # a move made with under a minute left counts as time trouble
 _DEFICIT_PERSIST = 4     # a material gap must hold this many plies (~2 moves) to count
                          # — filters out capture/recapture trade blips
+_EVAL_CAP_CP = 1000      # clamp evals to ±10 pawns before per-move loss (decisive-range noise)
 
 
 def _uci_from(uci: str) -> tuple[int, int]:
@@ -122,6 +123,11 @@ class MoveAssembler:
         before = 0 if i == 1 else game.moves[i - 2].eval_cp
         if after is None or before is None:
             return  # mate score or missing eval — skip this move
+        # Clamp to ±EVAL_CAP_CP first: once a position is decisively won/lost the engine's
+        # eval swings wildly (it wins regardless), so an uncapped diff invents huge phantom
+        # "errors" (e.g. +59 → +17 pawns). Capping makes accuracy meaningful (CLAUDE.md note).
+        before = max(-_EVAL_CAP_CP, min(_EVAL_CAP_CP, before))
+        after = max(-_EVAL_CAP_CP, min(_EVAL_CAP_CP, after))
         loss = max(0, before - after) if s == "w" else max(0, after - before)
         self.eval_losses[s].append(float(loss))
 

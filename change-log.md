@@ -6,6 +6,24 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-02 — Fix EVAL accuracy spikes (clamp) + render robustness/perf
+
+- **What:**
+  - **EVAL accuracy bug:** centipawn loss was uncapped, so in already-decided positions the
+    engine's wild eval swings logged huge phantom "errors" — e.g. Keymer vs Vidit, eval +59.72
+    → +16.72 pawns scored as a **4300cp blunder**, blowing `EVAL.consistency` to 547. Now evals
+    are **clamped to ±10 pawns** before the per-move loss (standard ACPL practice). Keymer's
+    accuracy went acpl 88→11.5, consistency 547→25. Test added; profiles rebuilt.
+  - **Render robustness:** added an **ErrorBoundary** around the active view, so a render error
+    shows a message and stays recoverable instead of unmounting the whole app to a blank screen.
+  - **Perf:** the Insights **drawer now mounts its heatmap lazily** (first open), so the 38×38
+    correlation grid no longer renders on every profile load — meaningful for the 116-player
+    Grand Swiss (5.5 MB) profile.
+- **Why:** Debugging a reported "EVAL.consistency jumps 30→500 in a move" surfaced the
+  decisive-range ACPL flaw. The blank-screen report traced to grand-swiss being heavy to render
+  (no crash on women/candidates — those are fine on a fresh load; a stale cached bundle was the
+  likely culprit there); the error boundary + lazy drawer harden against both.
+
 ## 2026-06-01 — Grand Swiss eval annotated (full coverage)
 
 - **What:** Ran `annotate_eval.py` over all 638 Grand Swiss games (~80 min local Stockfish);

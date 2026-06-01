@@ -141,6 +141,13 @@ class TestEvalFeatures:
         f = _feat(_run(SCHOLAR)["plies"][-1], "EVAL.acpl", "w")
         assert f["status"] == "unavailable" and f["value"] is None
 
+    def test_eval_clamps_decisive_swings(self):
+        # White is already crushing (+50.00) then "only" +12.00 — both decisive, not an error.
+        # Uncapped this is a 3800cp blunder; clamped to ±10 pawns it's ~0.
+        pgn = "1. e4 {[%eval 50.0]} e5 {[%eval 12.0]} 2. Nf3 {[%eval 11.0]} *"
+        last = _run(pgn)["plies"][-1]
+        assert _feat(last, "EVAL.acpl", "w")["value"] < 50  # not the ~1900 an uncapped diff gives
+
     def test_eval_engine_tag(self):
         meta = _run(SCHOLAR)["meta"]
         assert meta["EVAL.acpl"]["engine"] == "cached-eval-optional"

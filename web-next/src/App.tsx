@@ -4,6 +4,7 @@ import { useJson } from './hooks/useFetch';
 import { ProfilesView } from './views/ProfilesView';
 import { GameView } from './views/GameView';
 import { FormView } from './views/FormView';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 interface Library {
   tournaments: LibraryEntry[];
@@ -87,21 +88,23 @@ export default function App() {
         </select>
       </header>
 
-      {view === 'profiles' ? (
-        <ProfilesView slug={slug === 'custom' ? tournaments[0]?.slug ?? '' : slug} onOpenGame={openGame} />
-      ) : view === 'form' ? (
-        <FormView slug={slug === 'custom' ? tournaments[0]?.slug ?? '' : slug} onOpenGame={openGame} />
-      ) : (
-        <GameView
-          key={`${slug}:${deepGame ?? ''}`}
-          slug={slug}
-          initialGameId={deepGame}
-          initialPly={deepPly}
-          onSelectGame={(id, ply) => {
-            window.location.hash = `#${id}@${ply}`;
-          }}
-        />
-      )}
+      <ErrorBoundary key={`${view}:${slug}`}>
+        {view === 'profiles' ? (
+          <ProfilesView slug={slug === 'custom' ? tournaments[0]?.slug ?? '' : slug} onOpenGame={openGame} />
+        ) : view === 'form' ? (
+          <FormView slug={slug === 'custom' ? tournaments[0]?.slug ?? '' : slug} onOpenGame={openGame} />
+        ) : (
+          <GameView
+            key={`${slug}:${deepGame ?? ''}`}
+            slug={slug}
+            initialGameId={deepGame}
+            initialPly={deepPly}
+            onSelectGame={(id, ply) => {
+              window.location.hash = `#${id}@${ply}`;
+            }}
+          />
+        )}
+      </ErrorBoundary>
     </div>
   );
 }

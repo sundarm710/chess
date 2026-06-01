@@ -1,14 +1,19 @@
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 
 const WIDTH = 660; // wide enough to show ~all feature columns of the correlation heatmap
 
 /** Right-edge slide-over (drawer). A chevron handle peeks at the edge: hover to reveal,
  *  click to pin open. The wrapper is pointer-events-none so it never blocks the page;
- *  only the handle and (when open) the panel are interactive. */
+ *  only the handle and (when open) the panel are interactive. Children are mounted lazily
+ *  (first open) so the heavy heatmap doesn't tax every profile load. */
 export function RightDrawer({ label, children }: { label: string; children: ReactNode }) {
   const [hover, setHover] = useState(false);
   const [pinned, setPinned] = useState(false);
+  const [seen, setSeen] = useState(false);
   const open = hover || pinned;
+  useEffect(() => {
+    if (open) setSeen(true);
+  }, [open]);
 
   return (
     <div className="pointer-events-none fixed right-0 top-0 z-40 h-full">
@@ -34,7 +39,7 @@ export function RightDrawer({ label, children }: { label: string; children: Reac
           open ? 'pointer-events-auto translate-x-0' : 'translate-x-full'
         }`}
       >
-        {children}
+        {seen ? children : null}
       </aside>
     </div>
   );
