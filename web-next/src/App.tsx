@@ -23,10 +23,19 @@ export default function App() {
   const initial = parseHash();
   const [view, setView] = useState<View>(initial?.view ?? 'game');
   const [slug, setSlug] = useState(initial?.slug ?? 'candidates-2026-open');
-  const [deepGame] = useState(initial?.gameId);
-  const [deepPly] = useState(initial?.ply ?? 0);
+  const [deepGame, setDeepGame] = useState(initial?.gameId);
+  const [deepPly, setDeepPly] = useState(initial?.ply ?? 0);
 
   const tournaments = lib.data?.tournaments ?? [];
+
+  // Open a specific game in the stepper (from a profiles drill-down row).
+  const openGame = (id: string) => {
+    setSlug(id.split('__')[0]);
+    setDeepGame(id);
+    setDeepPly(0);
+    setView('game');
+    window.location.hash = `#${id}@0`;
+  };
 
   const switchView = (v: View) => {
     setView(v);
@@ -74,10 +83,10 @@ export default function App() {
       </header>
 
       {view === 'profiles' ? (
-        <ProfilesView slug={slug === 'custom' ? tournaments[0]?.slug ?? '' : slug} />
+        <ProfilesView slug={slug === 'custom' ? tournaments[0]?.slug ?? '' : slug} onOpenGame={openGame} />
       ) : (
         <GameView
-          key={slug}
+          key={`${slug}:${deepGame ?? ''}`}
           slug={slug}
           initialGameId={deepGame}
           initialPly={deepPly}

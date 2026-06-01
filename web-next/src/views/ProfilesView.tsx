@@ -11,7 +11,7 @@ import { PlayerRadar } from '../components/PlayerRadar';
 import { FeatureScatter } from '../components/FeatureScatter';
 import { PhaseColourCard } from '../components/PhaseColourCard';
 
-export function ProfilesView({ slug }: { slug: string }) {
+export function ProfilesView({ slug, onOpenGame }: { slug: string; onOpenGame?: (id: string) => void }) {
   const { data: p, loading, error } = useJson<Profile>(`./data/profiles/${slug}.json`);
   const [sel, setSel] = useState<SliceSel>({ phase: 'all', color: 'all' });
   const [focused, setFocused] = useState<string | null>('SPC.space');
@@ -76,7 +76,9 @@ export function ProfilesView({ slug }: { slug: string }) {
         </aside>
       </div>
 
-      {drillPlayer && <PlayerGames p={p} player={drillPlayer} sel={sel} onClose={() => setDrillPlayer(null)} />}
+      {drillPlayer && (
+        <PlayerGames p={p} player={drillPlayer} sel={sel} onClose={() => setDrillPlayer(null)} onOpenGame={onOpenGame} />
+      )}
 
       <div className="mt-5 flex flex-col gap-5">
         <PlayerRadar p={p} sel={sel} selected={selected} onToggle={toggle} />

@@ -13,11 +13,13 @@ export function PlayerGames({
   player,
   sel,
   onClose,
+  onOpenGame,
 }: {
   p: Profile;
   player: string;
   sel: SliceSel;
   onClose: () => void;
+  onOpenGame?: (id: string) => void;
 }) {
   const d = p.players[player];
   const feats = useMemo(() => availableFeatures(p), [p]);
@@ -53,7 +55,8 @@ export function PlayerGames({
             {player} <span className="text-xs font-normal text-ink2">— per-game breakdown{colourNote}</span>
           </h3>
           <p className="text-[11px] text-ink2">
-            {rows.length} games · the <b>Mean</b> row equals this player’s value in the matrix above{phaseNote}.
+            {rows.length} games · the <b>Mean</b> row equals this player’s value in the matrix above{phaseNote}. Click a
+            game to open it in the stepper.
           </p>
         </div>
         <button type="button" onClick={onClose} className="rounded-md border border-line px-2 py-0.5 text-xs text-ink2 hover:bg-paper2">
@@ -74,11 +77,17 @@ export function PlayerGames({
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.id} className="hover:bg-paper/60">
+              <tr
+                key={r.id}
+                onClick={() => onOpenGame?.(r.id)}
+                className={onOpenGame ? 'cursor-pointer hover:bg-paper/60' : 'hover:bg-paper/60'}
+                title={onOpenGame ? 'Open this game in the stepper' : undefined}
+              >
                 <td className="sticky left-0 z-10 whitespace-nowrap border-b border-line/60 bg-white px-2 py-0.5">
                   <span className="text-ink2">R{r.round}</span>{' '}
                   <span className={r.color === 'w' ? 'text-w' : 'text-b'}>{r.color === 'w' ? '□' : '■'}</span>{' '}
-                  {r.opp} <span className="text-ink2">· {WDL(r.score)}</span>
+                  <span className={onOpenGame ? 'underline decoration-dotted underline-offset-2' : ''}>{r.opp}</span>{' '}
+                  <span className="text-ink2">· {WDL(r.score)}</span>
                 </td>
                 {feats.map((id) => (
                   <Cell key={id} fid={id} v={r.vals[id]} />

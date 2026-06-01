@@ -90,11 +90,14 @@ export function columnRange(
 }
 
 export function cellColor(g: number): string {
-  const hue = g * 120; // red→green
-  return `hsl(${hue}, 55%, ${91 - Math.abs(g - 0.5) * 14}%)`;
+  const c = Math.max(0, Math.min(1, g)); // clamp: per-game values can fall outside the field's mean range
+  const hue = c * 120; // red→green (never past green into blue/purple)
+  return `hsl(${hue}, 55%, ${91 - Math.abs(c - 0.5) * 14}%)`;
 }
 
-export const PALETTE = ['#9A3B2E', '#1F5673', '#0F6E56', '#B0522A', '#7d3b56', '#5d6a37', '#4b3b7d', '#2f6f6a'];
+// Warm "analytical instrument" categorical palette — White (oxblood) and Black (deep
+// blue) lead, then earthy tones. No off-theme purple/indigo.
+export const PALETTE = ['#9A3B2E', '#1F5673', '#0F6E56', '#C0882E', '#5D6A37', '#2F6F6A', '#A85A3C', '#6B4A2E'];
 export const MAX_RADAR_PLAYERS = 8;
 const CLUSTER_MAX = 8; // features per radar
 

@@ -6,6 +6,23 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-01 — Drill-down → game deep link + heatmap colour fix (web-next)
+
+- **What:**
+  - **Click a breakdown row → open that game in the stepper** (`App.openGame` switches to the
+    Game view, loads the game's tournament, and sets `#<id>@0`). Opponent names are dotted-
+    underlined as the affordance.
+  - **Fixed the breakdown heatmap going blue/purple:** `cellColor` now **clamps** goodness to
+    [0,1]. The matrix colours by the field's *mean* range, but a single game's value can exceed
+    any player's mean → goodness > 1 → the `hsl(g·120°)` hue ran past green into cyan/blue/
+    purple. Clamping keeps the breakdown on the same red→green scale as the matrix.
+  - **Retired off-theme chart colours:** the categorical `PALETTE` (radar / trajectory) dropped
+    the purple/indigo for warm earthy tones; White (oxblood) and Black (deep blue) still lead.
+- **Why:** Direct response to feedback — the drill-down's colours diverged from the main table
+  (the clamp bug) and the radar used purple that clashed with the warm theme; and being able to
+  jump from a suspicious per-game number straight into the move-by-move stepper closes the
+  "this looks off → see why" loop. web-next only; build + Vitest green.
+
 ## 2026-06-01 — Player per-game drill-down (Profiles)
 
 - **What:** Clicking a player name in the Profiles matrix now opens a **per-game breakdown**
