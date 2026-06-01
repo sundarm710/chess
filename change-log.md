@@ -6,6 +6,23 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-01 — Phase filter now drives the per-game breakdown
+
+- **What:** The Opening/Middlegame/Endgame filter previously moved the matrix, takeaway,
+  Winning DNA and radar but **not** the per-game breakdown (it showed whole-game values) — so
+  it looked like the filter was broken there. Now the breakdown is phase-aware:
+  - `aggregate.tournament_profile` emits per-game **`phase_vals`** (the game's per-phase value
+    per feature), **gated to cross-eligible / small dense fields** like the cross (Candidates
+    yes; Grand Swiss keeps whole-game only, with a caption, to bound JSON size).
+  - `PlayerGames` reads the current phase's per-game value, recomputes the **Mean** from it
+    (so it still reconciles with the phase-sliced matrix), and colours cells against the
+    **same slice's** field range. Caption shows "· Endgame only" (or notes whole-game where
+    per-phase data isn't stored). New `test_aggregate` checks (present + reconciles; dropped on
+    sparse fields).
+- **Why:** Direct fix to the reported "filter isn't working" — the matrix and the drill-down
+  now move together under the phase filter, and the Mean still equals the matrix value. Rebuilt
+  profiles (Candidates ~424 KB; Grand Swiss unchanged ~2 MB).
+
 ## 2026-06-01 — Drill-down → game deep link + heatmap colour fix (web-next)
 
 - **What:**

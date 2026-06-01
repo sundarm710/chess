@@ -208,6 +208,23 @@ class TestPhaseAndColourRollups:
         roll = prof["players"]["A"]["rollups"]["SPC.space"]
         assert roll["cross"]["opening:w"] == {"mean": 8.0, "n": 8}
 
+    def test_game_rows_carry_phase_vals_on_dense_fields(self):
+        sums = [_summary(f"g{i}", "A", "B", "1-0",
+                         [_cell("SPC.space", "w", 11, phase_values={"opening": 8, "middlegame": 12})])
+                for i in range(8)]
+        doc = self._profile(sums)["players"]["A"]
+        row = doc["game_rows"][0]
+        assert row["phase_vals"]["opening"]["SPC.space"] == 8
+        # mean of per-game opening values reconciles with the phase rollup the matrix shows
+        op = [r["phase_vals"]["opening"]["SPC.space"] for r in doc["game_rows"]]
+        assert sum(op) / len(op) == doc["rollups"]["SPC.space"]["phases"]["opening"]["mean"]
+
+    def test_phase_vals_dropped_on_sparse_field(self):
+        sums = [_summary("g1", "A", "B", "1-0", [_cell("SPC.space", "w", 10, phase_values={"opening": 8})]),
+                _summary("g2", "A", "B", "1-0", [_cell("SPC.space", "w", 10, phase_values={"opening": 8})])]
+        doc = self._profile(sums)["players"]["A"]
+        assert "phase_vals" not in doc["game_rows"][0]
+
     def test_cross_omitted_for_sparse_field(self):
         sums = [_summary("g1", "A", "B", "1-0", [_cell("SPC.space", "w", 10, phase_values={"opening": 8})]),
                 _summary("g2", "A", "B", "1-0", [_cell("SPC.space", "w", 10, phase_values={"opening": 8})])]

@@ -23,20 +23,30 @@ export function PlayerGames({
 }) {
   const d = p.players[player];
   const feats = useMemo(() => availableFeatures(p), [p]);
+  // Colour the cells against the field range for the SAME slice as the matrix.
   const ranges = useMemo(
-    () => Object.fromEntries(feats.map((id) => [id, columnRange(p, id, { phase: 'all', color: 'all' }, p.n_min)])),
-    [p, feats],
+    () => Object.fromEntries(feats.map((id) => [id, columnRange(p, id, sel, p.n_min)])),
+    [p, feats, sel],
   );
   if (!d) return null;
 
   const rows = sel.color === 'all' ? d.game_rows : d.game_rows.filter((r) => r.color === sel.color);
+  const hasPhaseData = sel.phase !== 'all' && rows.some((r) => r.phase_vals);
+  // A game's value for the current slice: whole-game, or its per-phase value when filtered.
+  const valOf = (r: typeof rows[number], fid: string): number | undefined =>
+    sel.phase === 'all' ? r.vals[fid] : r.phase_vals?.[sel.phase]?.[fid];
   const mean = (fid: string) => {
-    const xs = rows.map((r) => r.vals[fid]).filter((v) => v != null) as number[];
+    const xs = rows.map((r) => valOf(r, fid)).filter((v): v is number => v != null);
     return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
   };
 
   const colourNote = sel.color === 'all' ? '' : sel.color === 'w' ? ' · White games only' : ' · Black games only';
-  const phaseNote = sel.phase !== 'all' ? ` (per-game values are whole-game; the matrix above is sliced to ${PHASE_LABEL[sel.phase]})` : '';
+  const phaseNote =
+    sel.phase === 'all'
+      ? ''
+      : hasPhaseData
+        ? ` · ${PHASE_LABEL[sel.phase]} only`
+        : ` (whole-game values — per-phase breakdown isn’t stored for this tournament)`;
 
   const Cell = ({ fid, v }: { fid: string; v: number | null | undefined }) => {
     const g = v == null ? null : goodness(v, ranges[fid].lo, ranges[fid].hi, p.meta[fid]?.higher ?? 'neutral');
@@ -90,7 +100,7 @@ export function PlayerGames({
                   <span className="text-ink2">· {WDL(r.score)}</span>
                 </td>
                 {feats.map((id) => (
-                  <Cell key={id} fid={id} v={r.vals[id]} />
+                  <Cell key={id} fid={id} v={valOf(r, id)} />
                 ))}
               </tr>
             ))}

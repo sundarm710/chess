@@ -248,7 +248,8 @@ def tournament_profile(
                 acc.opp_elos.append(opp_elo)
             if g.eco:
                 acc.eco[g.eco] += 1
-            gvals: Dict[str, float] = {}  # this game's per-feature value for the player
+            gvals: Dict[str, float] = {}  # this game's whole-game value per feature
+            gphases: Dict[str, Dict[str, float]] = {ph: {} for ph in PHASES}  # + per phase
             for cell in g.cells:
                 if cell.side not in (side_char, "shared"):
                     continue
@@ -267,10 +268,12 @@ def tournament_profile(
                         fa[ph].append(pv)
                         fa[f"{ph}:{side_char}"].append(pv)
                         co[ph].append((pv, score))
+                        gphases[ph][cell.feature_id] = round(pv, 2)
             acc.games_rows.append({
                 "id": g.game_id, "round": g.round, "color": side_char,
                 "opp": g.black if side_char == "w" else g.white,
                 "result": g.result, "score": score, "vals": gvals,
+                "phase_vals": {ph: gphases[ph] for ph in PHASES if gphases[ph]},
             })
 
     # Store the full phase×colour cross only for small, dense fields (else marginals only).
@@ -281,6 +284,10 @@ def tournament_profile(
     # Per-player profile dicts.
     player_docs: Dict[str, Any] = {}
     for name, acc in players.items():
+        rows = sorted(acc.games_rows, key=lambda r: (r["round"], r["id"]))
+        if not emit_cross:  # drop the per-game phase breakdown on big fields (size)
+            for r in rows:
+                r.pop("phase_vals", None)
         player_docs[name] = {
             "games": acc.games, "score": acc.score,
             "wins": acc.wins, "draws": acc.draws, "losses": acc.losses,
@@ -288,7 +295,7 @@ def tournament_profile(
             "avg_opp_elo": round(statistics.fmean(acc.opp_elos), 1) if acc.opp_elos else None,
             "eco_distribution": dict(acc.eco),
             "rollups": {fid: _rollup_doc(d, emit_cross) for fid, d in acc.feats.items()},
-            "game_rows": sorted(acc.games_rows, key=lambda r: (r["round"], r["id"])),
+            "game_rows": rows,
         }
 
     # Tournament-level: which features correlate with winning (overall + per phase).

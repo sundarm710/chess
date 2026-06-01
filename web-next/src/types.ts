@@ -41,6 +41,8 @@ export interface GameRow {
   result: string;
   score: number;
   vals: Record<string, number>;
+  // per-phase per-feature values (only on cross-eligible / small dense fields)
+  phase_vals?: Partial<Record<Phase, Record<string, number>>>;
 }
 
 export interface PlayerDoc {
