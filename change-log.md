@@ -6,6 +6,20 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-01 — Drawer width, frozen heatmap labels, uncapped focus list (web-next)
+
+- **What:**
+  - **Wider Insights drawer** (660 px) so nearly all feature columns of the correlation
+    heatmap are visible at once; handle stays pinned to the panel edge.
+  - **Frozen feature-name column** in the heatmap (`position: sticky; left: 0`) so the row
+    labels stay readable while scrolling the grid.
+  - **Focus panel uncapped:** the per-feature player ranking (the rail card that updates when a
+    matrix column is clicked) now lists **all** players high→low and scrolls, its height
+    bounded to the matrix (~68 vh). (This is the cap the earlier "don't cap at 8" meant.)
+- **Why:** Direct UI feedback — the heatmap was too cramped to read and lost its labels on
+  scroll; and the clicked-feature ranking should show the whole field ordered, not a top-8
+  slice. web-next only; build + Vitest green.
+
 ## 2026-06-01 — Insights drawer, feature-correlation matrix, ungate, layout rework
 
 - **What:**

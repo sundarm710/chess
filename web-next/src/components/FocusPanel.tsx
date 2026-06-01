@@ -6,16 +6,16 @@ const fmt = (v: number) => (Number.isInteger(v) ? String(v) : (Math.round(v * 10
 export function FocusPanel({ p, fid, sel }: { p: Profile; fid: string | null; sel: SliceSel }) {
   if (!fid) return null;
   const m = p.meta[fid];
-  const rows = rankedEntries(p, fid, sel, p.n_min).slice(0, 8);
+  const rows = rankedEntries(p, fid, sel, p.n_min); // all players, ranked high→low
   const max = Math.max(1e-9, ...rows.map((r) => Math.abs(r.mean)));
   const dir = m?.higher === 'good' ? 'higher is better' : m?.higher === 'bad' ? 'lower is better' : 'neutral';
 
   return (
     <section className="rounded-lg border border-line bg-white p-3">
       <h3 className="font-display text-base">{m?.name ?? fid}</h3>
-      <p className="text-[11px] text-ink2">{dir} · top players</p>
+      <p className="text-[11px] text-ink2">{dir} · {rows.length} players, ranked</p>
       {m?.description && <p className="my-1.5 text-xs leading-snug text-ink2">{m.description}</p>}
-      <div className="mt-1">
+      <div className="mt-1 max-h-[68vh] overflow-auto pr-1">
         {rows.map((r, i) => (
           <div
             key={r.name}

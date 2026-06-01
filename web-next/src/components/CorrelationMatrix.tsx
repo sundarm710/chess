@@ -30,7 +30,10 @@ export function CorrelationMatrix({ p }: { p: Profile }) {
         >
           {short.map((rowName, i) => (
             <div key={i} className="contents">
-              <div className="truncate border-b border-line/40 pr-1 text-right text-[10px] leading-[14px] text-ink2" title={rowName}>
+              <div
+                className="sticky left-0 z-10 truncate border-b border-line/40 bg-white pr-1 text-right text-[10px] leading-[14px] text-ink2"
+                title={rowName}
+              >
                 {rowName}
               </div>
               {r[i].map((v, j) => (
