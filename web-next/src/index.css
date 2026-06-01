@@ -10,6 +10,8 @@
   --color-w: #9a3b2e; /* White-player accent (oxblood) */
   --color-b: #1f5673; /* Black-player accent (deep blue) */
   --color-good: #0f6e56;
+  --color-lsq: #eae0c8; /* light board square */
+  --color-dsq: #b59169; /* dark board square */
 
   --font-display: 'Fraunces', Georgia, serif;
   --font-sans: 'Hanken Grotesk', system-ui, sans-serif;

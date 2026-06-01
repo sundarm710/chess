@@ -94,6 +94,37 @@ export function cellColor(g: number): string {
   return `hsl(${hue}, 55%, ${91 - Math.abs(g - 0.5) * 14}%)`;
 }
 
+export const PALETTE = ['#9A3B2E', '#1F5673', '#0F6E56', '#B0522A', '#7d3b56', '#5d6a37', '#4b3b7d', '#2f6f6a'];
+export const MAX_RADAR_PLAYERS = 8;
+const CLUSTER_MAX = 8; // features per radar
+
+/** Available features packed into category-coherent clusters of <= CLUSTER_MAX. */
+export function clusters(p: Profile): { ids: string[]; title: string }[] {
+  const out: string[][] = [];
+  let cur: string[] = [];
+  for (const g of featuresByCategory(p)) {
+    if (cur.length && cur.length + g.ids.length > CLUSTER_MAX) {
+      out.push(cur);
+      cur = [];
+    }
+    cur.push(...g.ids);
+  }
+  if (cur.length) out.push(cur);
+  if (out.length >= 2 && out[out.length - 1].length < 3) {
+    const last = out.pop()!;
+    out[out.length - 1].push(...last);
+  }
+  const title = (ids: string[]) => {
+    const cats: string[] = [];
+    for (const id of ids) {
+      const c = p.meta[id]?.category ?? '';
+      if (!cats.includes(c)) cats.push(c);
+    }
+    return cats.map((c) => CATEGORY_LABEL[c] ?? c).join(' · ');
+  };
+  return out.map((ids) => ({ ids, title: title(ids) }));
+}
+
 /** Features grouped by category, in CAT_ORDER. */
 export function featuresByCategory(p: Profile): { cat: string; label: string; ids: string[] }[] {
   const groups = new Map<string, string[]>();

@@ -6,6 +6,29 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-01 — `web-next/` full parity with the vanilla app (Game view + Profiles charts)
+
+- **What:** Ported every remaining piece of `web/` into the React/TS spike.
+  - **Engine reuse:** copied `engine.js / parser.js / highlights.js / catalog.js / analysis.js /
+    pieces.js / api.js` verbatim into `src/engine/` (typed via `allowJs`); pinned **chess.js
+    0.10.3** (the parser's API) so offline feature math can't drift from the canonical engine.
+    Typed wrapper `engine/game.ts` exposes `analyzeQuick`/`analyzeBackend`.
+  - **Game view** (`GameView` + `components/game/*`): board (cburnett SVG, move + feature
+    highlights), ←/→ stepper + counter, category-grouped feature table (per-side values, coloured
+    deltas, favour tally), explanation panel ("why it changed"), both-sides trend chart, running
+    aggregates + plain reading, round/game picker, custom-PGN paste, **Backend toggle** with
+    auto-fallback to offline. Fixes the "table didn't sort / no charts" gaps.
+  - **Profiles charts:** added the **player radar** (clustered ≤8 feats/≤8 players), **phase &
+    colour** card (trajectory / fingerprint heatmap / White-vs-Black radars), and the **feature
+    scatter** — completing parity with the redesigned matrix/Winning-DNA/focus layout.
+  - **App shell:** Game/Profiles tabs, shared tournament selector, deep-link hash routing
+    (`#profiles/<slug>`, `#<id>@<ply>`). Central Chart.js registration (`lib/chartSetup`).
+    `sync-data` now also mirrors `../web/data/t/*` (PGNs). Build + Vitest green.
+- **Why:** The first spike only had the Profiles matrix; the user asked to carry over the finer
+  touches (sortable table, radar plots, the game stepper, …) so `web-next` is a true side-by-side
+  replacement for the `:8000` app to evaluate the migration. Reusing the engine modules keeps the
+  parity wall intact — React only owns the view shell.
+
 ## 2026-05-30 — `web-next/` Profiles UX redesign (insight-first layout)
 
 - **What:** Reworked the spike from stacked full-width sections into a two-column

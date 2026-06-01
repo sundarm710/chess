@@ -22,20 +22,25 @@ untouched and remains the source of truth.**
 | Data types | `(p.meta[id]||{})` guards | compile-checked `types.ts` |
 | View-logic tests | — | `profile.test.ts` (Vitest) |
 
-### Layout (redesigned, not a 1:1 port)
+### Full parity with `../web`, two views
 
-A two-column "instrument" rather than stacked full-width sections — space in proportion to value:
+**Game / Profiles** tabs + deep links (`#profiles/<slug>`, `#<id>@<ply>`). The pure engine
+(`src/engine/*.js` — feature engine, PGN parser, highlights, catalog, analysis) is **reused
+verbatim** from `../web`; only chess.js is pinned to `0.10.3` (the parser depends on its API).
+So the offline feature math can't drift from the canonical engine.
 
-- **Takeaway** — one auto-generated sentence ("winners showed more X; Y tracked losses").
-- **Matrix (hero, left)** — players × features heatmap with **category group headers**,
-  sortable, sticky header + player column; click a column to focus it.
-- **Insight rail (right):**
-  - **Winning DNA** — features that track winning/losing as compact diverging bars
-    (replaces the old full-height 30-bar chart; the full chart sits behind "Show all features").
-  - **Focus panel** — the clicked feature's plain-language meaning + ranked players.
+**Game view** — board (cburnett SVG, move + feature-evidence highlights), ←/→ stepper, the
+category-grouped feature table (per-side values, coloured deltas, favour tally), the
+explanation panel ("why it changed"), the both-sides trend chart, running aggregates
+(exposures / avg space / worst-deficit + plain reading), the round/game picker, custom-PGN
+paste, and the **Backend toggle** (analyze via `chesslab.api`, auto-fallback to offline).
 
-Not yet ported: radar clusters, scatter, the Phase&colour trajectory/fingerprint card, and the
-game stepper/board — they'd follow the same component pattern.
+**Profiles view** (redesigned, insight-first — not a 1:1 port):
+- **Takeaway** sentence + **Matrix hero** (category group headers, sortable, sticky, focus).
+- **Insight rail:** **Winning DNA** (top ↑/↓ result-correlations as diverging bars, full chart
+  behind a toggle) + **Focus panel** (clicked feature's meaning + ranked players).
+- **Player radar** (clustered), **Phase & colour** card (trajectory / fingerprint / White-vs-
+  Black), and the **feature scatter**.
 
 ## Run
 

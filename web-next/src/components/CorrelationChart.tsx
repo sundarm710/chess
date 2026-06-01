@@ -1,18 +1,10 @@
 import { useMemo } from 'react';
-import {
-  BarController,
-  BarElement,
-  CategoryScale,
-  Chart as ChartJS,
-  LinearScale,
-  Tooltip,
-} from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import type { Profile } from '../types';
 import { type SliceSel, PHASE_LABEL, availableFeatures } from '../lib/profile';
 
+// Chart.js pieces are registered centrally in lib/chartSetup.
 // react-chartjs-2 manages the canvas lifecycle — no manual destroy()/recreate.
-ChartJS.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip);
 
 export function CorrelationChart({ p, phase }: { p: Profile; phase: SliceSel['phase'] }) {
   const rows = useMemo(() => {

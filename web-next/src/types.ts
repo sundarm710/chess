@@ -76,3 +76,22 @@ export interface LibraryEntry {
   section: string;
   label: string;
 }
+
+export interface GameRecord {
+  id: string;
+  round: number;
+  board?: number;
+  white: string;
+  black: string;
+  welo?: string | number;
+  belo?: string | number;
+  result: string;
+  eco?: string;
+  opening?: string;
+  label: string;
+  pgn: string;
+}
+
+export interface TournamentDoc {
+  games: GameRecord[];
+}

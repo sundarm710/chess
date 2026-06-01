@@ -1,87 +1,90 @@
 import { useState } from 'react';
-import type { LibraryEntry, Profile } from './types';
-import { type SliceSel, takeaway } from './lib/profile';
+import type { LibraryEntry } from './types';
 import { useJson } from './hooks/useFetch';
-import { FilterBar } from './components/FilterBar';
-import { Matrix } from './components/Matrix';
-import { WinningDNA } from './components/WinningDNA';
-import { FocusPanel } from './components/FocusPanel';
+import { ProfilesView } from './views/ProfilesView';
+import { GameView } from './views/GameView';
 
 interface Library {
   tournaments: LibraryEntry[];
 }
+type View = 'game' | 'profiles';
+
+function parseHash(): { view: View; slug: string; gameId?: string; ply?: number } | null {
+  const h = window.location.hash || '';
+  let m = h.match(/^#profiles\/([\w-]+)$/);
+  if (m) return { view: 'profiles', slug: m[1] };
+  m = h.match(/^#([\w-]+__r\d+b\d+)(?:@(\d+))?$/);
+  if (m) return { view: 'game', slug: m[1].split('__')[0], gameId: m[1], ply: Number(m[2] || 0) };
+  return null;
+}
 
 export default function App() {
   const lib = useJson<Library>('./data/library.json');
-  const [slug, setSlug] = useState('candidates-2026-open');
-  const prof = useJson<Profile>(`./data/profiles/${slug}.json`);
-  const [sel, setSel] = useState<SliceSel>({ phase: 'all', color: 'all' });
-  const [focused, setFocused] = useState<string | null>('SPC.space');
+  const initial = parseHash();
+  const [view, setView] = useState<View>(initial?.view ?? 'game');
+  const [slug, setSlug] = useState(initial?.slug ?? 'candidates-2026-open');
+  const [deepGame] = useState(initial?.gameId);
+  const [deepPly] = useState(initial?.ply ?? 0);
 
   const tournaments = lib.data?.tournaments ?? [];
-  const p = prof.data;
-  const tk = p ? takeaway(p, sel.phase) : null;
+
+  const switchView = (v: View) => {
+    setView(v);
+    if (v === 'profiles') {
+      window.location.hash = `#profiles/${slug === 'custom' ? tournaments[0]?.slug ?? '' : slug}`;
+      if (slug === 'custom') setSlug(tournaments[0]?.slug ?? slug);
+    }
+  };
+
+  const tabBtn = (v: View) =>
+    `px-3 py-1 text-sm ${view === v ? 'bg-ink text-paper' : 'bg-paper2 text-ink2'}`;
 
   return (
     <div className="mx-auto max-w-[1320px] px-5 py-5">
       <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-baseline gap-2">
-          <h1 className="font-display text-xl font-medium tracking-tight text-ink">Positional Feature Stepper</h1>
-          <span className="rounded bg-ink px-1.5 py-0.5 text-[10px] font-semibold text-paper">web-next</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-baseline gap-2">
+            <h1 className="font-display text-xl font-medium tracking-tight text-ink">Positional Feature Stepper</h1>
+            <span className="rounded bg-ink px-1.5 py-0.5 text-[10px] font-semibold text-paper">web-next</span>
+          </div>
+          <div className="inline-flex overflow-hidden rounded-md border border-line">
+            <button type="button" className={tabBtn('game')} onClick={() => switchView('game')}>
+              Game
+            </button>
+            <button type="button" className={tabBtn('profiles')} onClick={() => switchView('profiles')}>
+              Profiles
+            </button>
+          </div>
         </div>
         <select
           className="rounded-md border border-line bg-white px-2 py-1 text-sm"
           value={slug}
-          onChange={(e) => setSlug(e.target.value)}
+          onChange={(e) => {
+            setSlug(e.target.value);
+            if (view === 'profiles') window.location.hash = `#profiles/${e.target.value}`;
+          }}
         >
           {tournaments.map((t) => (
             <option key={t.slug} value={t.slug}>
               {t.label}
             </option>
           ))}
+          {view === 'game' && <option value="custom">Custom PGN…</option>}
         </select>
       </header>
 
-      {prof.loading && <p className="text-ink2">Loading profile…</p>}
-      {prof.error && (
-        <p className="text-w">
-          Couldn’t load {slug}: {prof.error}
-        </p>
-      )}
-
-      {p && (
-        <>
-          <div className="mb-4 rounded-lg border border-line bg-white/60 p-3">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="font-display text-lg leading-tight">{p.label}</h2>
-                <p className="text-xs text-ink2">
-                  {Object.keys(p.players).length} players · click a feature column to focus it
-                </p>
-              </div>
-              <FilterBar sel={sel} onChange={setSel} emitCross={p.emit_cross} />
-            </div>
-            {tk && (
-              <p className="mt-2.5 border-l-2 border-good pl-3 text-sm leading-snug text-ink">
-                <span className="font-medium">Takeaway.</span> {tk}
-              </p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_330px]">
-            <div className="min-w-0">
-              <Matrix p={p} sel={sel} focused={focused} onFocus={setFocused} />
-              <p className="mt-1.5 text-[11px] text-ink2">
-                Each cell is a player’s mean for that feature; colour ranks them within the column
-                (green = better, red = worse), faint = below {p.n_min} games. Headers sort.
-              </p>
-            </div>
-            <aside className="flex min-w-0 flex-col gap-4">
-              <WinningDNA p={p} phase={sel.phase} />
-              <FocusPanel p={p} fid={focused} sel={sel} />
-            </aside>
-          </div>
-        </>
+      {view === 'profiles' ? (
+        <ProfilesView slug={slug === 'custom' ? tournaments[0]?.slug ?? '' : slug} />
+      ) : (
+        <GameView
+          key={slug}
+          slug={slug}
+          initialGameId={deepGame}
+          initialPly={deepPly}
+          onSelectGame={(id, ply) => {
+            window.location.hash = `#${id}@${ply}`;
+          }}
+        />
       )}
     </div>
   );

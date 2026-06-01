@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "sync-data": "mkdir -p public/data/profiles && cp ../web/data/library.json public/data/ && cp ../web/data/profiles/*.json public/data/profiles/",
+    "sync-data": "mkdir -p public/data/profiles public/data/t && cp ../web/data/library.json public/data/ && cp ../web/data/profiles/*.json public/data/profiles/ && cp ../web/data/t/*.json public/data/t/",
     "predev": "npm run sync-data",
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -16,6 +16,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.26",
     "chart.js": "^4.5.1",
+    "chess.js": "^0.10.3",
     "react": "^19.2.6",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.6",
