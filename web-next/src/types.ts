@@ -69,6 +69,11 @@ export interface ResultCorrelation {
   phases?: Partial<Record<Phase, { r: number; n: number }>>;
 }
 
+export interface FeatureCorrelation {
+  features: string[];
+  r: (number | null)[][];
+}
+
 export interface Profile {
   slug: string;
   label: string;
@@ -80,6 +85,7 @@ export interface Profile {
   players: Record<string, PlayerDoc>;
   leaderboards: Record<string, Leaderboard>;
   result_correlation: Record<string, ResultCorrelation>;
+  feature_correlation: FeatureCorrelation;
 }
 
 export interface LibraryEntry {

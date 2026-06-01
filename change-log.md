@@ -6,6 +6,29 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-01 — Insights drawer, feature-correlation matrix, ungate, layout rework
+
+- **What:**
+  - **Right-edge drawer** (`RightDrawer`): a chevron **handle** peeks at the edge — hover to
+    reveal, click to pin. **Winning DNA** moved into it, plus a new **feature-correlation
+    heatmap**.
+  - **Feature↔feature correlation** (`aggregate.FeatureCorrelationMatrix`, a small OOP value
+    object): pairwise Pearson over per-(player,game) observations → `feature_correlation`
+    `{features, r[][]}` in the profile. `CorrelationMatrix` renders a green(+1)→red(−1) grid.
+  - **Ungated:** the phase×colour `cross` and per-game `phase_vals` are now **always emitted**
+    (removed the field-size gate); `_rollup_doc` simplified. Grand-Swiss JSON ~4.9 MB
+    (~0.8 MB gz, lazy-loaded); Candidates ~430 KB.
+  - **Layout:** the per-feature player ranking (`FocusPanel`) moved up to the rail (Winning DNA
+    left it); the **per-game breakdown now sits in the matrix column** (matching its width);
+    the **player radar lost its 8-player cap** and its picker is a scrollable bordered box.
+    Chart `PALETTE` already warm/earthy.
+  - Tests: `FeatureCorrelationMatrix` unit (perfect/inverse/diagonal/min-n); profiles.test.mjs
+    asserts the matrix is square/symmetric/diagonal-1/in-range and cross+phase_vals always on.
+- **Why:** Winning DNA is reference material, not a constant-on panel — a drawer reclaims the
+  width for the matrix while keeping it a hover away; the correlation heatmap answers "which
+  features say the same thing" (redundancy / style structure); and removing the gate honours
+  "always keep phase-wise on" so the drill-down tracks the filter for every tournament.
+
 ## 2026-06-01 — Phase filter now drives the per-game breakdown
 
 - **What:** The Opening/Middlegame/Endgame filter previously moved the matrix, takeaway,

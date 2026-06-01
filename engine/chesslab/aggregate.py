@@ -131,10 +131,7 @@ def summarize(analysis: Dict[str, Any], *, slug: str, game: Dict[str, Any]) -> G
 
 
 # --- Layer B: per-game scalars → player rollups → tournament profile ----------
-# Cross-eligibility (store the full phase×colour cross only for small, dense fields):
-CROSS_MAX_PLAYERS = 16
-CROSS_MIN_GAMES = 8
-# Minimum observations for a feature↔result correlation to be reported.
+# Minimum observations for a correlation (feature↔result, feature↔feature) to be reported.
 CORR_MIN_N = 10
 
 
@@ -186,7 +183,51 @@ def _pearson(pairs: List[Tuple[float, float]]) -> Optional[float]:
     return round(cov / (sx * sy), 3)
 
 
-def _rollup_doc(d: Dict[str, Any], emit_cross: bool) -> Dict[str, Any]:
+def _pairwise_pearson(xs: List[Optional[float]], ys: List[Optional[float]], min_n: int) -> Optional[float]:
+    """Pearson r over the observations where both values are present, or None."""
+    pairs = [(x, y) for x, y in zip(xs, ys) if x is not None and y is not None]
+    n = len(pairs)
+    if n < min_n:
+        return None
+    xv = [p[0] for p in pairs]
+    yv = [p[1] for p in pairs]
+    sx, sy = statistics.pstdev(xv), statistics.pstdev(yv)
+    if sx == 0 or sy == 0:
+        return None
+    mx, my = statistics.fmean(xv), statistics.fmean(yv)
+    cov = sum((a - mx) * (b - my) for a, b in pairs) / n
+    return round(cov / (sx * sy), 3)
+
+
+@dataclass(frozen=True)
+class FeatureCorrelationMatrix:
+    """Pairwise Pearson correlation between features, computed over per-(player, game)
+    observations. A symmetric matrix with 1.0 on the diagonal and ``None`` where a pair
+    has too few shared observations (or no variance)."""
+
+    features: Tuple[str, ...]
+    matrix: Tuple[Tuple[Optional[float], ...], ...]
+
+    @classmethod
+    def from_observations(
+        cls, observations: List[Dict[str, float]], features: List[str], *, min_n: int = CORR_MIN_N
+    ) -> "FeatureCorrelationMatrix":
+        cols: Dict[str, List[Optional[float]]] = {f: [o.get(f) for o in observations] for f in features}
+        n = len(features)
+        mat: List[List[Optional[float]]] = [[None] * n for _ in range(n)]
+        for i in range(n):
+            mat[i][i] = 1.0
+            for j in range(i + 1, n):
+                r = _pairwise_pearson(cols[features[i]], cols[features[j]], min_n)
+                mat[i][j] = r
+                mat[j][i] = r
+        return cls(tuple(features), tuple(tuple(row) for row in mat))
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {"features": list(self.features), "r": [list(row) for row in self.matrix]}
+
+
+def _rollup_doc(d: Dict[str, Any]) -> Dict[str, Any]:
     """Serialize one player-feature accumulator to the SPA rollup dict."""
     xs = d["all"]
     n = len(xs)
@@ -208,11 +249,10 @@ def _rollup_doc(d: Dict[str, Any], emit_cross: bool) -> Dict[str, Any]:
     phases = {ph: _slice(d[ph]) for ph in PHASES if d[ph]}
     if phases:
         doc["phases"] = phases
-    if emit_cross:
-        cross = {f"{ph}:{s}": _slice(d[f"{ph}:{s}"])
-                 for ph in PHASES for s in ("w", "b") if d[f"{ph}:{s}"]}
-        if cross:
-            doc["cross"] = cross
+    cross = {f"{ph}:{s}": _slice(d[f"{ph}:{s}"])
+             for ph in PHASES for s in ("w", "b") if d[f"{ph}:{s}"]}
+    if cross:
+        doc["cross"] = cross
     return doc
 
 
@@ -232,6 +272,8 @@ def tournament_profile(
     players: Dict[str, _Acc] = {}
     # Tournament-level feature↔result observations: fid -> slice -> [(value, score)].
     corr: Dict[str, Dict[str, List[Tuple[float, float]]]] = {}
+    # One observation per (player, game): {feature -> whole-game value}, for feature↔feature.
+    observations: List[Dict[str, float]] = []
 
     for g in summaries:
         ws, bs = SCORE.get(g.result, (0.0, 0.0))
@@ -275,26 +317,19 @@ def tournament_profile(
                 "result": g.result, "score": score, "vals": gvals,
                 "phase_vals": {ph: gphases[ph] for ph in PHASES if gphases[ph]},
             })
+            observations.append(dict(gvals))
 
-    # Store the full phase×colour cross only for small, dense fields (else marginals only).
-    games_per_player = [a.games for a in players.values()]
-    median_gpp = statistics.median(games_per_player) if games_per_player else 0
-    emit_cross = len(players) <= CROSS_MAX_PLAYERS and median_gpp >= CROSS_MIN_GAMES
-
-    # Per-player profile dicts.
+    # Per-player profile dicts (cross + per-game phase breakdown always emitted).
     player_docs: Dict[str, Any] = {}
     for name, acc in players.items():
         rows = sorted(acc.games_rows, key=lambda r: (r["round"], r["id"]))
-        if not emit_cross:  # drop the per-game phase breakdown on big fields (size)
-            for r in rows:
-                r.pop("phase_vals", None)
         player_docs[name] = {
             "games": acc.games, "score": acc.score,
             "wins": acc.wins, "draws": acc.draws, "losses": acc.losses,
             "performance_elo": _performance_elo(acc),
             "avg_opp_elo": round(statistics.fmean(acc.opp_elos), 1) if acc.opp_elos else None,
             "eco_distribution": dict(acc.eco),
-            "rollups": {fid: _rollup_doc(d, emit_cross) for fid, d in acc.feats.items()},
+            "rollups": {fid: _rollup_doc(d) for fid, d in acc.feats.items()},
             "game_rows": rows,
         }
 
@@ -311,6 +346,10 @@ def tournament_profile(
             entry["phases"] = phases
         result_correlation[fid] = entry
 
+    # Feature↔feature correlation matrix (manifest order, present features only).
+    corr_features = [fid for fid in manifest if any(fid in o for o in observations)]
+    feature_correlation = FeatureCorrelationMatrix.from_observations(observations, corr_features).to_dict()
+
     leaderboards = _leaderboards(player_docs, manifest, n_min)
     meta = {
         fid: {"name": m.get("name", fid), "category": m.get("category", ""),
@@ -320,9 +359,9 @@ def tournament_profile(
     }
     return {
         "slug": slug, "label": label, "has_clock": has_clock, "has_eval": has_eval,
-        "feature_set_version": feature_set_version, "n_min": n_min, "emit_cross": emit_cross,
+        "feature_set_version": feature_set_version, "n_min": n_min, "emit_cross": True,
         "meta": meta, "players": player_docs, "leaderboards": leaderboards,
-        "result_correlation": result_correlation,
+        "result_correlation": result_correlation, "feature_correlation": feature_correlation,
     }
 
 

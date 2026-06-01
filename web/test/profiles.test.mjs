@@ -73,13 +73,22 @@ for (const p of Object.values(cand.players)) {
 }
 check(sawPhases, 'at least one populated phase slice seen');
 
-// Cross is field-size gated: present for the dense Candidates, absent for the big Swiss.
-check(cand.emit_cross === true, 'candidates emit_cross true');
-check(gsw.emit_cross === false, 'grand-swiss emit_cross false');
+// Cross + per-game phase breakdown are always emitted now (gate removed).
+check(cand.emit_cross === true && gsw.emit_cross === true, 'emit_cross true everywhere');
 const withCross = Object.values(cand.players).find((p) => p.rollups['SPC.space']?.cross);
 check(!!withCross, 'candidates has a cross slice');
-for (const p of Object.values(gsw.players)) {
-  check(!('cross' in (p.rollups['SPC.space'] || {})), 'grand-swiss has no cross');
+const withPhaseRows = Object.values(cand.players).find((p) => p.game_rows.some((r) => r.phase_vals));
+check(!!withPhaseRows, 'candidates game_rows carry phase_vals');
+
+// Feature↔feature correlation matrix: square, symmetric, diagonal 1, entries in [-1,1] or null.
+for (const prof of [cand, gsw]) {
+  const fc = prof.feature_correlation;
+  check(fc && Array.isArray(fc.features) && fc.features.length > 0, `${prof.slug} feature_correlation present`);
+  const k = fc.features.length;
+  check(fc.r.length === k && fc.r.every((row) => row.length === k), `${prof.slug} matrix is square`);
+  check(fc.r.every((row, i) => row[i] === 1.0), `${prof.slug} diagonal = 1`);
+  check(fc.r.every((row, i) => row.every((v, j) => v === fc.r[j][i])), `${prof.slug} symmetric`);
+  check(fc.r.every((row) => row.every((v) => v === null || (v >= -1 && v <= 1))), `${prof.slug} entries in [-1,1]`);
 }
 
 // Result correlation: present, bounded in [-1,1], with valid (optional) per-phase entries.

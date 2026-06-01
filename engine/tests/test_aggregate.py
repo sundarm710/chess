@@ -5,6 +5,7 @@ import pytest
 from chesslab import build_default_registry
 from chesslab.aggregate import (
     FeatureCell,
+    FeatureCorrelationMatrix,
     GameSummary,
     REDUCERS,
     resolve_reducer,
@@ -108,6 +109,22 @@ class TestPhaseReductions:
         assert c.phase_values["opening"] == 5.0
         assert c.phase_values["middlegame"] == 7.0
         assert c.phase_values["endgame"] is None
+
+
+class TestFeatureCorrelationMatrix:
+    def test_perfect_and_inverse_and_diagonal(self):
+        obs = [{"x": float(i), "y": float(i), "z": float(-i)} for i in range(12)]
+        d = FeatureCorrelationMatrix.from_observations(obs, ["x", "y", "z"], min_n=5).to_dict()
+        assert d["features"] == ["x", "y", "z"]
+        assert d["r"][0][0] == 1.0                       # diagonal
+        assert d["r"][0][1] == pytest.approx(1.0)        # x,y identical
+        assert d["r"][0][2] == pytest.approx(-1.0)       # x,z inverse
+        assert d["r"][1][0] == d["r"][0][1]              # symmetric
+
+    def test_min_n_and_missing_yield_none(self):
+        obs = [{"x": 1.0, "y": 2.0}]
+        d = FeatureCorrelationMatrix.from_observations(obs, ["x", "y"], min_n=5).to_dict()
+        assert d["r"][0][1] is None
 
 
 def _cell(fid, side, value, status="ok", phase_values=None):
@@ -219,18 +236,14 @@ class TestPhaseAndColourRollups:
         op = [r["phase_vals"]["opening"]["SPC.space"] for r in doc["game_rows"]]
         assert sum(op) / len(op) == doc["rollups"]["SPC.space"]["phases"]["opening"]["mean"]
 
-    def test_phase_vals_dropped_on_sparse_field(self):
-        sums = [_summary("g1", "A", "B", "1-0", [_cell("SPC.space", "w", 10, phase_values={"opening": 8})]),
-                _summary("g2", "A", "B", "1-0", [_cell("SPC.space", "w", 10, phase_values={"opening": 8})])]
-        doc = self._profile(sums)["players"]["A"]
-        assert "phase_vals" not in doc["game_rows"][0]
-
-    def test_cross_omitted_for_sparse_field(self):
+    def test_phase_vals_and_cross_always_emitted(self):
+        # Even on a tiny field the per-game phase breakdown + cross are kept (gate removed).
         sums = [_summary("g1", "A", "B", "1-0", [_cell("SPC.space", "w", 10, phase_values={"opening": 8})]),
                 _summary("g2", "A", "B", "1-0", [_cell("SPC.space", "w", 10, phase_values={"opening": 8})])]
         prof = self._profile(sums)
-        assert prof["emit_cross"] is False
-        assert "cross" not in prof["players"]["A"]["rollups"]["SPC.space"]
+        assert prof["emit_cross"] is True
+        assert "phase_vals" in prof["players"]["A"]["game_rows"][0]
+        assert "cross" in prof["players"]["A"]["rollups"]["SPC.space"]
 
     def test_game_rows_reconcile_with_mean(self):
         sums = [

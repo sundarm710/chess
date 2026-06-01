@@ -10,6 +10,8 @@ import { PlayerGames } from '../components/PlayerGames';
 import { PlayerRadar } from '../components/PlayerRadar';
 import { FeatureScatter } from '../components/FeatureScatter';
 import { PhaseColourCard } from '../components/PhaseColourCard';
+import { RightDrawer } from '../components/RightDrawer';
+import { CorrelationMatrix } from '../components/CorrelationMatrix';
 
 export function ProfilesView({ slug, onOpenGame }: { slug: string; onOpenGame?: (id: string) => void }) {
   const { data: p, loading, error } = useJson<Profile>(`./data/profiles/${slug}.json`);
@@ -69,22 +71,27 @@ export function ProfilesView({ slug, onOpenGame }: { slug: string; onOpenGame?: 
             Each cell is a player’s mean for that feature; colour ranks them within the column (green = better, red =
             worse), faint = below {p.n_min} games. Headers sort; click a player name for their per-game breakdown.
           </p>
+          {drillPlayer && (
+            <div className="mt-3">
+              <PlayerGames p={p} player={drillPlayer} sel={sel} onClose={() => setDrillPlayer(null)} onOpenGame={onOpenGame} />
+            </div>
+          )}
         </div>
         <aside className="flex min-w-0 flex-col gap-4">
-          <WinningDNA p={p} phase={sel.phase} />
           <FocusPanel p={p} fid={focused} sel={sel} />
         </aside>
       </div>
-
-      {drillPlayer && (
-        <PlayerGames p={p} player={drillPlayer} sel={sel} onClose={() => setDrillPlayer(null)} onOpenGame={onOpenGame} />
-      )}
 
       <div className="mt-5 flex flex-col gap-5">
         <PlayerRadar p={p} sel={sel} selected={selected} onToggle={toggle} />
         <PhaseColourCard p={p} sel={sel} focused={focused} selected={selected} />
         <FeatureScatter p={p} sel={sel} />
       </div>
+
+      <RightDrawer label="Insights">
+        <WinningDNA p={p} phase={sel.phase} />
+        <CorrelationMatrix p={p} />
+      </RightDrawer>
     </>
   );
 }
