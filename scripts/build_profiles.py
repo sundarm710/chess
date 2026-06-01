@@ -46,9 +46,11 @@ def main() -> None:
                 continue
             summaries.append(summarize(analysis, slug=t["slug"], game=g))
 
+        # Eval is available if any game carried %eval (e.g. annotated by annotate_eval.py).
+        has_eval = any(s.has_eval for s in summaries)
         profile = tournament_profile(
             t["slug"], t["label"], summaries, manifest,
-            has_clock=t.get("has_clock", False), has_eval=False, feature_set_version=version,
+            has_clock=t.get("has_clock", False), has_eval=has_eval, feature_set_version=version,
         )
         (out_dir / f"{t['slug']}.json").write_text(json.dumps(profile, separators=(",", ":")))
         print(f"  {t['slug']}: {len(summaries)} games, {len(profile['players'])} players"

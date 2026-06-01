@@ -6,6 +6,27 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-01 — Form & Temperament layer + local Stockfish eval pass
+
+- **What:**
+  - **Form & Temperament view** (`web-next`, new Form tab `#form/<slug>`): per-player tournament
+    arc from existing data — a feature's form curve across rounds (result-coloured points + a
+    clickable result strip into the stepper), temperament conditioned by **entering streak**
+    (after a win/draw/loss/**2+ losses**) and **opponent strength** (vs stronger/weaker) as
+    diverging bars vs the player's mean (good/bad coloured by feature direction), and a
+    round-by-round table. Pure `lib/form.ts` + vitest. No backend/engine.
+  - **Local Stockfish eval pass** (`scripts/annotate_eval.py`): drives Stockfish 18 (depth-12,
+    free) over each game, writing `[%eval]` into move comments (keeping `%clk`), so
+    `EVAL.acpl` / `EVAL.consistency` compute. `build_profiles` now auto-detects eval. Annotated
+    both **Candidates** sections; profiles rebuilt → EVAL is a real, capability-gated feature
+    (Candidates on, Grand Swiss off). It flows everywhere incl. the Form selector, giving
+    **accuracy-by-round / accuracy-after-a-loss** (the rigorous tilt signal) — e.g. Esipenko's
+    centipawn loss spikes on his losses but is *lower* after a loss (bounce-back, not tilt).
+- **Why:** Reframes the project toward the real goal ([[end-goal-player-dynamics]]) — form,
+  temperament, and how players shift vs opponents / after results — most of it from data we
+  already had, with eval (free, local) adding the quality/tilt dimension. Grand Swiss eval is a
+  separate longer batch (run annotate_eval.py per slug).
+
 ## 2026-06-01 — Sustained material deficit/lead (filter trade blips)
 
 - **What:** `MAT.deficit` / `MAT.lead` now only count a material gap that **persists ≥4 plies
