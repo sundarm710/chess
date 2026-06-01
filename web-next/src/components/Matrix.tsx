@@ -90,8 +90,6 @@ export function Matrix({
         id: 'conv', header: 'Conv', accessorFn: (r) => r.fight.conversion ?? undefined, sortUndefined: 'last',
         cell: (c) => <span title={`from ${c.row.original.fight.nAhead} games ahead ≥3`}>{pct(c.row.original.fight.conversion)}</span>,
       },
-      { id: 'cmbk', header: 'CmBk', accessorFn: (r) => r.fight.comeback, cell: (c) => c.getValue<number>() || '–' },
-      { id: 'clps', header: 'Clps', accessorFn: (r) => r.fight.collapse, cell: (c) => c.getValue<number>() || '–' },
     ];
     const featCol = (fid: string): ColumnDef<Row> => ({
       id: fid,

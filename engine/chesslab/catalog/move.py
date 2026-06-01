@@ -98,15 +98,17 @@ def move_features() -> List[AssemblyFeature]:
         _f(
             id="MAT.deficit", name="Worst deficit", tier="T1", category="MAT",
             inputs="M/G", output_type="scalar", viz="trend", higher="bad", aggregation="max",
-            description="The most material the side was ever behind by — the fight/defence signal.",
-            computation="Running maximum of (opponent material − own material), floored at 0.",
+            description="The most material the side was *sustainably* behind by — the fight/defence signal.",
+            computation="Largest (opponent − own) material gap that held for ≥4 plies (so a "
+            "capture/recapture mid-trade doesn't count as a deficit), floored at 0.",
             saturation="—",
         ),
         _f(
             id="MAT.lead", name="Best lead", tier="T1", category="MAT",
             inputs="M/G", output_type="scalar", viz="trend", higher="good", aggregation="max",
-            description="The most material the side was ever ahead by — what they built up.",
-            computation="Running maximum of (own material − opponent material), floored at 0.",
+            description="The most material the side was *sustainably* ahead by — what they built up.",
+            computation="Largest (own − opponent) material gap that held for ≥4 plies (so a "
+            "pending recapture doesn't count as a lead), floored at 0.",
             saturation="—",
         ),
         _f(

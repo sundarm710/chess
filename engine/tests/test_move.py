@@ -95,14 +95,21 @@ class TestHeavyMoveFeatures:
         assert isinstance(_feat(last, "DEC.trade_discipline", "w")["value"], (int, float))
 
     def test_deficit_and_lead(self):
-        # Morphy sacrifices into a winning attack: White falls behind, Black builds a lead.
+        # Morphy sacrifices into a winning attack: White stays down material for many moves
+        # (a sustained, real deficit), Black builds a sustained lead.
         last = _run(MORPHY)["plies"][-1]
         assert _feat(last, "MAT.deficit", "w")["value"] >= 1   # White was down material
         assert _feat(last, "MAT.lead", "b")["value"] >= 1      # Black was up material
-        # deficit/lead are floored at 0 and never negative
-        assert _feat(last, "MAT.deficit", "b")["value"] >= 0
+        assert _feat(last, "MAT.deficit", "b")["value"] >= 0   # floored at 0
         # material on board only ever decreases from the start (78 = 2×39)
         assert _feat(_run(MORPHY)["plies"][0], "MAT.on_board", "shared")["value"] == 78
+
+    def test_even_trade_is_not_a_deficit_or_lead(self):
+        # exd5 then Qxd5 is a dead-even pawn trade — the one-ply mid-trade blip must not
+        # register as a lead/deficit now that a gap has to persist ~2 moves.
+        last = _run("1. e4 d5 2. exd5 Qxd5 3. Nc3 Qd8 4. Nf3 Nf6 *")["plies"][-1]
+        assert _feat(last, "MAT.lead", "w")["value"] == 0
+        assert _feat(last, "MAT.deficit", "b")["value"] == 0
 
     def test_time_trouble_counts_under_a_minute(self):
         # A clock that dips under 60s should register a time-trouble move.

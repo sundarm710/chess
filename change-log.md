@@ -6,6 +6,21 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-01 — Sustained material deficit/lead (filter trade blips)
+
+- **What:** `MAT.deficit` / `MAT.lead` now only count a material gap that **persists ≥4 plies
+  (~2 moves)**, via a rolling window in `MoveAssembler` (worst deficit = largest gap whose
+  window-minimum stays in the red). A capture–recapture or pending recapture no longer
+  registers as a deficit/lead. Resilience/Conversion recompute on the sustained values;
+  the **Comeback/Collapse columns are dropped** (weak signal). Descriptions updated, profiles
+  rebuilt, even-trade test added.
+- **Why:** The per-ply max sampled mid-trade intermediates, so an ongoing/just-resolved trade
+  handed out false "was behind/ahead" credit. The effect was large — e.g. Caruana's mean worst
+  deficit fell 4.36 → 0.86 once blips are filtered, i.e. the old number was ~5× trade noise.
+  Honest consequence: sustained ≥3 material deficits are rare at elite level, so Resil/Conv are
+  sparse for the Candidates (meaningful mainly on amateur/Swiss data) — correct, not a bug.
+  The remaining gap (sound sacrifice vs real deficit / compensation) needs the SEE+eval tier.
+
 ## 2026-06-01 — Fight & defence features + Game-view backend on by default
 
 - **What:**

@@ -397,8 +397,10 @@
   tier: T1
   scope: game
   category: MAT
-  description: The most material the side was ever behind by — the fight/defence signal.
-  computation: Running maximum of (opponent material − own material), floored at 0.
+  description: The most material the side was *sustainably* behind by — the fight/defence
+    signal.
+  computation: Largest (opponent − own) material gap that held for ≥4 plies (so a
+    capture/recapture mid-trade doesn't count as a deficit), floored at 0.
   inputs: M/G
   engine: none
   requires: []
@@ -440,8 +442,10 @@
   tier: T1
   scope: game
   category: MAT
-  description: The most material the side was ever ahead by — what they built up.
-  computation: Running maximum of (own material − opponent material), floored at 0.
+  description: The most material the side was *sustainably* ahead by — what they built
+    up.
+  computation: Largest (own − opponent) material gap that held for ≥4 plies (so a
+    pending recapture doesn't count as a lead), floored at 0.
   inputs: M/G
   engine: none
   requires: []

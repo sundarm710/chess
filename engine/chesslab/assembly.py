@@ -27,6 +27,8 @@ _MINOR_HOME = {
 }
 _QUEEN_HOME = {"w": (3, 0), "b": (3, 7)}
 _TIME_TROUBLE_SECS = 60  # a move made with under a minute left counts as time trouble
+_DEFICIT_PERSIST = 4     # a material gap must hold this many plies (~2 moves) to count
+                         # — filters out capture/recapture trade blips
 
 
 def _uci_from(uci: str) -> tuple[int, int]:
@@ -48,9 +50,10 @@ class MoveAssembler:
         self.exposure: Dict[str, int] = {"w": 0, "b": 0}
         self.move_time: Dict[str, Optional[float]] = {"w": None, "b": None}
         self.clock: Dict[str, Optional[float]] = {"w": None, "b": None}
-        self.worst_deficit: Dict[str, int] = {"w": 0, "b": 0}  # most ever behind
-        self.best_lead: Dict[str, int] = {"w": 0, "b": 0}        # most ever ahead
+        self.worst_deficit: Dict[str, int] = {"w": 0, "b": 0}  # most ever behind (sustained)
+        self.best_lead: Dict[str, int] = {"w": 0, "b": 0}        # most ever ahead (sustained)
         self.time_trouble: Dict[str, int] = {"w": 0, "b": 0}     # moves made under a minute
+        self._gap_window: Dict[str, List[int]] = {"w": [], "b": []}  # recent own−opp material gaps
         self.eval_losses: Dict[str, List[float]] = {"w": [], "b": []}
         self._prev_pf: Optional[PositionFeatures] = None
         self._prev_board: Optional[Board] = None
@@ -164,12 +167,18 @@ class MoveAssembler:
             status = ResultStatus.OK if available else ResultStatus.UNAVAILABLE
             out.append(FeatureResult(fid, side, value if available else None, status=status))
 
-        # Material trajectory extremes (updated every ply, for both sides).
+        # Material trajectory extremes — only a gap that holds for _DEFICIT_PERSIST plies
+        # counts, so capture/recapture trade blips don't register as a deficit or lead.
         for side in ("w", "b"):
             other = "b" if side == "w" else "w"
-            diff = getattr(pf, side).mat - getattr(pf, other).mat
-            self.worst_deficit[side] = max(self.worst_deficit[side], -diff)
-            self.best_lead[side] = max(self.best_lead[side], diff)
+            diff = getattr(pf, side).mat - getattr(pf, other).mat  # own − opp (>0 = ahead)
+            win = self._gap_window[side]
+            win.append(diff)
+            if len(win) > _DEFICIT_PERSIST:
+                del win[0]
+            if len(win) == _DEFICIT_PERSIST:
+                self.best_lead[side] = max(self.best_lead[side], max(0, min(win)))       # ahead throughout
+                self.worst_deficit[side] = max(self.worst_deficit[side], max(0, -max(win)))  # behind throughout
 
         # Shared, always available.
         add("TAC.density", "shared", float(pos.legal_captures + pos.legal_checks + pf.tension))
