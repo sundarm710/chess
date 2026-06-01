@@ -80,7 +80,7 @@ export function Matrix({
       id: fid,
       header: p.meta[fid]?.name ?? fid,
       accessorFn: (r) => (isOk(r.vals[fid]) ? r.vals[fid].mean : undefined),
-      sortUndefined: 'last',
+      enableSorting: false, // clicking a feature focuses it on the right; never re-sorts the field
       cell: (c) => {
         const s = c.row.original.vals[fid];
         const low = !isOk(s) || s.n < nMin;
@@ -145,8 +145,8 @@ export function Matrix({
                     key={h.id}
                     colSpan={h.colSpan}
                     onClick={() => {
-                      col.toggleSorting();
-                      if (isFeat) onFocus(col.id);
+                      if (isFeat) onFocus(col.id); // focus only — keep the field sorted by points
+                      else col.toggleSorting();
                     }}
                     title={p.meta[col.id]?.description ?? ''}
                     className={[
