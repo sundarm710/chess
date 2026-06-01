@@ -6,6 +6,16 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-01 — Grand Swiss eval annotated (full coverage)
+
+- **What:** Ran `annotate_eval.py` over all 638 Grand Swiss games (~80 min local Stockfish);
+  `EVAL.acpl`/`EVAL.consistency` now available there too (it's a clockless event, so only
+  `%eval` was added, no `%clk`). Rebuilt profiles; `profiles.test` updated (EVAL available for
+  both fields). Grand-Swiss profile JSON is now ~5.5 MB (eval + cross + per-game phase data for
+  116 players; ~1 MB gzipped, lazy-loaded per tournament).
+- **Why:** Completes eval coverage so accuracy/tilt analysis works across the full corpus, not
+  just the Candidates.
+
 ## 2026-06-01 — Form & Temperament layer + local Stockfish eval pass
 
 - **What:**

@@ -51,10 +51,10 @@ for (const board of Object.values(cand.leaderboards)) {
 // Capability gating: clocks present for Candidates, absent for Grand Swiss.
 check(cand.leaderboards['TIM.clock'].available === true, 'candidates TIM.clock available');
 check(gsw.leaderboards['TIM.clock'].available === false, 'grand-swiss TIM.clock unavailable');
-// EVAL: present for the Candidates (annotated by annotate_eval.py), absent for Grand Swiss.
+// EVAL: present for both (annotated by annotate_eval.py); gating is per-feature data.
 check(cand.leaderboards['EVAL.acpl'].available === true, 'candidates EVAL.acpl available (annotated)');
-check(gsw.leaderboards['EVAL.acpl'].available === false, 'grand-swiss EVAL.acpl unavailable (not annotated)');
-check(cand.has_eval === true && gsw.has_eval === false, 'has_eval flag set per annotation');
+check(gsw.leaderboards['EVAL.acpl'].available === true, 'grand-swiss EVAL.acpl available (annotated)');
+check(cand.has_eval === true && gsw.has_eval === true, 'has_eval flag set per annotation');
 
 // --- Phase & colour slices ---------------------------------------------------
 const PHASES = ['opening', 'middlegame', 'endgame'];
