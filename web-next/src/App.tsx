@@ -3,16 +3,17 @@ import type { LibraryEntry } from './types';
 import { useJson } from './hooks/useFetch';
 import { ProfilesView } from './views/ProfilesView';
 import { GameView } from './views/GameView';
+import { FormView } from './views/FormView';
 
 interface Library {
   tournaments: LibraryEntry[];
 }
-type View = 'game' | 'profiles';
+type View = 'game' | 'profiles' | 'form';
 
 function parseHash(): { view: View; slug: string; gameId?: string; ply?: number } | null {
   const h = window.location.hash || '';
-  let m = h.match(/^#profiles\/([\w-]+)$/);
-  if (m) return { view: 'profiles', slug: m[1] };
+  let m = h.match(/^#(profiles|form)\/([\w-]+)$/);
+  if (m) return { view: m[1] as View, slug: m[2] };
   m = h.match(/^#([\w-]+__r\d+b\d+)(?:@(\d+))?$/);
   if (m) return { view: 'game', slug: m[1].split('__')[0], gameId: m[1], ply: Number(m[2] || 0) };
   return null;
@@ -39,8 +40,9 @@ export default function App() {
 
   const switchView = (v: View) => {
     setView(v);
-    if (v === 'profiles') {
-      window.location.hash = `#profiles/${slug === 'custom' ? tournaments[0]?.slug ?? '' : slug}`;
+    if (v === 'profiles' || v === 'form') {
+      const s = slug === 'custom' ? tournaments[0]?.slug ?? '' : slug;
+      window.location.hash = `#${v}/${s}`;
       if (slug === 'custom') setSlug(tournaments[0]?.slug ?? slug);
     }
   };
@@ -63,6 +65,9 @@ export default function App() {
             <button type="button" className={tabBtn('profiles')} onClick={() => switchView('profiles')}>
               Profiles
             </button>
+            <button type="button" className={tabBtn('form')} onClick={() => switchView('form')}>
+              Form
+            </button>
           </div>
         </div>
         <select
@@ -84,6 +89,8 @@ export default function App() {
 
       {view === 'profiles' ? (
         <ProfilesView slug={slug === 'custom' ? tournaments[0]?.slug ?? '' : slug} onOpenGame={openGame} />
+      ) : view === 'form' ? (
+        <FormView slug={slug === 'custom' ? tournaments[0]?.slug ?? '' : slug} onOpenGame={openGame} />
       ) : (
         <GameView
           key={`${slug}:${deepGame ?? ''}`}
