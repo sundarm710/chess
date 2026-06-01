@@ -69,6 +69,16 @@ class TestHeavyMoveFeatures:
         last = _run(SCHOLAR)["plies"][-1]
         assert _feat(last, "DEV.tempo_waste", "w")["value"] >= 1
 
+    def test_tempo_waste_only_counts_in_the_opening(self):
+        # A knight shuffle: each Ng1 re-moves a developed minor. The gate must stop
+        # counting once we're past the opening, so extending the shuffle adds nothing.
+        base = (" ".join(f"{m}. Nf3 Nf6 {m + 1}. Ng1 Ng8" for m in range(1, 13, 2)))
+        short = _feat(_run(base + " *")["plies"][-1], "DEV.tempo_waste", "w")["value"]
+        extra = " ".join(f"{m}. Nf3 Nf6 {m + 1}. Ng1 Ng8" for m in range(13, 19, 2))
+        long = _feat(_run(base + " " + extra + " *")["plies"][-1], "DEV.tempo_waste", "w")["value"]
+        assert short > 0
+        assert long == short  # middlegame minor shuffles no longer inflate the count
+
     def test_exposure_in_a_sacrificial_game(self):
         # Morphy sacrifices material repeatedly -> White records exposure events.
         last = _run(MORPHY)["plies"][-1]

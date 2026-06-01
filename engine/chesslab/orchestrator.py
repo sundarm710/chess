@@ -50,34 +50,8 @@ def _merge_evidence(evidence: Tuple[Evidence, ...]) -> Dict[str, Any]:
 # Castling status: once a side has castled it stays castled even if the king later moves.
 STICKY_MAX = {"KSF.castle"}
 
-
-# --- Game-phase classification (material + move hybrid) ----------------------
-# Tapered material weight (both colours summed): minors=1, rooks=2, queens=4.
-# Start position = 4 minors + 4 rooks + 2 queens = 4 + 8 + 8 = 24.
-_PHASE_WEIGHT = {"n": 1, "b": 1, "r": 2, "q": 4}
-OPENING_MAX_MOVE = 12   # opening only within the first 12 moves (ply <= 24)...
-OPENING_MIN_PHASE = 20  # ...and only while most material is still on the board
-ENDGAME_MAX_PHASE = 8   # endgame once heavy material is largely gone (queens off-ish)
-
-
-def _phase_value(board: Board) -> int:
-    """Tapered material units left on the board (0..24)."""
-    return sum(_PHASE_WEIGHT.get(p.type, 0) for _, _, p in board.pieces())
-
-
-def classify_phase(board: Board, ply: int) -> str:
-    """Classify a position as ``"opening" | "middlegame" | "endgame"``.
-
-    Hybrid of a move-number opening gate and a tapered-material endgame threshold
-    (CLAUDE.md §17). Opening takes precedence, then endgame, else middlegame.
-    """
-    move_number = (ply + 1) // 2  # ply 0 (start) -> move 0
-    pv = _phase_value(board)
-    if move_number <= OPENING_MAX_MOVE and pv >= OPENING_MIN_PHASE:
-        return "opening"
-    if pv <= ENDGAME_MAX_PHASE:
-        return "endgame"
-    return "middlegame"
+# Re-exported so callers can keep importing it from the orchestrator (CLAUDE.md §17).
+from .phase import classify_phase  # noqa: E402,F401
 
 
 def _serialize(result: FeatureResult) -> Dict[str, Any]:

@@ -17,6 +17,7 @@ import statistics
 from typing import Dict, List, Optional
 
 from .features import Board, FeatureEngine, Piece, PositionFeatures, opposite
+from .phase import is_opening
 from .pipeline import ParsedGame, ParsedMove
 from .registry import FeatureResult, ResultStatus
 
@@ -83,7 +84,9 @@ class MoveAssembler:
             self.exposure[s] += 1
 
         if prev_board is not None and prev_pf is not None:
-            if self._is_tempo_waste(mv, s, prev_board, prev_pf):
+            # Tempo waste is an opening concept — only count while still in the opening
+            # (re-moving a developed minor in a middlegame/endgame is normal play).
+            if is_opening(prev_board, i - 1) and self._is_tempo_waste(mv, s, prev_board, prev_pf):
                 self.tempo_waste[s] += 1
             if self._pawn_tension(prev_board, s) and not self._resolves_pawn_tension(mv, prev_board):
                 self.tension_hold[s] += 1

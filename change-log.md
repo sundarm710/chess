@@ -6,6 +6,20 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-01 — `DEV.tempo_waste` only counts in the opening
+
+- **What:** Tempo waste was counting "re-moving a developed minor / early queen" on *every*
+  ply, so a knight repositioning in the middlegame or endgame inflated it — nonsensical, since
+  tempo loss is an opening concept. Now the increment is **gated to the opening phase**.
+  - Extracted `classify_phase`/`is_opening` into a new neutral `chesslab/phase.py` (the
+    assembler can't import the orchestrator — circular); `orchestrator` re-exports
+    `classify_phase` for back-compat.
+  - `MoveAssembler` increments `tempo_waste` only when the position before the move
+    `is_opening(...)`. Updated the feature's description/computation; rebuilt profiles.
+  - Test: a knight-shuffle game — extending the shuffle past move 12 no longer raises the count.
+- **Why:** Direct fix to a reported false signal; a developed-piece re-route mid-game is normal
+  play, not wasted time.
+
 ## 2026-06-01 — Drawer width, frozen heatmap labels, uncapped focus list (web-next)
 
 - **What:**

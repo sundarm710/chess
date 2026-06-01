@@ -60,9 +60,10 @@ def move_features() -> List[AssemblyFeature]:
         _f(
             id="DEV.tempo_waste", name="Tempo waste", tier="T1", category="DEV",
             inputs="M/G", output_type="count", viz="trend", higher="bad",
-            description="Lost time — early queen sorties or re-moving already-developed pieces.",
-            computation="Running count of moves that bring the queen out before 3 minors are "
-            "developed, or re-move a developed minor before development is complete.",
+            description="Lost time in the opening — early queen sorties or re-moving already-developed pieces.",
+            computation="Running count of opening-phase moves that bring the queen out before 3 "
+            "minors are developed, or re-move a developed minor before development is complete "
+            "(only counted while the position is still in the opening).",
             saturation="~1700",
         ),
         _f(
