@@ -6,6 +6,33 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-03 — Form view: temperament heatmap (cluster traits, round by round)
+
+- **What:**
+  - **New behavioural clustering** (`web-next/src/lib/temperament.ts`): folds the ~38
+    raw features into **6 temperament traits** that cut *across* the positional headings
+    — Aggression, Risk appetite, Caution, Technical craft, Structure discipline,
+    Composure. Each declares member features with a sign that aligns them to the trait
+    (e.g. islands/isolated/doubled are inverted for Structure discipline). Pure +
+    unit-tested (`temperament.test.ts`, 7 tests): z-scoring with a std floor, sign
+    alignment, cluster = mean of available members, diverging colour.
+  - **Temperament heatmap** (`components/TemperamentHeatmap.tsx`): rows = traits ×
+    columns = rounds, each cell coloured by how dialled-up/down that trait was versus the
+    player's *own* tournament baseline (signed z-score; warm oxblood = amplified, cool
+    deep-blue = damped). Result+opponent strip on top; rows expand to their member
+    features; clicking a cell opens that game.
+  - **`FormView` rebuilt** to lead with the heatmap, then a focused drill-down (line
+    chart + after-result / vs-stronger conditioning + round table) for whichever
+    trait/feature row is selected. Removed the old one-feature-at-a-time dropdown flow;
+    dropped a setState-in-effect by deriving the active player.
+- **Why:** the Form view forced you to dropdown through 38 features one at a time and you
+  could never see a player's tournament arc as a whole. The heatmap shows the *emotional
+  arc* in one glance (e.g. "after the R5 loss, Risk spiked and Composure dropped") with
+  the raw features still one click away. Verified live (headless screenshot of the
+  Candidates Open field); `run_tests.sh` + web-next vitest green.
+
+---
+
 ## 2026-06-02 — Fix EVAL accuracy spikes (clamp) + render robustness/perf
 
 - **What:**
