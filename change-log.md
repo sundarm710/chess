@@ -6,6 +6,35 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-03 — Profiles: temperament matrix replaces the radar + app-wide selection persistence
+
+- **What:**
+  - **Field-relative trait aggregation** (`web-next/src/lib/traits.ts`, unit-tested):
+    the same 6 behavioural traits as the Form heatmap, but z-scored against the **field**
+    (mean/std of player means per feature) instead of a player's own baseline — so
+    players can be *ranked* on a trait ("most aggressive in this tournament"). Exposes
+    `availableTraits`, `fieldFeatStats`, `traitTable` (players × traits + member z), and
+    `gameTraitZ` (a single game scored on the same normaliser).
+  - **Temperament matrix** (`components/TraitMatrix.tsx`) **replaces the player radar**:
+    players × 6 traits, each cell a diverging field-z (warm = more of the trait). Trait
+    columns **expand** to their member features; clicking any header **focuses + sorts**
+    the field by it; clicking a player opens **`TraitPlayerGames`** — that player's games
+    ranked most→least of the focused trait, members alongside. A per-row checkbox feeds
+    the Phase & colour comparison (the radar's old job). `PlayerRadar.tsx` removed.
+  - **App-wide selection persistence:** the selected **player** is lifted to `App` and
+    shared by Profiles *and* Form, and the Profiles UI (slice, focused feature/trait,
+    expanded traits, comparison set, open drill) is lifted into one `ProfUi` bundle
+    (`lib/profile.ts`). Because this state lives above the view boundary, it survives tab
+    switches **and** opening a game and coming back — the player stays selected and the
+    drill stays open. `FormView` is now controlled by the shared player.
+- **Why:** the radar made you hand-pick players and squint at overlapping polygons; it
+  never answered "who is the most X, and which of their games show it." The trait matrix
+  makes that a sort-and-click. And selections used to reset on every tab switch / game
+  open — now they persist, as requested. `run_tests.sh` + web-next vitest (22) green;
+  verified live (headless screenshots of Profiles + Form on the Candidates Open field).
+
+---
+
 ## 2026-06-03 — Form view: temperament heatmap (cluster traits, round by round)
 
 - **What:**

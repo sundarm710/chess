@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { LibraryEntry } from './types';
+import { type ProfUi, DEFAULT_PROF_UI } from './lib/profile';
 import { useJson } from './hooks/useFetch';
 import { ProfilesView } from './views/ProfilesView';
 import { GameView } from './views/GameView';
@@ -27,6 +28,10 @@ export default function App() {
   const [slug, setSlug] = useState(initial?.slug ?? 'candidates-2026-open');
   const [deepGame, setDeepGame] = useState(initial?.gameId);
   const [deepPly, setDeepPly] = useState(initial?.ply ?? 0);
+  // Selection that persists across tabs + game round-trips (kept above the view boundary).
+  const [player, setPlayer] = useState<string | null>(null);
+  const [prof, setProf] = useState<ProfUi>(DEFAULT_PROF_UI);
+  const patchProf = (u: Partial<ProfUi>) => setProf((prev) => ({ ...prev, ...u }));
 
   const tournaments = lib.data?.tournaments ?? [];
 
@@ -90,9 +95,16 @@ export default function App() {
 
       <ErrorBoundary key={`${view}:${slug}`}>
         {view === 'profiles' ? (
-          <ProfilesView slug={slug === 'custom' ? tournaments[0]?.slug ?? '' : slug} onOpenGame={openGame} />
+          <ProfilesView
+            slug={slug === 'custom' ? tournaments[0]?.slug ?? '' : slug}
+            onOpenGame={openGame}
+            player={player}
+            onPlayer={setPlayer}
+            ui={prof}
+            onUi={patchProf}
+          />
         ) : view === 'form' ? (
-          <FormView slug={slug === 'custom' ? tournaments[0]?.slug ?? '' : slug} onOpenGame={openGame} />
+          <FormView slug={slug === 'custom' ? tournaments[0]?.slug ?? '' : slug} onOpenGame={openGame} player={player} onPlayer={setPlayer} />
         ) : (
           <GameView
             key={`${slug}:${deepGame ?? ''}`}

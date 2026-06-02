@@ -10,22 +10,31 @@ import { TemperamentHeatmap, type RoundHead, type Selection } from '../component
 const fmt = (v: number | null) => (v == null ? '–' : Number.isInteger(v) ? String(v) : (Math.round(v * 100) / 100).toFixed(2));
 const z2 = (z: number | null) => (z == null ? '–' : `${z >= 0 ? '+' : ''}${z.toFixed(2)}`);
 
-export function FormView({ slug, onOpenGame }: { slug: string; onOpenGame?: (id: string) => void }) {
+export function FormView({
+  slug,
+  onOpenGame,
+  player: sharedPlayer,
+  onPlayer,
+}: {
+  slug: string;
+  onOpenGame?: (id: string) => void;
+  player: string | null;
+  onPlayer: (name: string) => void;
+}) {
   const prof = useJson<Profile>(`./data/profiles/${slug}.json`);
   const tour = useJson<TournamentDoc>(`./data/t/${slug}.json`);
   const p = prof.data;
 
   const players = useMemo(() => (p ? playersByScore(p).map(([n]) => n) : []), [p]);
-  const [pick, setPick] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<Selection>({ kind: 'cluster', key: 'aggression' });
 
   if (prof.loading || tour.loading) return <p className="text-ink2">Loading…</p>;
   if (!p || !players.length) return <p className="text-w">No profile for {slug}.</p>;
 
-  // derive the active player (no setState-in-effect) so a slug change can't strand a stale pick
-  const player = pick && players.includes(pick) ? pick : players[0];
-  const setPlayer = setPick;
+  // the shared player persists across tabs; fall back to the leader if absent in this field
+  const player = sharedPlayer && players.includes(sharedPlayer) ? sharedPlayer : players[0];
+  const setPlayer = onPlayer;
   const elo = eloIndex(tour.data);
   const doc = p.players[player];
   const games = formTimeline(doc.game_rows, 'DYN.initiative', elo); // any fid; we read raw vals below

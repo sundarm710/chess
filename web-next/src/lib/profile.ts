@@ -65,6 +65,26 @@ export interface SliceSel {
   color: 'all' | 'w' | 'b';
 }
 
+/** Profiles-tab UI state — lifted to App so it survives tab switches and game
+ *  round-trips (the player is shared separately, across Form + Profiles). */
+export interface ProfUi {
+  sel: SliceSel;
+  feature: string; // feature-matrix focus → FocusPanel
+  trait: string; // trait-matrix focused trait
+  expanded: string[]; // expanded trait keys (member features shown)
+  compare: string[]; // players in the Phase & colour comparison
+  drill: 'feature' | 'trait' | null; // which player-games panel is open
+}
+
+export const DEFAULT_PROF_UI: ProfUi = {
+  sel: { phase: 'all', color: 'all' },
+  feature: 'SPC.space',
+  trait: 'aggression',
+  expanded: [],
+  compare: [],
+  drill: null,
+};
+
 const EMPTY: Slice = { mean: NaN, n: 0 };
 
 /** One player's value for a feature under a {phase,color} slice; falls back to the
