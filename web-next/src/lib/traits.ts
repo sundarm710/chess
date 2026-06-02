@@ -4,7 +4,7 @@
 // players can be ranked on a trait. Same six behavioural traits as the Form heatmap
 // (shared TEMPERAMENTS config), folded from whichever member features are populated.
 
-import type { FeatureMeta, Profile } from '../types';
+import type { FeatureMeta, GameRow, Profile } from '../types';
 import { TEMPERAMENTS } from './temperament';
 import { type SliceSel, availableFeatures, isOk, playersByScore, sliceValue } from './profile';
 
@@ -121,4 +121,71 @@ export function gameTraitZ(vals: Record<string, number> | undefined, t: TraitDef
   if (!vals) return { z: null, n: 0 };
   const zs = t.members.map((m) => alignedZ(vals[m.fid] ?? null, stats[m.fid], m.sign)).filter((z): z is number => z != null);
   return { z: zs.length ? zs.reduce((a, b) => a + b, 0) / zs.length : null, n: zs.length };
+}
+
+// ── correlations (for the Insights drawer) ────────────────────────────────────
+
+const CORR_MIN_N = 10;
+
+export function pearson(pairs: [number, number][]): number | null {
+  const n = pairs.length;
+  if (n < 3) return null;
+  let sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0;
+  for (const [x, y] of pairs) {
+    sx += x; sy += y; sxx += x * x; syy += y * y; sxy += x * y;
+  }
+  const cov = n * sxy - sx * sy;
+  const dx = n * sxx - sx * sx;
+  const dy = n * syy - sy * sy;
+  const d = Math.sqrt(dx * dy);
+  return d === 0 ? null : cov / d;
+}
+
+export interface TraitCorr {
+  key: string;
+  label: string;
+  r: number;
+  n: number;
+}
+
+const phaseVals = (r: GameRow, phase: SliceSel['phase']): Record<string, number> | undefined =>
+  phase === 'all' ? r.vals : r.phase_vals?.[phase];
+
+/** Per-trait Pearson r between a game's trait z and its result (win 1 · draw .5 · loss 0),
+ *  pooled across all players' games — the trait analogue of `result_correlation`. */
+export function traitResultCorr(p: Profile, sel: SliceSel, tbl: TraitTable): TraitCorr[] {
+  const out: TraitCorr[] = [];
+  for (const t of tbl.traits) {
+    const pairs: [number, number][] = [];
+    for (const d of Object.values(p.players)) {
+      for (const r of d.game_rows) {
+        if (sel.color !== 'all' && r.color !== sel.color) continue;
+        const z = gameTraitZ(phaseVals(r, sel.phase), t, tbl.stats).z;
+        if (z != null) pairs.push([z, r.score]);
+      }
+    }
+    const rr = pearson(pairs);
+    if (rr != null && pairs.length >= CORR_MIN_N) out.push({ key: t.key, label: t.label, r: rr, n: pairs.length });
+  }
+  return out;
+}
+
+/** Trait × trait Pearson r over all player-games (game-level trait z vectors). */
+export function traitCorrMatrix(p: Profile, sel: SliceSel, tbl: TraitTable): { traits: TraitDef[]; r: (number | null)[][] } {
+  const traits = tbl.traits;
+  // game-level z per trait, collected once per game
+  const cols: number[][] = traits.map(() => []);
+  for (const d of Object.values(p.players)) {
+    for (const r of d.game_rows) {
+      if (sel.color !== 'all' && r.color !== sel.color) continue;
+      const vals = phaseVals(r, sel.phase);
+      const zs = traits.map((t) => gameTraitZ(vals, t, tbl.stats).z);
+      if (zs.some((z) => z == null)) continue; // only games scoring every trait, so columns align
+      zs.forEach((z, i) => cols[i].push(z as number));
+    }
+  }
+  const r = traits.map((_, i) =>
+    traits.map((__, j) => (i === j ? 1 : pearson(cols[i].map((x, k) => [x, cols[j][k]] as [number, number])))),
+  );
+  return { traits, r };
 }

@@ -6,6 +6,37 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-03 — Refactor Profiles onto one Metric abstraction; traits = features
+
+- **What:**
+  - **Shared `Metric` model** (`web-next/src/lib/metrics.ts`, unit-tested): a Metric is
+    anything measurable per-player *and* per-game with a good/bad direction. Features and
+    traits are both just Metrics — `featureGroups` (by category) and `traitGroups` (a
+    trait roll-up *lead* column + its member features) produce the same shape, plus a
+    shared `playerPrefix` (Pts/TPR/Resil/Conv) and `metricRange`/`groupRanges` for colour.
+  - **One generic `MetricMatrix`** (replaces `Matrix` *and* `TraitMatrix`) and **one
+    `PlayerBreakdown`** (replaces `PlayerGames` *and* `TraitPlayerGames`). The temperament
+    view is now literally the feature framework: **red→green** `cellColor` (dropped the
+    diverging palette here), identical column/width treatment, **every value column sorts
+    desc on click** (the focused trait/feature sorts the field), and the player drill is
+    the **same round-ordered per-game table with a Mean row**. Trait columns expand to
+    their member features; the trait *lead* is a field-relative z (green = more of the
+    trait), members keep their own direction.
+  - **Temperament in Insights:** `Winning DNA` and the correlation matrix each gained a
+    **Temperaments / Features** toggle. New `traitResultCorr` (each trait's Pearson r with
+    the game result) and `traitCorrMatrix` (trait×trait r) computed on the frontend from
+    per-game trait z (`pearson` helper, unit-tested).
+  - Deleted `Matrix.tsx`, `TraitMatrix.tsx`, `PlayerGames.tsx`, `TraitPlayerGames.tsx`.
+- **Why:** the user wanted the trait view to *be* the feature view (same palette, same
+  round-sorted breakdown, same sortable/width treatment) and traits surfaced in Insights —
+  and, above all, the duplication between the feature path and the trait path collapsed
+  into one abstraction. Now a single Metric drives matrix, breakdown, ranges and colour for
+  both. `run_tests.sh` + web-next vitest (31) green; verified live via CDP (clicked a
+  player → round-sorted trait breakdown; opened Insights → trait Winning-DNA + trait
+  correlation matrix).
+
+---
+
 ## 2026-06-03 — Profiles: temperament matrix replaces the radar + app-wide selection persistence
 
 - **What:**
