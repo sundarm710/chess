@@ -1,18 +1,14 @@
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment, useMemo } from 'react';
 import { cellColor, goodness } from '../lib/profile';
 import type { Metric, MetricGroup, PrefixCol, Range } from '../lib/metrics';
 
 const fmt = (v: number | null) =>
   v == null || !Number.isFinite(v) ? '–' : Number.isInteger(v) ? String(v) : (Math.round(v * 100) / 100).toFixed(2);
 
-interface Sort {
-  key: string; // prefix id OR metric id
-  dir: 1 | -1;
-}
-
 /** A players × metrics table: red→green cells (goodness within each column), grouped &
- *  optionally-expandable columns, every value column sortable (desc on first click),
- *  sticky player + header. Drives BOTH the feature matrix and the temperament matrix. */
+ *  optionally-expandable columns. The table is ALWAYS in points order — clicking a column
+ *  only *focuses* it (drives the ranking panel to the right), never re-sorts. Drives both
+ *  the feature matrix and the temperament matrix. */
 export function MetricMatrix({
   names,
   prefix,
@@ -21,33 +17,25 @@ export function MetricMatrix({
   nMin,
   focused,
   onFocus,
-  initialSortKey,
   expandable = false,
   expanded,
   onToggleExpand,
   player,
   onSelectPlayer,
-  compare,
-  onToggleCompare,
 }: {
-  names: string[]; // players in baseline (score) order
+  names: string[]; // players in baseline (points) order — the fixed row order
   prefix: PrefixCol[];
   groups: MetricGroup[];
   ranges: Map<string, Range>;
   nMin: number;
-  focused: string | null; // highlighted/sorted column (mirrors persisted focus)
+  focused: string | null; // highlighted column id (mirrors persisted focus)
   onFocus: (metricId: string) => void;
-  initialSortKey?: string;
   expandable?: boolean;
   expanded?: Set<string>;
   onToggleExpand?: (groupKey: string) => void;
   player?: string | null;
   onSelectPlayer?: (name: string) => void;
-  compare?: Set<string>;
-  onToggleCompare?: (name: string) => void;
 }) {
-  const [sort, setSort] = useState<Sort>({ key: initialSortKey ?? 'score', dir: -1 });
-
   // visible columns per group: lead (if any) + members (always for non-collapsible groups)
   const view = useMemo(
     () =>
@@ -60,35 +48,7 @@ export function MetricMatrix({
     [groups, expandable, expanded],
   );
 
-  const sortValue = (name: string): number | null => {
-    const pc = prefix.find((c) => c.id === sort.key);
-    if (pc) return pc.value(name);
-    for (const g of groups) {
-      if (g.lead?.id === sort.key) return g.lead.player(name)?.mean ?? null;
-      const m = g.members.find((x) => x.id === sort.key);
-      if (m) return m.player(name)?.mean ?? null;
-    }
-    return null;
-  };
-  const rows = useMemo(() => {
-    return [...names].sort((a, b) => {
-      const av = sortValue(a), bv = sortValue(b);
-      if (av == null && bv == null) return 0;
-      if (av == null) return 1;
-      if (bv == null) return -1;
-      return (av - bv) * sort.dir;
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [names, sort, groups, prefix]);
-
-  const clickCol = (key: string, focus?: () => void) => {
-    focus?.();
-    setSort((s) => ({ key, dir: s.key === key ? (s.dir === 1 ? -1 : 1) : -1 }));
-  };
-  const arrow = (key: string) => (sort.key === key ? (sort.dir === 1 ? ' ▲' : ' ▼') : '');
-  const headCls = 'cursor-pointer select-none whitespace-nowrap border-b border-line bg-paper2 px-2 py-1.5 font-semibold';
-  const isHot = (id: string) => id === focused || id === sort.key;
-
+  const headCls = 'whitespace-nowrap border-b border-line bg-paper2 px-2 py-1.5 font-semibold';
   const colorCell = (m: Metric, v: number | null, n: number) => {
     const low = v == null || n < nMin;
     const rg = ranges.get(m.id);
@@ -129,34 +89,26 @@ export function MetricMatrix({
           </tr>
           {/* column header row */}
           <tr>
-            <th
-              className={`${headCls} sticky left-0 z-30 text-left`}
-              onClick={() => clickCol('score')}
-              title="Players — sorted by points; click any column to re-sort"
-            >
-              Player
-            </th>
+            <th className={`${headCls} sticky left-0 z-30 text-left text-ink2`} title="Players — fixed in points order">Player</th>
             {prefix.map((c) => (
-              <th key={c.id} className={`${headCls} text-right text-ink2`} title={c.desc} onClick={() => clickCol(c.id)}>
-                {c.label}{arrow(c.id)}
-              </th>
+              <th key={c.id} className={`${headCls} text-right text-ink2`} title={c.desc}>{c.label}</th>
             ))}
             {view.map(({ g, cols }) => (
               <Fragment key={g.key}>
                 {cols.map((m, i) => (
                   <th
                     key={m.id}
-                    onClick={() => clickCol(m.id, () => onFocus(m.id))}
+                    onClick={() => onFocus(m.id)}
                     title={m.desc}
                     className={[
                       headCls,
-                      'text-center',
+                      'cursor-pointer select-none text-center',
                       i === 0 ? 'border-l border-line' : '',
                       m.aggregate ? 'text-[11px]' : 'text-[10px]',
-                      isHot(m.id) ? 'text-w underline' : 'text-ink2',
+                      m.id === focused ? 'text-w underline' : 'text-ink2',
                     ].join(' ')}
                   >
-                    {m.label}{arrow(m.id)}
+                    {m.label}
                   </th>
                 ))}
               </Fragment>
@@ -164,31 +116,19 @@ export function MetricMatrix({
           </tr>
         </thead>
         <tbody>
-          {rows.map((name) => {
+          {names.map((name) => {
             const sel = name === player;
             return (
               <tr key={name} className={sel ? 'bg-paper' : 'hover:bg-paper/60'}>
                 <td className={`sticky left-0 z-10 whitespace-nowrap border-b border-line/60 px-2 py-1 text-left ${sel ? 'bg-paper' : 'bg-white'}`}>
-                  <span className="inline-flex items-center gap-1.5">
-                    {onToggleCompare && (
-                      <input
-                        type="checkbox"
-                        checked={compare?.has(name) ?? false}
-                        onChange={() => onToggleCompare(name)}
-                        onClick={(e) => e.stopPropagation()}
-                        title="Add to the Phase & colour comparison"
-                        className="h-3 w-3 shrink-0 accent-[var(--color-b)]"
-                      />
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => onSelectPlayer?.(name)}
-                      title="Show this player's per-game breakdown"
-                      className={`text-left hover:underline ${sel ? 'font-semibold text-w' : ''}`}
-                    >
-                      {name}
-                    </button>
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onSelectPlayer?.(name)}
+                    title="Show this player's per-game breakdown"
+                    className={`text-left hover:underline ${sel ? 'font-semibold text-w' : ''}`}
+                  >
+                    {name}
+                  </button>
                 </td>
                 {prefix.map((c) => (
                   <td key={c.id} className="whitespace-nowrap border-b border-line/60 px-2 py-1 text-right tabular-nums text-ink2" title={c.title?.(name)}>
@@ -207,7 +147,7 @@ export function MetricMatrix({
                           className={[
                             'whitespace-nowrap border-b border-line/60 px-2 py-1 text-right tabular-nums',
                             i === 0 ? 'border-l border-line' : '',
-                            isHot(m.id) ? 'ring-1 ring-inset ring-w/30' : '',
+                            m.id === focused ? 'ring-1 ring-inset ring-w/30' : '',
                           ].join(' ')}
                         >
                           <span className={low ? 'opacity-40' : ''} style={style}>

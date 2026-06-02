@@ -45,7 +45,7 @@ export const PHASE_LABEL: Record<string, string> = {
 };
 
 // Stable category order + human labels so feature columns group sensibly.
-const CAT_ORDER = ['MAT', 'SPC', 'KSF', 'STR', 'DEV', 'ACT', 'DYN', 'TAC', 'DEC', 'TIM', 'EVAL'];
+const CAT_ORDER = ['MAT', 'SPC', 'KSF', 'STR', 'DEV', 'ACT', 'DYN', 'TAC', 'DEC', 'END', 'TIM', 'EVAL'];
 export const CATEGORY_LABEL: Record<string, string> = {
   MAT: 'Material',
   SPC: 'Space',
@@ -56,6 +56,7 @@ export const CATEGORY_LABEL: Record<string, string> = {
   DYN: 'Dynamics',
   TAC: 'Tactics',
   DEC: 'Decisions',
+  END: 'Endgame',
   TIM: 'Time',
   EVAL: 'Evaluation',
 };
@@ -66,23 +67,21 @@ export interface SliceSel {
 }
 
 /** Profiles-tab UI state — lifted to App so it survives tab switches and game
- *  round-trips (the player is shared separately, across Form + Profiles). */
+ *  round-trips (the player is shared separately, across Form + Profiles). The two
+ *  matrices each track their own focused column; the table itself never re-sorts
+ *  (always points order), so focus only drives the right-hand ranking panel. */
 export interface ProfUi {
   sel: SliceSel;
-  feature: string; // feature-matrix focus → FocusPanel
-  trait: string; // trait-matrix focused trait
+  featFocus: string; // focused feature column → feature right panel
+  traitFocus: string; // focused trait/member column → temperament right panel
   expanded: string[]; // expanded trait keys (member features shown)
-  compare: string[]; // players in the Phase & colour comparison
-  drill: 'feature' | 'trait' | null; // which player-games panel is open
 }
 
 export const DEFAULT_PROF_UI: ProfUi = {
   sel: { phase: 'all', color: 'all' },
-  feature: 'SPC.space',
-  trait: 'aggression',
+  featFocus: 'SPC.space',
+  traitFocus: 'trait:aggression',
   expanded: [],
-  compare: [],
-  drill: null,
 };
 
 const EMPTY: Slice = { mean: NaN, n: 0 };

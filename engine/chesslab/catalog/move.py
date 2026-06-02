@@ -158,4 +158,49 @@ def move_features() -> List[AssemblyFeature]:
             computation="Running standard deviation of per-move centipawn loss (needs %eval).",
             saturation="—",
         ),
+        # --- Phase / endgame tier (END) -----------------------------------------
+        # These make the phase mix an explicit parameter rather than a silent confound
+        # that dilutes the all-game means (CLAUDE.md §17 / the endgame-dilution note).
+        _f(
+            id="END.endgame_share", name="Endgame share", tier="T2", category="END",
+            inputs="M/G", output_type="rate", viz="trend", higher="neutral", aggregation="end",
+            description="How much of the game is spent in the endgame — the grind axis.",
+            computation="Fraction of positions classified as endgame (tapered material ≤ 8), end-of-game value.",
+            saturation="—",
+        ),
+        _f(
+            id="END.endgame_onset", name="Endgame onset", tier="T2", category="END",
+            inputs="M/G", output_type="scalar", viz="trend", higher="neutral", aggregation="end",
+            description="Move number at which the game first reaches an endgame (earlier = simplification-seeking).",
+            computation="Move number of the first endgame position; unavailable for games that never simplify.",
+            saturation="—",
+        ),
+        _f(
+            id="END.control_drift", name="Control drift", tier="T3", category="END",
+            inputs="M/G", output_type="scalar", viz="trend", higher="neutral", aggregation="end",
+            description="How board control shifts from middlegame to endgame — activity retained into simplification.",
+            computation="Endgame mean − middlegame mean of board control; unavailable until both phases occur.",
+            saturation="—",
+        ),
+        _f(
+            id="END.mobility_drift", name="Mobility drift", tier="T3", category="END",
+            inputs="M/G", output_type="scalar", viz="trend", higher="neutral", aggregation="end",
+            description="How piece mobility shifts from middlegame to endgame.",
+            computation="Endgame mean − middlegame mean of piece mobility; unavailable until both phases occur.",
+            saturation="—",
+        ),
+        _f(
+            id="END.space_drift", name="Space drift", tier="T3", category="END",
+            inputs="M/G", output_type="scalar", viz="trend", higher="neutral", aggregation="end",
+            description="How space held shifts from middlegame to endgame.",
+            computation="Endgame mean − middlegame mean of space; unavailable until both phases occur.",
+            saturation="—",
+        ),
+        _f(
+            id="END.pressure_drift", name="King-pressure drift", tier="T3", category="END",
+            inputs="M/G", output_type="scalar", viz="trend", higher="neutral", aggregation="end",
+            description="How king-zone pressure on the side shifts from middlegame to endgame.",
+            computation="Endgame mean − middlegame mean of king-zone pressure; unavailable until both phases occur.",
+            saturation="—",
+        ),
     ]

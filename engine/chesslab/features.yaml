@@ -240,6 +240,139 @@
   viz: trend
   higher: good
   version: 1
+- id: END.control_drift
+  name: Control drift
+  tier: T3
+  scope: game
+  category: END
+  description: How board control shifts from middlegame to endgame — activity retained
+    into simplification.
+  computation: Endgame mean − middlegame mean of board control; unavailable until
+    both phases occur.
+  inputs: M/G
+  engine: none
+  requires: []
+  output_type: scalar
+  aggregation: end
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: neutral
+  version: 1
+- id: END.endgame_onset
+  name: Endgame onset
+  tier: T2
+  scope: game
+  category: END
+  description: Move number at which the game first reaches an endgame (earlier = simplification-seeking).
+  computation: Move number of the first endgame position; unavailable for games that
+    never simplify.
+  inputs: M/G
+  engine: none
+  requires: []
+  output_type: scalar
+  aggregation: end
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: neutral
+  version: 1
+- id: END.endgame_share
+  name: Endgame share
+  tier: T2
+  scope: game
+  category: END
+  description: How much of the game is spent in the endgame — the grind axis.
+  computation: Fraction of positions classified as endgame (tapered material ≤ 8),
+    end-of-game value.
+  inputs: M/G
+  engine: none
+  requires: []
+  output_type: rate
+  aggregation: end
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: neutral
+  version: 1
+- id: END.mobility_drift
+  name: Mobility drift
+  tier: T3
+  scope: game
+  category: END
+  description: How piece mobility shifts from middlegame to endgame.
+  computation: Endgame mean − middlegame mean of piece mobility; unavailable until
+    both phases occur.
+  inputs: M/G
+  engine: none
+  requires: []
+  output_type: scalar
+  aggregation: end
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: neutral
+  version: 1
+- id: END.pressure_drift
+  name: King-pressure drift
+  tier: T3
+  scope: game
+  category: END
+  description: How king-zone pressure on the side shifts from middlegame to endgame.
+  computation: Endgame mean − middlegame mean of king-zone pressure; unavailable until
+    both phases occur.
+  inputs: M/G
+  engine: none
+  requires: []
+  output_type: scalar
+  aggregation: end
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: neutral
+  version: 1
+- id: END.space_drift
+  name: Space drift
+  tier: T3
+  scope: game
+  category: END
+  description: How space held shifts from middlegame to endgame.
+  computation: Endgame mean − middlegame mean of space; unavailable until both phases
+    occur.
+  inputs: M/G
+  engine: none
+  requires: []
+  output_type: scalar
+  aggregation: end
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: neutral
+  version: 1
 - id: EVAL.acpl
   name: Avg centipawn loss
   tier: T6

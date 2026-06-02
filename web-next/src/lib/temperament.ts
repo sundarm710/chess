@@ -87,6 +87,12 @@ export const TEMPERAMENTS: Temperament[] = [
       m('DEV.tempo_waste', -1),
     ],
   },
+  {
+    key: 'endgame',
+    label: 'Endgame tilt',
+    blurb: 'Steering into endgames and thriving there — more time simplified, reached earlier, activity retained.',
+    members: [m('END.endgame_share'), m('END.endgame_onset', -1), m('END.control_drift'), m('END.mobility_drift')],
+  },
 ];
 
 /** Sample standard deviation with a small floor so a near-constant feature reads as

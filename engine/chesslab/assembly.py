@@ -14,10 +14,10 @@ required data, so the UI shows "needs clock/eval data" rather than a misleading 
 from __future__ import annotations
 
 import statistics
-from typing import Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from .features import Board, FeatureEngine, Piece, PositionFeatures, opposite
-from .phase import is_opening
+from .phase import classify_phase, is_opening
 from .pipeline import ParsedGame, ParsedMove
 from .registry import FeatureResult, ResultStatus
 
@@ -30,6 +30,16 @@ _TIME_TROUBLE_SECS = 60  # a move made with under a minute left counts as time t
 _DEFICIT_PERSIST = 4     # a material gap must hold this many plies (~2 moves) to count
                          # — filters out capture/recapture trade blips
 _EVAL_CAP_CP = 1000      # clamp evals to ±10 pawns before per-move loss (decisive-range noise)
+
+# Phase-drift bases: how much a positional feature shifts from the middlegame to the
+# endgame (endgame mean − middlegame mean). Activity that survives simplification is a
+# real style signal, and it de-confounds the all-game mean from the phase mix.
+_DRIFT_FEATS: Dict[str, "Callable[[Any], float]"] = {
+    "control": lambda sf: float(sf.control),
+    "mobility": lambda sf: float(sf.mobility),
+    "space": lambda sf: float(sf.space),
+    "pressure": lambda sf: float(sf.kp),
+}
 
 
 def _uci_from(uci: str) -> tuple[int, int]:
@@ -56,6 +66,16 @@ class MoveAssembler:
         self.time_trouble: Dict[str, int] = {"w": 0, "b": 0}     # moves made under a minute
         self._gap_window: Dict[str, List[int]] = {"w": [], "b": []}  # recent own−opp material gaps
         self.eval_losses: Dict[str, List[float]] = {"w": [], "b": []}
+        # Phase mix (shared, board-level): how much of the game is spent in the endgame
+        # and when it arrives. The "dilution" parameter, turned into an explicit signal.
+        self._positions_seen = 0
+        self._endgame_positions = 0
+        self._endgame_onset: Optional[int] = None  # move number the endgame first arrived
+        # Per side, per drift-base, per phase: [running sum, count] of the base feature.
+        self._phase_feat: Dict[str, Dict[str, Dict[str, List[float]]]] = {
+            side: {name: {ph: [0.0, 0] for ph in ("opening", "middlegame", "endgame")} for name in _DRIFT_FEATS}
+            for side in ("w", "b")
+        }
         self._prev_pf: Optional[PositionFeatures] = None
         self._prev_board: Optional[Board] = None
 
@@ -186,12 +206,32 @@ class MoveAssembler:
                 self.best_lead[side] = max(self.best_lead[side], max(0, min(win)))       # ahead throughout
                 self.worst_deficit[side] = max(self.worst_deficit[side], max(0, -max(win)))  # behind throughout
 
+        # Phase mix — running endgame share + onset (shared, board-level).
+        ph = classify_phase(board, i)
+        self._positions_seen += 1
+        if ph == "endgame":
+            self._endgame_positions += 1
+            if self._endgame_onset is None:
+                self._endgame_onset = (i + 1) // 2  # ply -> move number
+        # Accumulate each drift base within its phase, per side.
+        for side in ("w", "b"):
+            sf = getattr(pf, side)
+            for name, getter in _DRIFT_FEATS.items():
+                acc = self._phase_feat[side][name][ph]
+                acc[0] += getter(sf)
+                acc[1] += 1
+
         # Shared, always available.
         add("TAC.density", "shared", float(pos.legal_captures + pos.legal_checks + pf.tension))
         balance = pf.w.mat - pf.b.mat
         prev_balance = (self._prev_pf.w.mat - self._prev_pf.b.mat) if self._prev_pf else balance
         add("MAT.swing", "shared", float(abs(balance - prev_balance)))
         add("MAT.on_board", "shared", float(pf.w.mat + pf.b.mat))
+        add("END.endgame_share", "shared", self._endgame_positions / self._positions_seen)
+        # Onset is unavailable until (and unless) the endgame is reached, so a game that
+        # never simplifies contributes no onset rather than a misleading 0.
+        add("END.endgame_onset", "shared", float(self._endgame_onset) if self._endgame_onset is not None else None,
+            available=self._endgame_onset is not None)
 
         for side in ("w", "b"):
             rate = self.forcing[side] / self.played[side] if self.played[side] else 0.0
@@ -213,5 +253,11 @@ class MoveAssembler:
             consistency = statistics.pstdev(losses) if len(losses) >= 2 else 0.0
             add("EVAL.acpl", side, round(acpl, 1), available=game.has_eval)
             add("EVAL.consistency", side, round(consistency, 1), available=game.has_eval)
+            # Phase drift: endgame mean − middlegame mean of each base; unavailable until
+            # the side has seen both phases (a game still in the middlegame has no drift).
+            for name in _DRIFT_FEATS:
+                eg, mg = self._phase_feat[side][name]["endgame"], self._phase_feat[side][name]["middlegame"]
+                drift = (eg[0] / eg[1] - mg[0] / mg[1]) if eg[1] and mg[1] else None
+                add(f"END.{name}_drift", side, drift, available=drift is not None)
 
         return out

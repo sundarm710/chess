@@ -311,8 +311,16 @@ Key structural facts (don't re-derive):
     loss), `EVAL.consistency` (stdev of loss), consuming PGN `%eval`. Capability-gated:
     emit `status=unavailable` + value `None` when the game lacks the data (the Candidates
     PGNs have clocks but no `%eval`, so EVAL shows "needs eval data" for them).
+  - END (phase tier, backend-only, 6 features): `END.endgame_share` (fraction of plies
+    in the endgame), `END.endgame_onset` (move the endgame first arrives; unavailable if
+    it never does), and `END.{control,mobility,space,pressure}_drift` (endgame-mean −
+    middlegame-mean of a base feature). All computed per-ply in `MoveAssembler` (running
+    phase counters), so the manifest⇄per-ply invariant holds. These make the phase mix an
+    explicit parameter instead of a silent confound that dilutes the all-game means.
+    Registry total is **44 features (22 POSITION, 22 GAME)**.
   - Still pending: filling EVAL via cached cloud-eval for games without `%eval`
-    (`cloud_eval.py`, batch-only); SEE-based exposure; corpus/profiles.
+    (`cloud_eval.py`, batch-only); SEE-based exposure; corpus/profiles; phase-standardized
+    aggregation (reweight to a reference phase mix — the deeper de-confounding pass).
 - `FeatureMeta.higher` (good|bad|neutral) feeds the UI's favour/comparison column; the
   JS `HIGHER` map covers board features, the manifest's `higher` covers backend-only ones.
 - **Sticky features** (`orchestrator.STICKY_MAX` / `analysis.js STICKY_MAX`): `KSF.castle`

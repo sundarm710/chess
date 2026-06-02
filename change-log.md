@@ -6,6 +6,44 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-03 — END/phase tier (de-confound the endgame) + Profiles UX corrections
+
+- **What — engine (END tier, backend-only):** the phase mix used to silently dilute the
+  all-game means (a long endgame drags board control / material down). Turned it into
+  explicit features instead of a confound:
+  - `END.endgame_share`, `END.endgame_onset` — running phase counters in
+    `MoveAssembler` (shared; onset unavailable for games that never simplify).
+  - `END.{control,mobility,space,pressure}_drift` — endgame-mean − middlegame-mean of a
+    base feature, accumulated per phase in the assembler (so they stay per-ply and keep
+    the manifest⇄per-ply invariant). "Activity retained into the endgame."
+  - Declared in `catalog/move.py` (category `END`); registry now 44 features (22 GAME).
+    New `tests/test_phase_features.py` (sacrificial game → share 0 / drift unavailable;
+    a rook endgame → share∈(0,1), onset a move number, drift present). Profiles
+    regenerated (`build_profiles.py`); mypy + full suite green.
+- **What — frontend:** new `END` category + an **Endgame tilt** trait (share, onset⁻,
+  control/mobility drift), so the endgame parameter shows up in both the feature matrix
+  and the temperament matrix.
+- **What — Profiles UX corrections (per review):**
+  1. **Columns no longer sort the table** — the matrix is always in points order;
+     clicking a column only *focuses* it (drives the right-hand ranking panel).
+  2. **Removed the compare checkbox** entirely (feature & trait tables now identical);
+     the tracked player is still highlighted across both.
+  3. **Unified player drill** — clicking a player anywhere shows *both* per-game tables
+     (feature breakdown + temperament breakdown); no feature/trait differentiation.
+  4. **Sorted bar chart returned for the temperament matrix** — `FocusPanel` is now
+     generic over a `Metric`, so each matrix has its own ranked right column.
+  5. **Trait-first breakdown** — when a trait is focused, the temperament per-game table
+     leads with that trait, then its component features, then the rest.
+  - Removed the **Phase & colour** and **Feature scatter** cards.
+
+- **Why:** the endgame-dilution insight needed to become measurable signal, not noise;
+  and the Profiles tab had drifted from the feature framework the user wanted replicated
+  (no spurious re-sorting, one drill system, ranking panels on both, no stray checkbox).
+  Verified live via CDP (focus-not-sort, both breakdowns, Endgame tilt present, cards
+  gone). `run_tests.sh` (Python + JS parity, 680 profile checks) + vitest (31) green.
+
+---
+
 ## 2026-06-03 — Refactor Profiles onto one Metric abstraction; traits = features
 
 - **What:**
