@@ -6,6 +6,40 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-10 — Win-probability tier + game story layer (chapters / moments / archetypes)
+
+- **What — WP layer (`chesslab/winprob.py`):** eval → win probability via the Lichess
+  logistic (mate = 0/1; white-perspective series with carry-forward over eval-less
+  moves), plus the blunder (≥ 0.20 WP drop) / mistake (0.10–0.20) thresholds and the
+  better/equal/worse state bands (≥ 0.60 / ≤ 0.40, side-perspective).
+- **What — 6 new eval-gated features (registry 44 → 50):** `EVAL.wp_loss` (mean WP
+  drop per move, pp), `EVAL.blunders`, `EVAL.mistakes`, `EVAL.worst_drop` (max, pp),
+  and the temperament contrasts `DEC.complicate_worse` (forcing rate when worse − when
+  equal) and `DEC.simplify_better` (capture rate when better − when equal); state read
+  BEFORE the move; computed in `MoveAssembler`, declared in `catalog/move.py`.
+- **What — story layer (`chesslab/story.py` → `analysis["story"]`):** per game:
+  **chapters** (runs of the 5-band WP trajectory, min 6 plies, with per-side
+  forcing/captures/exposure/prophylaxis deltas, time spent and clock-at-end inside each
+  run; phase-run fallback without eval), **moments** (blunders/mistakes with WP
+  before/after, top-3 big thinks, first sub-5-minute clock dip, endgame arrival) and
+  **archetype tags** (quiet_draw, early_collapse, single_blunder, blunder_fest, grind,
+  squeeze, sac_attack, swindle, fortress, time_scramble — side-suffixed where they
+  belong to one player). Orchestrator stamps each ply with `wp` + `state`.
+- **What — aggregation:** `summarize` reduces every per-side feature within each
+  state band (`FeatureCell.state_values` → rollup `states`), `GameSummary`/game_rows
+  carry `tags`, player docs carry `archetypes` counts. Profiles rebuilt for all 4
+  tournaments. Tests: `test_winprob.py`, `test_story.py`; counts updated in
+  `test_registry.py`/`test_api.py`; suite + JS parity green.
+- **Why:** preparation for the Gukesh–Sindarov world-championship match: read each game
+  as a story — where the balance shifted, what each side did about it (gameplan and
+  temperament *within* the game, conditioned on the state), what decided it, and what
+  kind of game it was — instead of one flat per-game mean. Centipawn loss replaced by
+  WP loss so errors are weighed by what they actually cost. Also documents (CLAUDE.md
+  §14) that `annotate_eval.py` legitimately fills `%eval` with local Stockfish for
+  batch annotation — the engine-free core wall is unchanged.
+
+---
+
 ## 2026-06-03 — END/phase tier (de-confound the endgame) + Profiles UX corrections
 
 - **What — engine (END tier, backend-only):** the phase mix used to silently dilute the

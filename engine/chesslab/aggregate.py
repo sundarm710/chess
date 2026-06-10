@@ -42,10 +42,15 @@ def resolve_reducer(meta_entry: Dict[str, Any]) -> str:
     return "end" if meta_entry.get("scope") == "game" else "mean"
 
 
+from .winprob import perspective, state_of
+
 SCORE = {"1-0": (1.0, 0.0), "0-1": (0.0, 1.0), "1/2-1/2": (0.5, 0.5)}
 
 # Game phases (CLAUDE.md §17); each game's per-ply series is reduced within each.
 PHASES = ("opening", "middlegame", "endgame")
+# Eval-state bands (side-relative win probability); per-ply series also reduce within
+# each, so behavior can be read conditioned on the game state ("what they do when worse").
+STATES = ("better", "equal", "worse")
 
 
 def _elo(s: Any) -> Optional[int]:
@@ -70,6 +75,9 @@ class FeatureCell:
     status: str  # "ok" | "unavailable" | "na"
     reducer: str
     phase_values: Mapping[str, Optional[float]] = field(default_factory=dict)
+    # Same reducer applied within each side-relative eval-state band ("better" /
+    # "equal" / "worse"); empty for shared cells and for games without eval.
+    state_values: Mapping[str, Optional[float]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -89,6 +97,8 @@ class GameSummary:
     has_clock: bool
     has_eval: bool
     cells: Tuple[FeatureCell, ...]
+    # Archetype tags from the story layer (e.g. "grind:w", "blunder_fest").
+    tags: Tuple[str, ...] = ()
 
 
 def summarize(analysis: Dict[str, Any], *, slug: str, game: Dict[str, Any]) -> GameSummary:
@@ -98,27 +108,38 @@ def summarize(analysis: Dict[str, Any], *, slug: str, game: Dict[str, Any]) -> G
     no headers); per-ply cells and capability flags come from `analysis`.
     """
     meta = analysis["meta"]
-    # Per (feature, side): the per-ply (value, status, phase) series, in ply order.
-    series: Dict[Tuple[str, str], List[Tuple[Optional[float], str, str]]] = {}
+    # Per (feature, side): the per-ply (value, status, phase, wp) series, in ply order.
+    series: Dict[Tuple[str, str], List[Tuple[Optional[float], str, str, Optional[float]]]] = {}
     for ply in analysis["plies"]:
         phase = ply.get("phase", "middlegame")
+        wp = ply.get("wp")  # white-perspective win prob (absent without eval)
         for f in ply["features"]:
-            series.setdefault((f["id"], f["side"]), []).append((f["value"], f["status"], phase))
+            series.setdefault((f["id"], f["side"]), []).append((f["value"], f["status"], phase, wp))
 
     cells: List[FeatureCell] = []
     for (fid, side), vals in series.items():
         reducer = resolve_reducer(meta.get(fid, {}))
         red = REDUCERS[reducer]
-        ok = [v for v, s, _ in vals if v is not None and s == "ok"]
+        ok = [v for v, s, _, _ in vals if v is not None and s == "ok"]
         # Same reducer within each phase (order preserved → "end"/"last" = last in phase).
         phase_values: Dict[str, Optional[float]] = {}
         for ph in PHASES:
-            okp = [v for v, s, p in vals if v is not None and s == "ok" and p == ph]
+            okp = [v for v, s, p, _ in vals if v is not None and s == "ok" and p == ph]
             phase_values[ph] = float(red(okp)) if okp else None
+        # And within each side-relative eval-state band (per-side cells only — a
+        # shared feature has no single perspective to band by).
+        state_values: Dict[str, Optional[float]] = {}
+        if side in ("w", "b"):
+            for st in STATES:
+                oks = [v for v, s, _, wp in vals
+                       if v is not None and s == "ok" and wp is not None
+                       and state_of(perspective(side, wp)) == st]
+                if oks:
+                    state_values[st] = float(red(oks))
         if ok:
-            cells.append(FeatureCell(fid, side, float(red(ok)), "ok", reducer, phase_values))
+            cells.append(FeatureCell(fid, side, float(red(ok)), "ok", reducer, phase_values, state_values))
         else:
-            cells.append(FeatureCell(fid, side, None, "unavailable", reducer, phase_values))
+            cells.append(FeatureCell(fid, side, None, "unavailable", reducer, phase_values, state_values))
 
     return GameSummary(
         game_id=game.get("id", analysis.get("game_id", "")), slug=slug, round=int(game.get("round", 0)),
@@ -127,6 +148,7 @@ def summarize(analysis: Dict[str, Any], *, slug: str, game: Dict[str, Any]) -> G
         result=game.get("result", "*"), eco=game.get("eco", ""),
         has_clock=analysis.get("has_clock", False), has_eval=analysis.get("has_eval", False),
         cells=tuple(cells),
+        tags=tuple(analysis.get("story", {}).get("tags", [])),
     )
 
 
@@ -142,6 +164,8 @@ def _new_feat() -> Dict[str, Any]:
         d[ph] = []
         d[f"{ph}:w"] = []
         d[f"{ph}:b"] = []
+    for st in STATES:
+        d[f"st:{st}"] = []
     return d
 
 
@@ -154,6 +178,7 @@ class _Acc:
     losses: int = 0
     opp_elos: List[int] = field(default_factory=list)
     eco: "Counter[str]" = field(default_factory=Counter)
+    archetypes: "Counter[str]" = field(default_factory=Counter)
     feats: Dict[str, Dict[str, Any]] = field(default_factory=dict)
     # Per-game breakdown rows (the drill-down behind each player's means).
     games_rows: List[Dict[str, Any]] = field(default_factory=list)
@@ -249,6 +274,9 @@ def _rollup_doc(d: Dict[str, Any]) -> Dict[str, Any]:
     phases = {ph: _slice(d[ph]) for ph in PHASES if d[ph]}
     if phases:
         doc["phases"] = phases
+    states = {st: _slice(d[f"st:{st}"]) for st in STATES if d[f"st:{st}"]}
+    if states:
+        doc["states"] = states
     cross = {f"{ph}:{s}": _slice(d[f"{ph}:{s}"])
              for ph in PHASES for s in ("w", "b") if d[f"{ph}:{s}"]}
     if cross:
@@ -311,11 +339,20 @@ def tournament_profile(
                         fa[f"{ph}:{side_char}"].append(pv)
                         co[ph].append((pv, score))
                         gphases[ph][cell.feature_id] = round(pv, 2)
+                for st in STATES:
+                    sv = cell.state_values.get(st)
+                    if sv is not None:
+                        fa[f"st:{st}"].append(sv)
+            # Archetype tags: a side-suffixed tag ("swindle:w") belongs to that player
+            # only; an unsuffixed tag ("blunder_fest") describes the game — both players.
+            my_tags = [t for t in g.tags if ":" not in t or t.endswith(f":{side_char}")]
+            acc.archetypes.update(t.split(":")[0] for t in my_tags)
             acc.games_rows.append({
                 "id": g.game_id, "round": g.round, "color": side_char,
                 "opp": g.black if side_char == "w" else g.white,
                 "result": g.result, "score": score, "vals": gvals,
                 "phase_vals": {ph: gphases[ph] for ph in PHASES if gphases[ph]},
+                "tags": list(g.tags),
             })
             observations.append(dict(gvals))
 
@@ -329,6 +366,7 @@ def tournament_profile(
             "performance_elo": _performance_elo(acc),
             "avg_opp_elo": round(statistics.fmean(acc.opp_elos), 1) if acc.opp_elos else None,
             "eco_distribution": dict(acc.eco),
+            "archetypes": dict(acc.archetypes),
             "rollups": {fid: _rollup_doc(d) for fid, d in acc.feats.items()},
             "game_rows": rows,
         }

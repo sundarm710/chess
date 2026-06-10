@@ -317,7 +317,37 @@ Key structural facts (don't re-derive):
     middlegame-mean of a base feature). All computed per-ply in `MoveAssembler` (running
     phase counters), so the manifest⇄per-ply invariant holds. These make the phase mix an
     explicit parameter instead of a silent confound that dilutes the all-game means.
-    Registry total is **44 features (22 POSITION, 22 GAME)**.
+    Registry total is **50 features (22 POSITION, 28 GAME)** — the END tier plus the
+    WP/story tier below.
+  - **WP / story tier (eval-gated, 6 more features → registry total 50: 22 POSITION,
+    28 GAME).** `chesslab/winprob.py` maps eval → win probability (Lichess logistic
+    `1/(1+e^(-0.00368208·cp))`, mate = 0/1; white-perspective, carried forward over
+    eval-less moves). On it: `EVAL.wp_loss` (mean per-move WP drop, percentage points),
+    `EVAL.blunders` (drop ≥ 0.20), `EVAL.mistakes` (0.10–0.20), `EVAL.worst_drop` (max,
+    pp), and the temperament contrasts `DEC.complicate_worse` (forcing rate when worse −
+    when equal) / `DEC.simplify_better` (capture rate when better − when equal); state is
+    read BEFORE the move; both unavailable until the side has moved in both states.
+    Bands: better ≥ 0.60, worse ≤ 0.40 (side-perspective).
+  - **Story layer (`chesslab/story.py`, attached as `analysis["story"]`):** per game —
+    `chapters` (runs of the 5-band WP trajectory w++/w+/=/b+/b++, min 6 plies, shorter
+    wobbles absorbed; each with per-side forcing/captures/exposure/prophylaxis deltas,
+    time spent, clock at end, density mean; falls back to phase runs without eval),
+    `moments` (blunders/mistakes with WP before/after, top-3 big thinks ≥ max(120s,
+    3×median emt), first time-pressure dip < 5min, endgame arrival), and `tags`
+    (multi-label archetypes: `quiet_draw`, `early_collapse:<loser>`,
+    `single_blunder:<loser>`, `blunder_fest`, `grind:<winner>`, `squeeze:<winner>`,
+    `sac_attack:<winner>`, `swindle:<winner>`, `fortress:<side>`, `time_scramble`;
+    side-suffixed tags attribute to that player only, unsuffixed to both). Orchestrator
+    also stamps each ply with `wp` (white-perspective, 3 dp) and `state` (`w|=|b`) when
+    eval is present, and `summarize` reduces every per-side feature within each
+    side-relative state band → `FeatureCell.state_values` → rollup `states:{better|
+    equal|worse:{mean,n}}`; player docs carry `archetypes` counts and game_rows carry
+    `tags`.
+  - **Eval source note:** `scripts/annotate_eval.py` fills `%eval` with *local* Stockfish
+    (depth 12, batch-only, offline annotation of the committed library JSON). This
+    deliberately amends the original "cached cloud-eval only" rule: the eval tier remains
+    optional and capability-gated, but local SF is allowed for batch annotation; the
+    engine-free wall around the core path is unchanged.
   - Still pending: filling EVAL via cached cloud-eval for games without `%eval`
     (`cloud_eval.py`, batch-only); SEE-based exposure; corpus/profiles; phase-standardized
     aggregation (reweight to a reference phase mix — the deeper de-confounding pass).

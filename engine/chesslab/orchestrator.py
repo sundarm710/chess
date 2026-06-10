@@ -16,6 +16,8 @@ from .assembly import MoveAssembler
 from .features import Board
 from .manifest import build_manifest
 from .pipeline import ParsedGame
+from .story import build_story
+from .winprob import wp_series
 from .registry import (
     Evidence,
     FeatureRegistry,
@@ -79,6 +81,8 @@ class Orchestrator:
         # (feature_id, side) -> last value, for server-side delta computation.
         prev: Dict[Tuple[str, str], Optional[float]] = {}
         assembler = MoveAssembler(game)  # MOVE/GAME running features
+        wps = wp_series(game)            # white-perspective win prob per ply (story layer)
+        balances: List[int] = []         # white−black material per ply (for the story tags)
 
         def emit(result: FeatureResult, value: Optional[float]) -> None:
             key = (result.feature_id, result.side)
@@ -106,17 +110,22 @@ class Orchestrator:
                 emit(result, result.value)
 
             move = game.moves[pos.ply - 1] if pos.ply > 0 else None
-            plies.append(
-                {
-                    "ply": pos.ply,
-                    "fen": pos.fen,
-                    "san": move.san if move else None,
-                    "uci": move.uci if move else None,  # lets the UI highlight from/to squares
-                    "mover": move.mover if move else None,
-                    "phase": classify_phase(ctx.board, pos.ply),
-                    "features": feats,
-                }
-            )
+            pf = ctx.position_features
+            balances.append(pf.w.mat - pf.b.mat)
+            ply_doc: Dict[str, Any] = {
+                "ply": pos.ply,
+                "fen": pos.fen,
+                "san": move.san if move else None,
+                "uci": move.uci if move else None,  # lets the UI highlight from/to squares
+                "mover": move.mover if move else None,
+                "phase": classify_phase(ctx.board, pos.ply),
+                "features": feats,
+            }
+            wp = wps[pos.ply]
+            if game.has_eval and wp is not None:
+                ply_doc["wp"] = round(wp, 3)  # white-perspective win probability
+                ply_doc["state"] = "w" if wp >= 0.60 else ("b" if wp <= 0.40 else "=")
+            plies.append(ply_doc)
 
         return {
             "game_id": game.game_id,
@@ -127,5 +136,6 @@ class Orchestrator:
             "has_eval": game.has_eval,
             "meta": build_manifest(self.registry),
             "plies": plies,
+            "story": build_story(game, plies, balances),  # chapters / moments / archetype tags
             "game_features": [],  # GAME/CORPUS scope arrives in later phases
         }

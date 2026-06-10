@@ -130,6 +130,30 @@
   viz: trend
   higher: good
   version: 1
+- id: DEC.complicate_worse
+  name: Fight response
+  tier: T5
+  scope: game
+  category: DEC
+  description: 'What you do when worse: + = seek forcing complications, − = go quiet.'
+  computation: Forcing-move rate (captures+checks) while win-prob <= 0.40 minus the
+    same rate while equal; unavailable until the side has moved in both states (needs
+    %eval).
+  inputs: M/E
+  engine: cached-eval-optional
+  requires:
+  - eval
+  output_type: scalar
+  aggregation: ''
+  normalization: ''
+  saturation: rises to top
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: neutral
+  version: 1
 - id: DEC.prophylaxis
   name: Prophylaxis
   tier: T3
@@ -151,6 +175,30 @@
   status: implemented
   viz: trend
   higher: good
+  version: 1
+- id: DEC.simplify_better
+  name: Conversion instinct
+  tier: T5
+  scope: game
+  category: DEC
+  description: 'What you do when better: + = trade down toward the win, − = keep pieces
+    on.'
+  computation: Capture rate while win-prob >= 0.60 minus the capture rate while equal;
+    unavailable until the side has moved in both states (needs %eval).
+  inputs: M/E
+  engine: cached-eval-optional
+  requires:
+  - eval
+  output_type: scalar
+  aggregation: ''
+  normalization: ''
+  saturation: rises to top
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: neutral
   version: 1
 - id: DEC.trade_discipline
   name: Trade discipline
@@ -396,6 +444,29 @@
   viz: trend
   higher: bad
   version: 1
+- id: EVAL.blunders
+  name: Blunders
+  tier: T6
+  scope: game
+  category: EVAL
+  description: Moves that threw away at least 20% win probability.
+  computation: Running count of the side's moves with a win-prob drop >= 0.20 (needs
+    %eval).
+  inputs: M/E
+  engine: cached-eval-optional
+  requires:
+  - eval
+  output_type: count
+  aggregation: ''
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: bad
+  version: 1
 - id: EVAL.consistency
   name: Error consistency
   tier: T6
@@ -403,6 +474,76 @@
   category: EVAL
   description: Spread of your errors — low variance late in games is the 2700 signal.
   computation: Running standard deviation of per-move centipawn loss (needs %eval).
+  inputs: M/E
+  engine: cached-eval-optional
+  requires:
+  - eval
+  output_type: scalar
+  aggregation: ''
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: bad
+  version: 1
+- id: EVAL.mistakes
+  name: Mistakes
+  tier: T6
+  scope: game
+  category: EVAL
+  description: Moves that cost 10-20% win probability — errors below the blunder bar.
+  computation: Running count of the side's moves with a win-prob drop in [0.10, 0.20)
+    (needs %eval).
+  inputs: M/E
+  engine: cached-eval-optional
+  requires:
+  - eval
+  output_type: count
+  aggregation: ''
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: bad
+  version: 1
+- id: EVAL.worst_drop
+  name: Worst single-move drop
+  tier: T6
+  scope: game
+  category: EVAL
+  description: The single most expensive move of the game, in win-probability points.
+  computation: Running max of the side's per-move win-prob drop, in percentage points
+    (needs %eval).
+  inputs: M/E
+  engine: cached-eval-optional
+  requires:
+  - eval
+  output_type: scalar
+  aggregation: max
+  normalization: ''
+  saturation: —
+  confounders: ''
+  depends_on: []
+  residualize_on: ''
+  status: implemented
+  viz: trend
+  higher: bad
+  version: 1
+- id: EVAL.wp_loss
+  name: Win-prob loss / move
+  tier: T6
+  scope: game
+  category: EVAL
+  description: Mean win-probability lost per move (percentage points) — accuracy that
+    weighs errors by how much they actually cost.
+  computation: Eval mapped to win probability via the Lichess logistic; running mean
+    of the mover's per-move WP drop (floored at 0), in percentage points (needs %eval).
   inputs: M/E
   engine: cached-eval-optional
   requires:

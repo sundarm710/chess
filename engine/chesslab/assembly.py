@@ -20,6 +20,7 @@ from .features import Board, FeatureEngine, Piece, PositionFeatures, opposite
 from .phase import classify_phase, is_opening
 from .pipeline import ParsedGame, ParsedMove
 from .registry import FeatureResult, ResultStatus
+from .winprob import BLUNDER_WP, MISTAKE_WP, STATES, move_drop, perspective, state_of, win_prob
 
 _MINOR_HOME = {
     "w": {(1, 0), (6, 0), (2, 0), (5, 0)},  # b1,g1 (N) ; c1,f1 (B)
@@ -66,6 +67,19 @@ class MoveAssembler:
         self.time_trouble: Dict[str, int] = {"w": 0, "b": 0}     # moves made under a minute
         self._gap_window: Dict[str, List[int]] = {"w": [], "b": []}  # recent own−opp material gaps
         self.eval_losses: Dict[str, List[float]] = {"w": [], "b": []}
+        # Win-probability accounting (white-perspective WP, carried forward over
+        # eval-less moves; the start position is a known 0.5).
+        self._last_wp: Optional[float] = 0.5 if game.has_eval else None
+        self.wp_losses: Dict[str, List[float]] = {"w": [], "b": []}
+        self.blunders: Dict[str, int] = {"w": 0, "b": 0}    # WP drop >= BLUNDER_WP
+        self.mistakes: Dict[str, int] = {"w": 0, "b": 0}    # BLUNDER_WP > drop >= MISTAKE_WP
+        self.worst_drop: Dict[str, float] = {"w": 0.0, "b": 0.0}
+        # State-conditioned behavior: moves / forcing moves / captures made while the
+        # mover was better / equal / worse (state read BEFORE the move) — the raw
+        # material for the "what do you do when worse?" temperament contrasts.
+        self.state_moves: Dict[str, Dict[str, int]] = {s: {st: 0 for st in STATES} for s in ("w", "b")}
+        self.state_forcing: Dict[str, Dict[str, int]] = {s: {st: 0 for st in STATES} for s in ("w", "b")}
+        self.state_caps: Dict[str, Dict[str, int]] = {s: {st: 0 for st in STATES} for s in ("w", "b")}
         # Phase mix (shared, board-level): how much of the game is spent in the endgame
         # and when it arrives. The "dilution" parameter, turned into an explicit signal.
         self._positions_seen = 0
@@ -136,6 +150,7 @@ class MoveAssembler:
 
         if game.has_eval:
             self._record_eval_loss(i, s)
+            self._record_wp(i, s, mv)
 
     def _record_eval_loss(self, i: int, s: str) -> None:
         game = self.game
@@ -150,6 +165,37 @@ class MoveAssembler:
         after = max(-_EVAL_CAP_CP, min(_EVAL_CAP_CP, after))
         loss = max(0, before - after) if s == "w" else max(0, after - before)
         self.eval_losses[s].append(float(loss))
+
+    def _record_wp(self, i: int, s: str, mv: ParsedMove) -> None:
+        """Win-prob accounting for one move: loss, blunder/mistake bands, state counters."""
+        before = self._last_wp
+        # State is read BEFORE the move — what the mover chose to do *from* that state.
+        if before is not None:
+            state = state_of(perspective(s, before))
+            self.state_moves[s][state] += 1
+            if mv.is_capture or mv.is_check:
+                self.state_forcing[s][state] += 1
+            if mv.is_capture:
+                self.state_caps[s][state] += 1
+        after = win_prob(mv.eval_cp, mv.eval_mate)
+        drop = move_drop(s, before, after)
+        if drop is not None:
+            self.wp_losses[s].append(drop)
+            if drop >= BLUNDER_WP:
+                self.blunders[s] += 1
+            elif drop >= MISTAKE_WP:
+                self.mistakes[s] += 1
+            self.worst_drop[s] = max(self.worst_drop[s], drop)
+        if after is not None:
+            self._last_wp = after
+
+    def _state_contrast(self, s: str, counts: Dict[str, Dict[str, int]], state: str) -> Optional[float]:
+        """Rate of ``counts`` in ``state`` minus the rate when equal; None until the
+        side has moved in both states (no contrast without both samples)."""
+        n_state, n_equal = self.state_moves[s][state], self.state_moves[s]["equal"]
+        if not n_state or not n_equal:
+            return None
+        return counts[s][state] / n_state - counts[s]["equal"] / n_equal
 
     # -- helpers -----------------------------------------------------------
     @staticmethod
@@ -253,6 +299,20 @@ class MoveAssembler:
             consistency = statistics.pstdev(losses) if len(losses) >= 2 else 0.0
             add("EVAL.acpl", side, round(acpl, 1), available=game.has_eval)
             add("EVAL.consistency", side, round(consistency, 1), available=game.has_eval)
+            # Win-prob tier (percentage points, mover's perspective).
+            wpl = self.wp_losses[side]
+            add("EVAL.wp_loss", side, round(statistics.fmean(wpl) * 100, 1) if wpl else 0.0,
+                available=game.has_eval)
+            add("EVAL.blunders", side, float(self.blunders[side]), available=game.has_eval)
+            add("EVAL.mistakes", side, float(self.mistakes[side]), available=game.has_eval)
+            add("EVAL.worst_drop", side, round(self.worst_drop[side] * 100, 1), available=game.has_eval)
+            # Temperament contrasts: behavior when worse/better vs when equal.
+            fight = self._state_contrast(side, self.state_forcing, "worse")
+            convert = self._state_contrast(side, self.state_caps, "better")
+            add("DEC.complicate_worse", side, round(fight, 3) if fight is not None else None,
+                available=game.has_eval and fight is not None)
+            add("DEC.simplify_better", side, round(convert, 3) if convert is not None else None,
+                available=game.has_eval and convert is not None)
             # Phase drift: endgame mean − middlegame mean of each base; unavailable until
             # the side has seen both phases (a game still in the middlegame has no drift).
             for name in _DRIFT_FEATS:

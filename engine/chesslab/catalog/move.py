@@ -158,6 +158,58 @@ def move_features() -> List[AssemblyFeature]:
             computation="Running standard deviation of per-move centipawn loss (needs %eval).",
             saturation="—",
         ),
+        _f(
+            id="EVAL.wp_loss", name="Win-prob loss / move", tier="T6", category="EVAL",
+            inputs="M/E", output_type="scalar", viz="trend", higher="bad",
+            requires=frozenset({Capability.EVAL}),
+            description="Mean win-probability lost per move (percentage points) — accuracy that "
+            "weighs errors by how much they actually cost.",
+            computation="Eval mapped to win probability via the Lichess logistic; running mean of "
+            "the mover's per-move WP drop (floored at 0), in percentage points (needs %eval).",
+            saturation="—",
+        ),
+        _f(
+            id="EVAL.blunders", name="Blunders", tier="T6", category="EVAL",
+            inputs="M/E", output_type="count", viz="trend", higher="bad",
+            requires=frozenset({Capability.EVAL}),
+            description="Moves that threw away at least 20% win probability.",
+            computation="Running count of the side's moves with a win-prob drop >= 0.20 (needs %eval).",
+            saturation="—",
+        ),
+        _f(
+            id="EVAL.mistakes", name="Mistakes", tier="T6", category="EVAL",
+            inputs="M/E", output_type="count", viz="trend", higher="bad",
+            requires=frozenset({Capability.EVAL}),
+            description="Moves that cost 10-20% win probability — errors below the blunder bar.",
+            computation="Running count of the side's moves with a win-prob drop in [0.10, 0.20) (needs %eval).",
+            saturation="—",
+        ),
+        _f(
+            id="EVAL.worst_drop", name="Worst single-move drop", tier="T6", category="EVAL",
+            inputs="M/E", output_type="scalar", viz="trend", higher="bad", aggregation="max",
+            requires=frozenset({Capability.EVAL}),
+            description="The single most expensive move of the game, in win-probability points.",
+            computation="Running max of the side's per-move win-prob drop, in percentage points (needs %eval).",
+            saturation="—",
+        ),
+        _f(
+            id="DEC.complicate_worse", name="Fight response", tier="T5", category="DEC",
+            inputs="M/E", output_type="scalar", viz="trend", higher="neutral",
+            requires=frozenset({Capability.EVAL}),
+            description="What you do when worse: + = seek forcing complications, − = go quiet.",
+            computation="Forcing-move rate (captures+checks) while win-prob <= 0.40 minus the same "
+            "rate while equal; unavailable until the side has moved in both states (needs %eval).",
+            saturation="rises to top",
+        ),
+        _f(
+            id="DEC.simplify_better", name="Conversion instinct", tier="T5", category="DEC",
+            inputs="M/E", output_type="scalar", viz="trend", higher="neutral",
+            requires=frozenset({Capability.EVAL}),
+            description="What you do when better: + = trade down toward the win, − = keep pieces on.",
+            computation="Capture rate while win-prob >= 0.60 minus the capture rate while equal; "
+            "unavailable until the side has moved in both states (needs %eval).",
+            saturation="rises to top",
+        ),
         # --- Phase / endgame tier (END) -----------------------------------------
         # These make the phase mix an explicit parameter rather than a silent confound
         # that dilutes the all-game means (CLAUDE.md §17 / the endgame-dilution note).
