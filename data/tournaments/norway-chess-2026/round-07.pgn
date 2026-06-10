@@ -1,0 +1,78 @@
+[Event "14th Norway Chess 2026"]
+[Site "Oslo NOR"]
+[Date "2026.06.01"]
+[Round "7.1"]
+[White "Praggnanandhaa, R"]
+[Black "Firouzja, Alireza"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2733"]
+[BlackElo "2759"]
+[ECO "C50"]
+[Opening "Giuoco Pianissimo"]
+[WhiteFideId "25059530"]
+[BlackFideId "12573981"]
+[EventDate "2026.05.25"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d3 Bc5 5. a3 a6 6. Be3 d6 7. Nbd2 O-O 8. Qe2
+Re8 9. Ba2 Be6 10. Bxe6 Rxe6 11. Bxc5 dxc5 12. O-O h6 13. a4 a5 14. Nc4 Qd7 15.
+g3 b6 16. Kg2 Rd8 17. b3 Re7 18. Rae1 Qe6 19. Nh4 Nd4 20. Qd1 Red7 21. Ne3 c6
+22. Nf3 b5 23. Nd2 Qe7 24. Qa1 g6 25. axb5 cxb5 26. Qxa5 Ra7 27. Qc3 Ra2 28.
+Nf3 b4 29. Qc4 Nxf3 30. Kxf3 Rd4 31. Qb5 Qa7 32. Kg2 Rd8 33. f4 Ra5 34. Qc6 Ra6
+35. Ra1 Rxa1 36. Qxf6 Rf8 37. Rf2 exf4 38. Qxf4 h5 39. Nd5 f5 40. Qe5 Qg7 41.
+Qe6+ Qf7 42. Qd6 Qg7 43. exf5 gxf5 44. Re2 f4 45. Nxf4 Qb7+ 46. Re4 Ra6 47.
+Qxc5 Rc8 48. Qf5 Rxc2+ 49. Kh3 Qf7 50. Qg5+ Kf8 51. Qd8+ 1-0
+
+[Event "14th Norway Chess 2026"]
+[Site "Oslo NOR"]
+[Date "2026.06.01"]
+[Round "7.2"]
+[White "Keymer, Vincent"]
+[Black "Carlsen, Magnus"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2759"]
+[BlackElo "2840"]
+[ECO "A05"]
+[Opening "Reti"]
+[Variation "King's Indian attack"]
+[WhiteFideId "12940690"]
+[BlackFideId "1503014"]
+[EventDate "2026.05.25"]
+
+1. Nf3 Nf6 2. g3 g6 3. c4 Bg7 4. Bg2 O-O 5. d4 d6 6. Nc3 Re8 7. O-O Bd7 8. Bg5
+h6 9. Bf4 Nc6 10. d5 Na5 11. b3 e5 12. dxe6 Bxe6 13. Qd2 Kh7 14. Nd4 Bd7 15. e4
+Nc6 16. Be3 a5 17. h3 a4 18. Nc2 Qc8 19. g4 axb3 20. axb3 Rxa1 21. Rxa1 h5 22.
+f3 hxg4 23. hxg4 Ne5 24. Rf1 Kg8 25. Nd4 Qd8 26. Nde2 Nh7 27. g5 f6 28. gxf6
+Nxf6 29. Nd5 Nf7 30. Rf2 Nxd5 31. cxd5 c6 32. Nf4 Qf6 33. Rf1 Ra8 34. dxc6 bxc6
+35. Ne2 g5 36. f4 gxf4 37. Nxf4 Ra1 38. Rxa1 Qxa1+ 39. Qc1 Qe5 40. Qe1 Bh6 41.
+Nd3 Bxe3+ 42. Qxe3 Qc3 43. b4 Be6 44. Kh2 Kf8 45. Qg3 Qh8+ 46. Kg1 Qd4+ 47. Kh2
+Ne5 48. Nxe5 dxe5 49. Qg5 Ke8 50. Qg7 Kd8 51. Qf8+ Kc7 52. Qe7+ Bd7 53. Qc5 Kb7
+54. Qxd4 exd4 55. Bf1 Kb6 56. Kg3 c5 57. bxc5+ 1/2-1/2
+
+[Event "14th Norway Chess 2026"]
+[Site "Oslo NOR"]
+[Date "2026.06.01"]
+[Round "7.3"]
+[White "Gukesh, D"]
+[Black "So, Wesley"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2732"]
+[BlackElo "2754"]
+[ECO "C55"]
+[Opening "Two knights defence (Modern bishop's opening)"]
+[WhiteFideId "46616543"]
+[BlackFideId "5202213"]
+[EventDate "2026.05.25"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d3 Be7 5. O-O O-O 6. Bb3 d5 7. exd5 Nxd5 8.
+Re1 Bg4 9. h3 Bh5 10. g4 Bg6 11. Nxe5 Nxe5 12. Rxe5 Nb4 13. a3 Nc6 14. Rd5 Bd6
+15. Bf4 Ne7 16. Bxd6 cxd6 17. Rb5 b6 18. Nc3 Kh8 19. Rb4 f5 20. Rf4 Be8 21. Qf3
+Bc6 22. Qg3 Qd7 23. Rd4 Rad8 24. Re1 fxg4 25. Be6 Qe8 26. hxg4 Rf3 27. Qh2 Ng6
+28. Kf1 Ne5 29. Bf5 h6 30. Nd5 Rxf5 31. gxf5 Qf7 32. Qg2 Qxf5 33. Re3 Rf8 34.
+c4 b5 35. Qg3 Bxd5 36. Rxd5 bxc4 37. dxc4 Qb1+ 38. Re1 Qxb2 39. Rxd6 Nxc4 40.
+Rd3 Rf5 1/2-1/2

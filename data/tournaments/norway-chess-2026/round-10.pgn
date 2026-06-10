@@ -1,0 +1,77 @@
+[Event "14th Norway Chess 2026"]
+[Site "Oslo NOR"]
+[Date "2026.06.05"]
+[Round "10.1"]
+[White "Firouzja, Alireza"]
+[Black "So, Wesley"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2759"]
+[BlackElo "2754"]
+[ECO "C24"]
+[Opening "Bishop's opening"]
+[Variation "Berlin defence"]
+[WhiteFideId "12573981"]
+[BlackFideId "5202213"]
+[EventDate "2026.05.25"]
+
+1. e4 e5 2. Bc4 Nf6 3. d3 Bc5 4. Nc3 c6 5. Qf3 b5 6. Bb3 a5 7. a3 d6 8. Nge2
+Be6 9. h3 Nbd7 10. Ng3 Bxb3 11. cxb3 Nf8 12. Nf5 Ne6 13. Ne2 Nd7 14. O-O O-O
+15. Bd2 g6 16. b4 Bb6 17. Nh6+ Kg7 18. Rac1 Rc8 19. Qg3 Kh8 20. Kh1 axb4 21.
+axb4 Nf6 22. Qf3 Kg7 23. Rc2 Qd7 24. Rfc1 Ng8 25. Nxg8 Kxg8 26. Be3 Bxe3 27.
+Qxe3 c5 28. bxc5 dxc5 29. f4 exf4 30. Nxf4 Nxf4 31. Qxf4 1/2-1/2
+
+[Event "14th Norway Chess 2026"]
+[Site "Oslo NOR"]
+[Date "2026.06.05"]
+[Round "10.2"]
+[White "Carlsen, Magnus"]
+[Black "Gukesh, D"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2840"]
+[BlackElo "2732"]
+[ECO "B10"]
+[Opening "Caro-Kann"]
+[Variation "anti-anti-Caro-Kann defence"]
+[WhiteFideId "1503014"]
+[BlackFideId "46616543"]
+[EventDate "2026.05.25"]
+
+1. e4 c6 2. c4 d5 3. exd5 cxd5 4. cxd5 Nf6 5. Nc3 Nxd5 6. Nf3 Nc6 7. Bb5 e6 8.
+O-O Be7 9. d4 O-O 10. Re1 Bd7 11. Bd3 Rc8 12. Nxd5 exd5 13. Ne5 Bf6 14. Bf4 g6
+15. Qb3 Na5 16. Qb4 Be6 17. Rad1 Re8 18. h3 Be7 19. Qa4 Qb6 20. Nd7 Bxd7 21.
+Qxd7 Nc6 22. Qxd5 Red8 23. Qb5 Bf6 24. Qxb6 axb6 25. Be4 Rxd4 26. Rxd4 Nxd4 27.
+Bxb7 Rc2 28. Bh6 Ne6 29. Rc1 Rxc1+ 30. Bxc1 Nc5 31. Bd5 Na4 32. Kf1 Nxb2 33.
+Ke2 Kf8 34. Be3 Ke7 35. Kd2 Na4 36. Kd3 Be5 37. Bb3 Nc5+ 38. Kc4 f5 39. Kb5 f4
+40. Bd2 Kd7 41. Kxb6 Ne4 42. Bc1 Nxf2 43. Bd5 Bd4+ 44. Kb5 g5 45. Kc4 Bb6 46.
+Bf3 Nh1 47. Bd2 Ng3 48. a4 Kc7 49. a5 Bf2 50. Kd5 h5 51. Bc3 Kb7 52. Bf6 g4 53.
+hxg4 hxg4 54. Bxg4 Nf1 55. a6+ Ka7 56. Be2 Nd2 57. Bd4+ Bxd4 58. Kxd4 f3 59.
+Bxf3 Kxa6 60. Bd5 Kb6 61. g4 Nf1 62. g5 Ng3 63. Ke5 Kc7 64. g6 Nh5 65. Bf3 1-0
+
+[Event "14th Norway Chess 2026"]
+[Site "Oslo NOR"]
+[Date "2026.06.05"]
+[Round "10.3"]
+[White "Praggnanandhaa, R"]
+[Black "Keymer, Vincent"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2733"]
+[BlackElo "2759"]
+[ECO "E10"]
+[Opening "Queen's pawn game"]
+[WhiteFideId "25059530"]
+[BlackFideId "12940690"]
+[EventDate "2026.05.25"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. e3 Be7 5. Nc3 O-O 6. cxd5 exd5 7. Bd3 Nc6 8. h3
+Bd6 9. O-O Re8 10. Re1 h6 11. a3 Be6 12. b4 a6 13. Bb2 Qd7 14. b5 axb5 15. Bxb5
+Qe7 16. Ne5 Bxa3 17. Bxa3 Rxa3 18. Bxc6 Rxa1 19. Qxa1 bxc6 20. Nxc6 Qd6 21. Ne5
+Rc8 22. Rb1 c5 23. Nb5 Qf8 24. dxc5 Bf5 25. Rb3 Qxc5 26. Nd4 Qc1+ 27. Qxc1
+Rxc1+ 28. Kh2 Be6 29. Rb6 Rf1 30. f4 h5 31. Rb8+ Kh7 32. Nef3 Ne4 33. f5 Bd7
+34. Rd8 Ba4 35. Ne5 g6 36. Rf8 Nd6 37. fxg6+ Kg7 38. Ne6+ fxe6 39. Rxf1 Be8 40.
+Kg3 Bxg6 41. Kf4 h4 42. Ra1 Nf7 43. Ra7 Kf6 44. Ng4+ Kg7 45. Re7 1-0

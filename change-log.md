@@ -6,6 +6,24 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-06-10 — Norway Chess 2026: full event ingested (30 games) + evals
+
+- **What:** `data/raw/norway26.pgn` updated to the complete event (30 games, 10 rounds,
+  6 players; was 12). Ran `build_library.py` (rounds split into
+  `data/tournaments/norway-chess-2026/`, library now 776 games), annotated all 30 games
+  with Stockfish depth-12 `%eval` (`annotate_eval.py`), rebuilt all profiles, synced the
+  SPA data. Norway now has the full WP/story tier (archetypes: 8 squeezes, 4 grinds,
+  4 blunder-fests, 3 single-blunder games, 2 sac-attacks, 1 fortress, 16 quiet-draw
+  player-tags); no clocks in the source, so `TIM.*` stays unavailable.
+- **Gotcha fixed & documented (CLAUDE.md §16):** re-running `build_library.py`
+  regenerates every `t/<slug>.json` from raw — wiping prior `%eval` annotations. The
+  Candidates/Grand-Swiss annotated files were restored from git instead of re-running
+  hours of Stockfish; the warning is now in the data-layout section.
+- **Why:** keep the library current ahead of the Gukesh–Sindarov match prep workflow;
+  every new event should land with evals so the story layer works end to end.
+
+---
+
 ## 2026-06-10 — Win-probability tier + game story layer (chapters / moments / archetypes)
 
 - **What — WP layer (`chesslab/winprob.py`):** eval → win probability via the Lichess

@@ -420,6 +420,11 @@ welo, belo, result, eco, opening, label, pgn`.
 - **Category label = `"{tournament} {year} — {Open|Women}"`** (e.g. `Norway Chess 2026 — Open`).
 - `slug` is hyphenated, no underscores (so `__` is an unambiguous id delimiter).
 
+⚠ **`build_library.py` regenerates every `web/data/t/<slug>.json` from `data/raw/` —
+which has no `%eval` — so re-running it WIPES the Stockfish annotations for all
+tournaments.** After any library rebuild, either re-run `annotate_eval.py <slug>` or
+restore the untouched tournaments' `t/*.json` from git before `build_profiles.py`.
+
 **Frontend filtering (two cascading selects).** `#tournamentSel` (categories from
 `library.json`, plus a `Custom PGN…` option) → on change, lazy-fetch `t/<slug>.json` and
 populate `#gameSel` grouped by round; picking a game loads it. There are **no built-in

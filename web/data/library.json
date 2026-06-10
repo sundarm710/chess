@@ -40,8 +40,8 @@
       "section": "open",
       "format": "round-robin",
       "label": "Norway Chess 2026 \u2014 Open",
-      "rounds": 4,
-      "count": 12,
+      "rounds": 10,
+      "count": 30,
       "has_clock": false
     }
   ]
