@@ -6,6 +6,22 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-07-03 23:39 IST — Page-1 review pass: verbatim comments + prompt hardening
+
+- **What:** Hand-reviewed the p.35 extraction against the photo (the first manual run
+  of the future review-UI step). No moves were missing; the gaps were paraphrased
+  comments, dropped a)/b)/c) variation labels, and off-page content (game stem on the
+  facing page; the bold 8...Bxd4 game continuation on the next page — noted as a scan
+  note in the PGN). Corrected movetext re-validated (70 moves, 14 comments) and the
+  out/ JSON+PGN rewritten with a `human_review` stamp; FEN visually confirmed
+  square-by-square. Spike prompt hardened: comments must be transcribed VERBATIM and
+  the book's variation labels preserved.
+- **Why:** user spotted the gaps when comparing the PGN to the page — confirming both
+  Phase-0 weaknesses (paraphrasing, cross-page spill) and that a review pass catches
+  them; the prompt fix stops the paraphrasing class at the source.
+
+---
+
 ## 2026-07-03 23:29 IST — Phase-0 spike RUN: 5/5 pages recognized + PGN export
 
 - **What:** Ran the recognition spike on 5 real book-page photos — all 5 extracted via

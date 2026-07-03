@@ -59,7 +59,11 @@ exactly these fields:
 Rules for movetext:
 - Convert figurine notation to English letters (♘f3 -> Nf3).
 - Variations go in parentheses, nested as printed; the author's main line stays at the top level.
-- The author's prose annotations go in { } comments attached directly after the move they discuss.
+- The author's prose annotations go in { } comments attached directly after the move
+  they discuss, transcribed VERBATIM — never paraphrase, condense, or reword. The
+  author's exact voice is the product; a shorter comment is a wrong comment.
+- Preserve the book's variation labels (a), b), c), lines, arrows between diagrams)
+  by starting the corresponding variation's first comment with that label.
 - Keep move-quality suffixes on the move itself (Nf3!, h4!?, Qb3?). Put evaluation
   symbols (+-, =, unclear, with-compensation, etc.) inside the { } comment as plain text.
 - Use "..." continuation for Black moves after a comment or variation (e.g. 12... Nf6).
