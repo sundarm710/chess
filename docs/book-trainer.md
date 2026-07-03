@@ -86,11 +86,17 @@ for whole chapters.
 
 ## Phases
 
-- **Phase 0 — feasibility spike (scaffolding DONE; needs photos).**
-  `scripts/spike_recognize.py` + `engine/chesslab/study.py` (validator, golden-tested).
-  Drop 3–5 page photos into `data/studies-raw/inbox/` and run
-  `engine/.venv/bin/python scripts/spike_recognize.py` to measure recognition accuracy
-  on real book typography before any further build.
+- **Phase 0 — feasibility spike: DONE (2026-07-03), verdict POSITIVE.** 5/5 real page
+  photos recognized via the subscription `claude -p` path; every extraction (174 moves,
+  16 sidelines, 41 comments total) replayed fully legal from its extracted FEN. The
+  agent self-verifies (resolves piece ambiguities by contradiction with printed lines,
+  infers castling/ep fields with stated evidence, skips the page's second diagram) at
+  a cost of ~5–15+ min/page — one dense page needed the CLI timeout raised to 1800 s.
+  Known weaknesses to design around: (1) squares no printed line touches are
+  unverifiable → the review UI stays mandatory; (2) comments are sometimes paraphrased,
+  not verbatim → tighten the prompt; (3) analysis spills across pages → Phase 2 needs
+  multi-page stitching. Stopgap practice path: the spike also emits importable
+  annotated PGNs (`data/studies-raw/out/*.pgn`) for Lichess studies / any GUI.
 - **Phase 1 — study model + trainer core.** Tree model + tree-preserving parser
   (Python canonical → JS mirror → golden fixtures), full-FEN seeding, click-to-move,
   Trainer view. Works with hand-authored study JSONs — independent of Phase 0.

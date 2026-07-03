@@ -6,6 +6,24 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-07-03 23:29 IST — Phase-0 spike RUN: 5/5 pages recognized + PGN export
+
+- **What:** Ran the recognition spike on 5 real book-page photos — all 5 extracted via
+  the subscription `claude -p` path and validated fully legal (174 moves, 16 sidelines,
+  41 author comments). Spike script hardened from the run: CLI timeout 600→1800 s (one
+  dense page needed a retry), line-buffered progress output (was invisible when
+  redirected), and a new `extraction_to_pgn()` that emits importable annotated PGNs
+  (`data/studies-raw/out/*.pgn`, gitignored) so extractions are practisable TODAY in a
+  Lichess study or any GUI. Findings recorded in `docs/book-trainer.md` (Phase 0 →
+  DONE/positive; weaknesses: untouched squares unverifiable, paraphrased comments,
+  cross-page spill).
+- **Why:** Phase 0's question was whether Claude vision reads this book's typography
+  reliably enough to build on — answer is yes, with the review-UI requirement
+  confirmed by the model's own uncertainty reports. PGN export gives a practice path
+  before the Phase-1 in-app trainer exists.
+
+---
+
 ## 2026-07-03 18:12 IST — Book trainer: design doc + Phase-0 recognition spike
 
 - **What:** New book-trainer tier scaffolding (photo a book page → diagram-as-FEN +

@@ -37,7 +37,7 @@ INBOX = ROOT / "data" / "studies-raw" / "inbox"
 OUTBOX = ROOT / "data" / "studies-raw" / "out"
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp", ".heic"}
 API_MODEL = "claude-opus-4-8"
-CLI_TIMEOUT_S = 600
+CLI_TIMEOUT_S = 1800  # the headless agent self-verifies against every printed line; dense pages run long
 
 PROMPT = """\
 You are reading one photographed page of a chess book. It contains a printed board
@@ -248,6 +248,7 @@ class SpikeRunner:
             result = SpikeResult(photo.name, recognizer_name, recognition, report)
             out_path = self._outbox / f"{photo.stem}.json"
             out_path.write_text(json.dumps(result.to_json(), indent=2))
+            (self._outbox / f"{photo.stem}.pgn").write_text(extraction_to_pgn(extraction))
             print(f"  via {recognizer_name}")
             print(f"  fen: {extraction.fen}")
             print(f"  {report.summary}")
@@ -256,6 +257,17 @@ class SpikeRunner:
             print(f"  -> {out_path.relative_to(ROOT)}")
             failures += 0 if report.ok else 1
         return failures
+
+
+def extraction_to_pgn(extraction: PageExtraction) -> str:
+    """Render an extraction as an importable annotated PGN (Lichess study, any GUI)."""
+    intro = f"{{ {extraction.intro.strip()} }} " if extraction.intro.strip() else ""
+    return (
+        f'[Event "Book study: {extraction.source}"]\n'
+        f'[SetUp "1"]\n'
+        f'[FEN "{extraction.fen}"]\n\n'
+        f"{intro}{extraction.movetext.strip()} *\n"
+    )
 
 
 def collect_photos(args: list[str]) -> list[Path]:
@@ -267,6 +279,7 @@ def collect_photos(args: list[str]) -> list[Path]:
 
 
 def main(argv: list[str]) -> int:
+    sys.stdout.reconfigure(line_buffering=True)  # progress must land even when redirected to a file
     photos = collect_photos(argv)
     if not photos:
         print(f"No photos found. Drop page photos into {INBOX.relative_to(ROOT)}/ and re-run.")
