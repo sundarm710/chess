@@ -6,6 +6,26 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-07-03 18:12 IST — Book trainer: design doc + Phase-0 recognition spike
+
+- **What:** New book-trainer tier scaffolding (photo a book page → diagram-as-FEN +
+  author analysis-as-annotated-PGN → practice on the board with the author's comments
+  as feedback). `docs/book-trainer.md` (architecture, locked decisions, phases);
+  `engine/chesslab/study.py` (`PageExtraction` + `StudyValidator` — replays every
+  extracted variation from the extracted FEN with python-chess so a single misread
+  piece flags the page instead of silently corrupting a study) with golden tests
+  (`engine/tests/test_study.py`, 5 tests); `scripts/spike_recognize.py` (`Recognizer`
+  chain: headless `claude -p` on the Claude Code subscription first, Anthropic API
+  `claude-opus-4-8` fallback; validates + writes JSON to `data/studies-raw/out/`);
+  `data/studies-raw/` gitignored (book photos stay out of git). CLI plumbing verified
+  end-to-end against `docs/screenshot.png`.
+- **Why:** origin request — understand author-analyzed book positions by playing them
+  on the app's board with guided feedback. Phase 0 measures recognition accuracy on
+  real book typography (drop 3–5 photos in `data/studies-raw/inbox/`, run the spike)
+  before building the trainer UI, tree parser, or phone-capture flow.
+
+---
+
 ## 2026-06-10 — Norway Chess 2026: full event ingested (30 games) + evals
 
 - **What:** `data/raw/norway26.pgn` updated to the complete event (30 games, 10 rounds,

@@ -9,6 +9,10 @@ __pycache__/
 # Large public-data dumps (CLAUDE.md §4, §8) — never committed
 data/dumps/
 
+# Book-trainer page photos + raw extractions (docs/book-trainer.md) — personal-use
+# book content, never committed
+data/studies-raw/
+
 # Backend analysis artifacts / local store (FileFeatureStore default root)
 engine/.data/
 
