@@ -6,6 +6,28 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-09-17 15:44 IST — 46th FIDE Chess Olympiad (Samarkand 2026) added as a live source
+
+- **What:** New `scripts/fetch_olympiad.py` pulls the Olympiad's Open and Women sections
+  from Lichess broadcasts. Lichess splits each section into several parallel
+  sub-broadcasts (Open I–V, Women I–IV, all boards too many for one broadcast); the
+  script fetches every sub-broadcast's per-round PGN export (`/api/broadcast/round/
+  <id>.pgn`, already carrying Lichess's own live `%eval` + `%clk`) and concatenates
+  same-round chunks into `data/raw/olympiad2026/{open,women}/round-NN/games.pgn`,
+  matching the existing "dir" source layout. Added matching `SOURCES` rows in
+  `build_library.py` (`olympiad-2026-open`, `olympiad-2026-women`, format `swiss`).
+  Rebuilt the library (`build_library.py`) and profiles (`build_profiles.py`); per the
+  documented §16 gotcha, the rebuild wipes other tournaments' Stockfish-annotated
+  `web/data/t/*.json`, so those four files were restored from git afterward (untouched
+  — only the two new Olympiad files are new). Round ids are permanent once Lichess
+  creates the round page, so the manifest is stable and the script can just be re-run
+  as later rounds are played to pull the latest moves. Currently live: Open round 1
+  complete (393 games), Women rounds 1–2 (368 games, round 2 in progress).
+- **Why:** user wants to track the Olympiad as it happens; this makes re-running one
+  script (+ the two build steps) the whole refresh workflow, no manual PGN wrangling.
+
+---
+
 ## 2026-07-03 23:39 IST — Page-1 review pass: verbatim comments + prompt hardening
 
 - **What:** Hand-reviewed the p.35 extraction against the photo (the first manual run

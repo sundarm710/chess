@@ -38,6 +38,10 @@ SOURCES = [
      "section": "open", "format": "swiss", "kind": "file", "path": "fidegrandsw25.pgn"},
     {"slug": "norway-chess-2026", "tournament": "Norway Chess", "year": 2026,
      "section": "open", "format": "round-robin", "kind": "file", "path": "norway26.pgn"},
+    {"slug": "olympiad-2026-open", "tournament": "FIDE Chess Olympiad", "year": 2026,
+     "section": "open", "format": "swiss", "kind": "dir", "path": "olympiad2026/open"},
+    {"slug": "olympiad-2026-women", "tournament": "FIDE Chess Olympiad", "year": 2026,
+     "section": "women", "format": "swiss", "kind": "dir", "path": "olympiad2026/women"},
 ]
 
 def _export(game, headers: bool) -> str:

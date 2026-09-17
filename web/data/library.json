@@ -43,6 +43,28 @@
       "rounds": 10,
       "count": 30,
       "has_clock": false
+    },
+    {
+      "slug": "olympiad-2026-open",
+      "tournament": "FIDE Chess Olympiad",
+      "year": 2026,
+      "section": "open",
+      "format": "swiss",
+      "label": "FIDE Chess Olympiad 2026 \u2014 Open",
+      "rounds": 1,
+      "count": 393,
+      "has_clock": true
+    },
+    {
+      "slug": "olympiad-2026-women",
+      "tournament": "FIDE Chess Olympiad",
+      "year": 2026,
+      "section": "women",
+      "format": "swiss",
+      "label": "FIDE Chess Olympiad 2026 \u2014 Women",
+      "rounds": 2,
+      "count": 368,
+      "has_clock": true
     }
   ]
 }
