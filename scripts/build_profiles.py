@@ -14,7 +14,7 @@ import json
 import pathlib
 
 from chesslab import build_default_registry
-from chesslab.aggregate import summarize, tournament_profile
+from chesslab.aggregate import summarize, team_profile, tournament_profile
 from chesslab.manifest import build_manifest
 from chesslab.orchestrator import Orchestrator
 from chesslab.pipeline import parse_pgn
@@ -52,8 +52,12 @@ def main() -> None:
             t["slug"], t["label"], summaries, manifest,
             has_clock=t.get("has_clock", False), has_eval=has_eval, feature_set_version=version,
         )
+        teams = team_profile(t["slug"], t["label"], summaries, manifest, feature_set_version=version)
+        if teams is not None:
+            profile["team_profile"] = teams
         (out_dir / f"{t['slug']}.json").write_text(json.dumps(profile, separators=(",", ":")))
-        print(f"  {t['slug']}: {len(summaries)} games, {len(profile['players'])} players"
+        team_note = f", {len(teams['teams'])} teams" if teams is not None else ""
+        print(f"  {t['slug']}: {len(summaries)} games, {len(profile['players'])} players" + team_note
               + (f", {skipped} skipped" if skipped else ""))
 
     print(f"wrote {len(index)} profiles -> {out_dir}")

@@ -27,6 +27,8 @@ export function GameView({
   const games = useMemo(() => doc.data?.games ?? [], [doc.data]);
 
   const [gameId, setGameId] = useState<string | null>(initialGameId ?? null);
+  const [team, setTeam] = useState('all'); // country/team filter (team events only)
+  const [teamSlug, setTeamSlug] = useState(slug); // last slug the filter was reset for
   const [customPgn, setCustomPgn] = useState('');
   const [submittedCustom, setSubmittedCustom] = useState('');
   const [backend, setBackend] = useState(true); // default on so MOVE/CLOCK features compute
@@ -35,12 +37,31 @@ export function GameView({
   const [selectedId, setSelectedId] = useState('MAT.hanging');
   const appliedInitial = useRef(false);
 
-  // Pick a default game when the tournament loads.
-  useEffect(() => {
-    if (!isCustom && games.length && !games.find((g) => g.id === gameId)) {
-      setGameId(initialGameId && games.find((g) => g.id === initialGameId) ? initialGameId : games[0].id);
+  // Country/team filter (FIDE Olympiad etc. — CLAUDE.md §16); reset it on tournament
+  // change (React's "adjust state during render" recipe — avoids an effect-driven reset).
+  if (slug !== teamSlug) {
+    setTeamSlug(slug);
+    setTeam('all');
+  }
+  const teams = useMemo(() => {
+    const set = new Set<string>();
+    for (const g of games) {
+      if (g.wteam) set.add(g.wteam);
+      if (g.bteam) set.add(g.bteam);
     }
-  }, [games, isCustom, gameId, initialGameId]);
+    return [...set].sort();
+  }, [games]);
+  const filteredGames = useMemo(
+    () => (team === 'all' ? games : games.filter((g) => g.wteam === team || g.bteam === team)),
+    [games, team],
+  );
+
+  // Pick a default game when the tournament (or team filter) loads/changes.
+  useEffect(() => {
+    if (!isCustom && filteredGames.length && !filteredGames.find((g) => g.id === gameId)) {
+      setGameId(initialGameId && filteredGames.find((g) => g.id === initialGameId) ? initialGameId : filteredGames[0].id);
+    }
+  }, [filteredGames, isCustom, gameId, initialGameId]);
 
   const game: GameRecord | null = useMemo(() => games.find((g) => g.id === gameId) ?? null, [games, gameId]);
   const pgn = isCustom ? submittedCustom || null : game?.pgn ?? null;
@@ -82,16 +103,16 @@ export function GameView({
   const goto = (p: number) => setPly(Math.max(0, Math.min(nMoves, p)));
   const move = data && ply > 0 ? data.moves[ply - 1] : null;
 
-  // group games by round for the picker
+  // group games by round for the picker (post country/team filter)
   const grouped = useMemo(() => {
     const out: { round: number; games: GameRecord[] }[] = [];
-    for (const g of games) {
+    for (const g of filteredGames) {
       const last = out[out.length - 1];
       if (!last || last.round !== g.round) out.push({ round: g.round, games: [g] });
       else last.games.push(g);
     }
     return out;
-  }, [games]);
+  }, [filteredGames]);
 
   const btn = 'rounded-md border border-line bg-white px-2.5 py-1 text-sm disabled:opacity-40';
 
@@ -145,6 +166,20 @@ export function GameView({
               </button>
             </div>
           ) : (
+            <>
+              {teams.length > 0 && (
+                <select
+                  className="rounded-md border border-line bg-white px-2 py-1 text-sm"
+                  value={team}
+                  onChange={(e) => setTeam(e.target.value)}
+                  title="Filter by country/team"
+                >
+                  <option value="all">All countries</option>
+                  {teams.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+              )}
             <select
               className="min-w-[260px] rounded-md border border-line bg-white px-2 py-1 text-sm"
               value={gameId ?? ''}
@@ -160,6 +195,7 @@ export function GameView({
                 </optgroup>
               ))}
             </select>
+            </>
           )}
           <label className="flex items-center gap-1.5 text-xs text-ink2" title="Analyze via the Python backend (chesslab.api); falls back to offline if unreachable">
             <input type="checkbox" checked={backend} onChange={(e) => setBackend(e.target.checked)} /> Backend

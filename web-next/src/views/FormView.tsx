@@ -25,12 +25,29 @@ export function FormView({
   const tour = useJson<TournamentDoc>(`./data/t/${slug}.json`);
   const p = prof.data;
 
-  const players = useMemo(() => (p ? playersByScore(p).map(([n]) => n) : []), [p]);
+  const allPlayers = useMemo(() => (p ? playersByScore(p).map(([n]) => n) : []), [p]);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<Selection>({ kind: 'cluster', key: 'aggression' });
+  const [country, setCountry] = useState('all'); // country/team filter (team events only)
+  const [countrySlug, setCountrySlug] = useState(slug); // last slug the filter was reset for
+  if (slug !== countrySlug) {
+    setCountrySlug(slug);
+    setCountry('all');
+  }
+
+  const countries = useMemo(() => {
+    const set = new Set<string>();
+    if (p) for (const d of Object.values(p.players)) if (d.team) set.add(d.team);
+    return [...set].sort();
+  }, [p]);
+  const players = useMemo(
+    () => (country === 'all' ? allPlayers : allPlayers.filter((n) => p?.players[n]?.team === country)),
+    [allPlayers, p, country],
+  );
 
   if (prof.loading || tour.loading) return <p className="text-ink2">Loading…</p>;
-  if (!p || !players.length) return <p className="text-w">No profile for {slug}.</p>;
+  if (!p || !allPlayers.length) return <p className="text-w">No profile for {slug}.</p>;
+  if (!players.length) return <p className="text-w">No players from {country} in this field.</p>;
 
   // the shared player persists across tabs; fall back to the leader if absent in this field
   const player = sharedPlayer && players.includes(sharedPlayer) ? sharedPlayer : players[0];
@@ -85,6 +102,17 @@ export function FormView({
     <div className="flex flex-col gap-4">
       {/* header */}
       <div className="flex flex-wrap items-end justify-between gap-3 rounded-lg border border-line bg-white/60 p-3">
+        {countries.length > 0 && (
+          <label className="flex items-center gap-1.5 text-sm text-ink2">
+            Country
+            <select className="rounded-md border border-line bg-white px-2 py-1 text-sm" value={country} onChange={(e) => setCountry(e.target.value)}>
+              <option value="all">All countries</option>
+              {countries.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </label>
+        )}
         <label className="flex items-center gap-1.5 text-sm text-ink2">
           Player
           <select className="rounded-md border border-line bg-white px-2 py-1 text-sm" value={player} onChange={(e) => setPlayer(e.target.value)}>

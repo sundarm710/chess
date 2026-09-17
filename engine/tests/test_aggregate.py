@@ -10,6 +10,7 @@ from chesslab.aggregate import (
     REDUCERS,
     resolve_reducer,
     summarize,
+    team_profile,
     tournament_profile,
 )
 from chesslab.manifest import build_manifest
@@ -131,8 +132,9 @@ def _cell(fid, side, value, status="ok", phase_values=None):
     return FeatureCell(fid, side, value, status, "mean", phase_values or {})
 
 
-def _summary(gid, white, black, result, cells, welo=2700, belo=2700):
-    return GameSummary(gid, "t", 1, white, black, welo, belo, result, "C20", False, False, tuple(cells))
+def _summary(gid, white, black, result, cells, welo=2700, belo=2700, round=1, wteam=None, bteam=None):
+    return GameSummary(gid, "t", round, white, black, welo, belo, result, "C20", False, False,
+                        tuple(cells), wteam=wteam, bteam=bteam)
 
 
 class TestTournamentProfile:
@@ -258,6 +260,16 @@ class TestPhaseAndColourRollups:
         assert doc["rollups"]["SPC.space"]["mean"] == pytest.approx(8.0)
         assert rows[0]["opp"] == "B" and rows[0]["color"] == "w"
 
+    def test_player_team_attached_when_present(self):
+        sums = [_summary("g1", "A", "B", "1-0", [], wteam="Uzbekistan", bteam="Peru")]
+        prof = self._profile(sums)
+        assert prof["players"]["A"]["team"] == "Uzbekistan"
+        assert prof["players"]["B"]["team"] == "Peru"
+
+    def test_player_team_none_for_individual_events(self):
+        sums = [_summary("g1", "A", "B", "1-0", [])]
+        assert self._profile(sums)["players"]["A"]["team"] is None
+
     def test_result_correlation_positive_when_feature_tracks_wins(self):
         # White (more space) always wins; black (less space) always loses → strong +r.
         sums = [_summary(f"g{i}", "A", "B", "1-0",
@@ -265,3 +277,54 @@ class TestPhaseAndColourRollups:
                 for i in range(8)]
         rc = self._profile(sums)["result_correlation"]["SPC.space"]
         assert rc["n"] == 16 and rc["r"] > 0.9
+
+
+class TestTeamProfile:
+    MANIFEST = {"SPC.space": {"higher": "good"}}
+
+    def _profile(self, sums, n_min=1):
+        return team_profile("t", "T", sums, self.MANIFEST, feature_set_version="v", n_min=n_min)
+
+    def test_no_team_data_returns_none(self):
+        sums = [_summary("g1", "A", "B", "1-0", [])]
+        assert team_profile("t", "T", sums, self.MANIFEST, feature_set_version="v") is None
+
+    def test_boards_roll_up_to_team_docs(self):
+        # Round 1: 2 boards, Uzbekistan vs Peru. Uzbekistan wins board 1, draws board 2.
+        sums = [
+            _summary("g1", "A1", "B1", "1-0", [_cell("SPC.space", "w", 10), _cell("SPC.space", "b", 4)],
+                      wteam="Uzbekistan", bteam="Peru"),
+            _summary("g2", "B2", "A2", "1/2-1/2", [_cell("SPC.space", "w", 6), _cell("SPC.space", "b", 8)],
+                      wteam="Peru", bteam="Uzbekistan"),
+        ]
+        prof = self._profile(sums)
+        uzb = prof["teams"]["Uzbekistan"]
+        assert uzb["games"] == 2 and uzb["score"] == 1.5  # 1 (board 1) + 0.5 (board 2)
+        assert {r["name"] for r in uzb["roster"]} == {"A1", "A2"}
+        assert prof["leaderboards"]["SPC.space"]["available"] is True
+
+    def test_match_points_and_standings(self):
+        # One match, round 1: Uzbekistan beats Peru 1.5-0.5 on boards -> 2 match points.
+        sums = [
+            _summary("g1", "A1", "B1", "1-0", [], wteam="Uzbekistan", bteam="Peru", round=1),
+            _summary("g2", "B2", "A2", "1/2-1/2", [], wteam="Peru", bteam="Uzbekistan", round=1),
+        ]
+        prof = self._profile(sums)
+        assert len(prof["matches"]) == 1
+        m = prof["matches"][0]
+        assert set(m["teams"]) == {"Uzbekistan", "Peru"}
+        assert m["match_points"]["Uzbekistan"] == 2 and m["match_points"]["Peru"] == 0
+        standings = {s["team"]: s for s in prof["standings"]}
+        assert standings["Uzbekistan"]["match_points"] == 2
+        assert standings["Uzbekistan"]["match_w"] == 1
+        assert standings["Peru"]["match_l"] == 1
+        assert prof["standings"][0]["team"] == "Uzbekistan"  # ranked first
+
+    def test_drawn_match_splits_match_points(self):
+        # X wins board 1, Y wins board 2 -> 1-1 on game points -> drawn match.
+        sums = [
+            _summary("g1", "A1", "B1", "1-0", [], wteam="X", bteam="Y", round=1),
+            _summary("g2", "B2", "A2", "1-0", [], wteam="Y", bteam="X", round=1),
+        ]
+        m = self._profile(sums)["matches"][0]
+        assert m["match_points"] == {"X": 1, "Y": 1}

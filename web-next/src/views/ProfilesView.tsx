@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { Profile } from '../types';
 import { type ProfUi, type SliceSel, takeaway } from '../lib/profile';
 import { type Metric, featureGroups, groupRanges, playerNames, playerPrefix, traitGroups } from '../lib/metrics';
@@ -11,6 +11,7 @@ import { WinningDNA } from '../components/WinningDNA';
 import { FocusPanel } from '../components/FocusPanel';
 import { RightDrawer } from '../components/RightDrawer';
 import { CorrelationMatrix } from '../components/CorrelationMatrix';
+import { TeamsPanel } from '../components/TeamsPanel';
 
 export function ProfilesView({
   slug,
@@ -29,9 +30,28 @@ export function ProfilesView({
 }) {
   const { data: p, loading, error } = useJson<Profile>(`./data/profiles/${slug}.json`);
 
+  // Players / Teams mode + country filter (team events only — FIDE Olympiad, CLAUDE.md §16/§17).
+  const [viewMode, setViewMode] = useState<'players' | 'teams'>('players');
+  const [country, setCountry] = useState('all');
+  const [filterSlug, setFilterSlug] = useState(slug); // last slug these filters were reset for
+  if (slug !== filterSlug) {
+    setFilterSlug(slug);
+    setViewMode('players');
+    setCountry('all');
+  }
+  const countries = useMemo(() => {
+    const set = new Set<string>();
+    if (p) for (const d of Object.values(p.players)) if (d.team) set.add(d.team);
+    return [...set].sort();
+  }, [p]);
+
   const tt = useMemo(() => (p ? traitTable(p, ui.sel) : null), [p, ui.sel]);
   const tk = useMemo(() => (p ? takeaway(p, ui.sel.phase) : null), [p, ui.sel.phase]);
-  const names = useMemo(() => (p ? playerNames(p) : []), [p]);
+  const allNames = useMemo(() => (p ? playerNames(p) : []), [p]);
+  const names = useMemo(
+    () => (country === 'all' ? allNames : allNames.filter((n) => p?.players[n]?.team === country)),
+    [allNames, p, country],
+  );
   const prefix = useMemo(() => (p ? playerPrefix(p) : []), [p]);
   const featGroups = useMemo(() => (p ? featureGroups(p, ui.sel) : []), [p, ui.sel]);
   const tGroups = useMemo(() => (p && tt ? traitGroups(p, ui.sel, tt) : []), [p, ui.sel, tt]);
@@ -51,7 +71,7 @@ export function ProfilesView({
   if (loading) return <p className="text-ink2">Loading profile…</p>;
   if (error || !p || !tt) return <p className="text-w">Couldn’t load {slug}: {error ?? 'no data'}</p>;
 
-  const activePlayer = player && p.players[player] ? player : null;
+  const activePlayer = player && names.includes(player) ? player : null;
   const expanded = new Set(ui.expanded);
   const selectPlayer = (name: string) => onPlayer(activePlayer === name ? null : name);
   const toggleExpand = (key: string) =>
@@ -73,23 +93,61 @@ export function ProfilesView({
     ...allFeatureMetrics.filter((m) => !memberIds.has(m.id)),
   ];
 
+  const unitCount = viewMode === 'teams' ? Object.keys(p.team_profile?.teams ?? {}).length : names.length;
+  const unitLabel = viewMode === 'teams' ? 'teams' : 'players';
+
   return (
     <>
       <div className="mb-4 rounded-lg border border-line bg-white/60 p-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="font-display text-lg leading-tight">{p.label}</h2>
-            <p className="text-xs text-ink2">{Object.keys(p.players).length} players · click a column to rank it on the right · click a player for their games</p>
+            <p className="text-xs text-ink2">{unitCount} {unitLabel} · click a column to rank it on the right · click a player for their games</p>
           </div>
-          <FilterBar sel={ui.sel} onChange={(sel: SliceSel) => onUi({ sel })} emitCross={p.emit_cross} />
+          {viewMode === 'players' && <FilterBar sel={ui.sel} onChange={(sel: SliceSel) => onUi({ sel })} emitCross={p.emit_cross} />}
         </div>
-        {tk && (
+        {p.team_profile && (
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <div className="inline-flex overflow-hidden rounded-md border border-line text-sm">
+              {(['players', 'teams'] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  className={`px-3 py-1 ${viewMode === m ? 'bg-ink text-paper' : 'bg-white text-ink2'}`}
+                  onClick={() => setViewMode(m)}
+                >
+                  {m === 'players' ? 'Players' : 'Teams'}
+                </button>
+              ))}
+            </div>
+            {viewMode === 'players' && countries.length > 0 && (
+              <label className="flex items-center gap-1.5 text-sm text-ink2">
+                Country
+                <select
+                  className="rounded-md border border-line bg-white px-2 py-1 text-sm"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                >
+                  <option value="all">All countries</option>
+                  {countries.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </label>
+            )}
+          </div>
+        )}
+        {tk && viewMode === 'players' && (
           <p className="mt-2.5 border-l-2 border-good pl-3 text-sm leading-snug text-ink">
             <span className="font-medium">Takeaway.</span> {tk}
           </p>
         )}
       </div>
 
+      {viewMode === 'teams' && p.team_profile ? (
+        <TeamsPanel tp={p.team_profile} meta={p.meta} />
+      ) : (
+      <>
       {/* ── features ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_330px]">
         <div className="min-w-0">
@@ -172,6 +230,8 @@ export function ProfilesView({
         <WinningDNA p={p} sel={ui.sel} table={tt} />
         <CorrelationMatrix p={p} sel={ui.sel} table={tt} />
       </RightDrawer>
+      </>
+      )}
     </>
   );
 }

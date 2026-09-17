@@ -9,7 +9,8 @@
       "label": "FIDE Candidates 2026 \u2014 Open",
       "rounds": 14,
       "count": 56,
-      "has_clock": true
+      "has_clock": true,
+      "has_teams": false
     },
     {
       "slug": "candidates-2026-women",
@@ -20,7 +21,8 @@
       "label": "FIDE Candidates 2026 \u2014 Women",
       "rounds": 13,
       "count": 52,
-      "has_clock": true
+      "has_clock": true,
+      "has_teams": false
     },
     {
       "slug": "grand-swiss-2025",
@@ -31,7 +33,8 @@
       "label": "FIDE Grand Swiss 2025 \u2014 Open",
       "rounds": 11,
       "count": 638,
-      "has_clock": false
+      "has_clock": false,
+      "has_teams": false
     },
     {
       "slug": "norway-chess-2026",
@@ -42,7 +45,8 @@
       "label": "Norway Chess 2026 \u2014 Open",
       "rounds": 10,
       "count": 30,
-      "has_clock": false
+      "has_clock": false,
+      "has_teams": false
     },
     {
       "slug": "olympiad-2026-open",
@@ -53,7 +57,8 @@
       "label": "FIDE Chess Olympiad 2026 \u2014 Open",
       "rounds": 1,
       "count": 393,
-      "has_clock": true
+      "has_clock": true,
+      "has_teams": true
     },
     {
       "slug": "olympiad-2026-women",
@@ -64,7 +69,8 @@
       "label": "FIDE Chess Olympiad 2026 \u2014 Women",
       "rounds": 2,
       "count": 368,
-      "has_clock": true
+      "has_clock": true,
+      "has_teams": true
     }
   ]
 }

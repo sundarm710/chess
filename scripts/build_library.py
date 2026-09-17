@@ -99,6 +99,7 @@ def build_source(src: dict) -> dict:
             "id": gid, "round": rnd, "board": board,
             "white": white, "black": black,
             "welo": h.get("WhiteElo", ""), "belo": h.get("BlackElo", ""),
+            "wteam": h.get("WhiteTeam", ""), "bteam": h.get("BlackTeam", ""),
             "result": result, "eco": h.get("ECO", ""), "opening": h.get("Opening", ""),
             "label": f"R{rnd}.{board} {_last(white)}–{_last(black)} ({result})",
             "pgn": pgn,
@@ -118,6 +119,7 @@ def build_source(src: dict) -> dict:
         "slug": src["slug"], "tournament": src["tournament"], "year": src["year"],
         "section": src["section"], "format": src["format"], "label": label,
         "rounds": rounds, "count": len(games), "has_clock": "%clk" in (games[0]["pgn"] if games else ""),
+        "has_teams": any(g["wteam"] or g["bteam"] for g in games),
     }
     tournament_doc = {"slug": src["slug"], "label": label, "section": src["section"], "games": games}
     print(f"  {src['slug']}: {len(games)} games, {rounds} rounds"

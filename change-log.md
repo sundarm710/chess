@@ -6,6 +6,34 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-09-17 21:14 IST — Country/team data: game filters + team-level rollups
+
+- **What:** Threaded the Olympiad's country data (PGN `WhiteTeam`/`BlackTeam`, already
+  captured in `data/raw/` but dropped before this) all the way to the UI. `build_library.py`
+  now carries `wteam`/`bteam` on every game record and a `has_teams` flag on the library
+  index. `engine/chesslab/aggregate.py`: `GameSummary` gained `wteam`/`bteam`; the
+  player/tournament accumulation loop was factored into a shared `_build_rollup(...,
+  key_fn)` so a new `team_profile(...)` can reuse the exact same feature-rollup/leaderboard
+  machinery grouped by team instead of player, plus `_team_matches(...)` deriving
+  match-level standings (2/1/0 points from boards grouped by round+team-pair — an
+  approximation of FIDE scoring, no official tiebreaks). Player docs also carry a `team`
+  field now (first team seen for that name) for country filtering. `build_profiles.py`
+  attaches this as `profile["team_profile"]` alongside the existing per-player profile.
+  Frontend (both apps): a country/team filter on the game picker; a Players/Teams mode
+  toggle in Profiles with a standings table + team feature leaderboard, and a country
+  filter narrowing the player matrix/leaderboard/radar/form views. web-next: new
+  `TeamsPanel` component, `TeamProfile`/`Standing`/`Match` types; state-reset-on-slug-change
+  rewritten as the render-time "adjust state" pattern (not an effect) to avoid growing the
+  pre-existing `react-hooks/set-state-in-effect` debt (baseline 9 → still 9 after this
+  change set). 4 new Python tests for `team_profile`/player `team` attribution; full
+  suite green (159 Python, all JS, tsc, vitest 31, eslint at baseline).
+- **Why:** user noticed the Form/temperament page felt "missing" (it lives in `web-next`,
+  whose `public/data` mirror was stale — resynced) and asked whether the Olympiad's
+  country-level structure was in the raw data and wanted filters built on it; chose the
+  full scope (game picker + player filters + team-level rollups) when asked.
+
+---
+
 ## 2026-09-17 15:44 IST — 46th FIDE Chess Olympiad (Samarkand 2026) added as a live source
 
 - **What:** New `scripts/fetch_olympiad.py` pulls the Olympiad's Open and Women sections

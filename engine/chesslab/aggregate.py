@@ -99,6 +99,10 @@ class GameSummary:
     cells: Tuple[FeatureCell, ...]
     # Archetype tags from the story layer (e.g. "grind:w", "blunder_fest").
     tags: Tuple[str, ...] = ()
+    # Team/federation for each side, for team events (e.g. FIDE Olympiad). None when the
+    # tournament has no team concept (individual round-robins/swisses).
+    wteam: Optional[str] = None
+    bteam: Optional[str] = None
 
 
 def summarize(analysis: Dict[str, Any], *, slug: str, game: Dict[str, Any]) -> GameSummary:
@@ -149,6 +153,7 @@ def summarize(analysis: Dict[str, Any], *, slug: str, game: Dict[str, Any]) -> G
         has_clock=analysis.get("has_clock", False), has_eval=analysis.get("has_eval", False),
         cells=tuple(cells),
         tags=tuple(analysis.get("story", {}).get("tags", [])),
+        wteam=game.get("wteam") or None, bteam=game.get("bteam") or None,
     )
 
 
@@ -292,23 +297,29 @@ def _performance_elo(acc: _Acc) -> Optional[float]:
     return round(avg_opp + 400 * (acc.wins - acc.losses) / acc.games, 1)
 
 
-def tournament_profile(
-    slug: str, label: str, summaries: List[GameSummary], manifest: Dict[str, Any],
-    *, has_clock: bool, has_eval: bool, feature_set_version: str, n_min: int = 3,
-) -> Dict[str, Any]:
-    """Build the per-tournament profile dict (the SPA contract) from game summaries."""
-    players: Dict[str, _Acc] = {}
+def _build_rollup(
+    summaries: List[GameSummary], manifest: Dict[str, Any], n_min: int,
+    *, key_fn: Callable[[GameSummary, str], Optional[str]],
+    opp_fn: Callable[[GameSummary, str], str],
+    row_extra_fn: Optional[Callable[[GameSummary, str], Dict[str, Any]]] = None,
+) -> Tuple[Dict[str, Any], Dict[str, Any], Dict[str, Any], Dict[str, Any]]:
+    """Generic per-entity (player or team) accumulation: feature rollups, leaderboards,
+    result correlation and feature↔feature correlation. ``key_fn`` picks the grouping
+    entity for a (game, side); a side is skipped entirely when it returns ``None``
+    (e.g. team rollup over a tournament with no team data for that game)."""
+    entities: Dict[str, _Acc] = {}
     # Tournament-level feature↔result observations: fid -> slice -> [(value, score)].
     corr: Dict[str, Dict[str, List[Tuple[float, float]]]] = {}
-    # One observation per (player, game): {feature -> whole-game value}, for feature↔feature.
+    # One observation per (entity, game): {feature -> whole-game value}, for feature↔feature.
     observations: List[Dict[str, float]] = []
 
     for g in summaries:
         ws, bs = SCORE.get(g.result, (0.0, 0.0))
-        for player, side_char, score, opp_elo in (
-            (g.white, "w", ws, g.belo), (g.black, "b", bs, g.welo)
-        ):
-            acc = players.setdefault(player, _Acc())
+        for side_char, score, opp_elo in (("w", ws, g.belo), ("b", bs, g.welo)):
+            key = key_fn(g, side_char)
+            if key is None:
+                continue
+            acc = entities.setdefault(key, _Acc())
             acc.games += 1
             acc.score += score
             acc.wins += score == 1.0
@@ -343,24 +354,27 @@ def tournament_profile(
                     sv = cell.state_values.get(st)
                     if sv is not None:
                         fa[f"st:{st}"].append(sv)
-            # Archetype tags: a side-suffixed tag ("swindle:w") belongs to that player
-            # only; an unsuffixed tag ("blunder_fest") describes the game — both players.
+            # Archetype tags: a side-suffixed tag ("swindle:w") belongs to that entity
+            # only; an unsuffixed tag ("blunder_fest") describes the game — both sides.
             my_tags = [t for t in g.tags if ":" not in t or t.endswith(f":{side_char}")]
             acc.archetypes.update(t.split(":")[0] for t in my_tags)
-            acc.games_rows.append({
+            row = {
                 "id": g.game_id, "round": g.round, "color": side_char,
-                "opp": g.black if side_char == "w" else g.white,
+                "opp": opp_fn(g, side_char),
                 "result": g.result, "score": score, "vals": gvals,
                 "phase_vals": {ph: gphases[ph] for ph in PHASES if gphases[ph]},
                 "tags": list(g.tags),
-            })
+            }
+            if row_extra_fn is not None:
+                row.update(row_extra_fn(g, side_char))
+            acc.games_rows.append(row)
             observations.append(dict(gvals))
 
-    # Per-player profile dicts (cross + per-game phase breakdown always emitted).
-    player_docs: Dict[str, Any] = {}
-    for name, acc in players.items():
+    # Per-entity profile dicts (cross + per-game phase breakdown always emitted).
+    entity_docs: Dict[str, Any] = {}
+    for name, acc in entities.items():
         rows = sorted(acc.games_rows, key=lambda r: (r["round"], r["id"]))
-        player_docs[name] = {
+        entity_docs[name] = {
             "games": acc.games, "score": acc.score,
             "wins": acc.wins, "draws": acc.draws, "losses": acc.losses,
             "performance_elo": _performance_elo(acc),
@@ -388,7 +402,30 @@ def tournament_profile(
     corr_features = [fid for fid in manifest if any(fid in o for o in observations)]
     feature_correlation = FeatureCorrelationMatrix.from_observations(observations, corr_features).to_dict()
 
-    leaderboards = _leaderboards(player_docs, manifest, n_min)
+    leaderboards = _leaderboards(entity_docs, manifest, n_min)
+    return entity_docs, leaderboards, result_correlation, feature_correlation
+
+
+def tournament_profile(
+    slug: str, label: str, summaries: List[GameSummary], manifest: Dict[str, Any],
+    *, has_clock: bool, has_eval: bool, feature_set_version: str, n_min: int = 3,
+) -> Dict[str, Any]:
+    """Build the per-tournament profile dict (the SPA contract) from game summaries."""
+    player_docs, leaderboards, result_correlation, feature_correlation = _build_rollup(
+        summaries, manifest, n_min,
+        key_fn=lambda g, side: g.white if side == "w" else g.black,
+        opp_fn=lambda g, side: g.black if side == "w" else g.white,
+    )
+    # Team events only (§16/§17): first team seen for each player name, for country
+    # filters in the UI. None for individual events (no wteam/bteam anywhere).
+    player_team: Dict[str, str] = {}
+    for g in summaries:
+        if g.wteam:
+            player_team.setdefault(g.white, g.wteam)
+        if g.bteam:
+            player_team.setdefault(g.black, g.bteam)
+    for name, doc in player_docs.items():
+        doc["team"] = player_team.get(name)
     meta = {
         fid: {"name": m.get("name", fid), "category": m.get("category", ""),
               "higher": m.get("higher", "neutral"), "requires": m.get("requires", []),
@@ -399,6 +436,86 @@ def tournament_profile(
         "slug": slug, "label": label, "has_clock": has_clock, "has_eval": has_eval,
         "feature_set_version": feature_set_version, "n_min": n_min, "emit_cross": True,
         "meta": meta, "players": player_docs, "leaderboards": leaderboards,
+        "result_correlation": result_correlation, "feature_correlation": feature_correlation,
+    }
+
+
+def _team_matches(summaries: List[GameSummary]) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """Group boards into team matches (same round + team pair) and derive match-point
+    standings (2/1/0), approximating FIDE team scoring — no official tiebreaks."""
+    buckets: Dict[Tuple[int, Tuple[str, str]], List[GameSummary]] = {}
+    for g in summaries:
+        if not g.wteam or not g.bteam or g.wteam == g.bteam:
+            continue
+        key = (g.round, tuple(sorted((g.wteam, g.bteam))))
+        buckets.setdefault(key, []).append(g)
+
+    matches: List[Dict[str, Any]] = []
+    standings: Dict[str, Dict[str, Any]] = {}
+    for (rnd, (team_a, team_b)), games in buckets.items():
+        pts = {team_a: 0.0, team_b: 0.0}
+        boards = []
+        for g in games:
+            ws, bs = SCORE.get(g.result, (0.0, 0.0))
+            pts[g.wteam] += ws
+            pts[g.bteam] += bs
+            boards.append({"white": g.white, "black": g.black, "result": g.result, "game_id": g.game_id})
+        if pts[team_a] > pts[team_b]:
+            match_points = {team_a: 2, team_b: 0}
+        elif pts[team_a] < pts[team_b]:
+            match_points = {team_a: 0, team_b: 2}
+        else:
+            match_points = {team_a: 1, team_b: 1}
+        matches.append({
+            "round": rnd, "teams": [team_a, team_b], "game_points": pts,
+            "match_points": match_points, "boards": boards,
+        })
+        for t in (team_a, team_b):
+            s = standings.setdefault(t, {
+                "matches": 0, "match_points": 0, "match_w": 0, "match_d": 0, "match_l": 0,
+                "game_points": 0.0,
+            })
+            s["matches"] += 1
+            s["match_points"] += match_points[t]
+            s["game_points"] += pts[t]
+            if match_points[t] == 2:
+                s["match_w"] += 1
+            elif match_points[t] == 1:
+                s["match_d"] += 1
+            else:
+                s["match_l"] += 1
+
+    ranked = sorted(standings.items(), key=lambda kv: (-kv[1]["match_points"], -kv[1]["game_points"], kv[0]))
+    standings_list = [{"team": t, **s, "rank": i + 1} for i, (t, s) in enumerate(ranked)]
+    matches.sort(key=lambda m: m["round"])
+    return matches, standings_list
+
+
+def team_profile(
+    slug: str, label: str, summaries: List[GameSummary], manifest: Dict[str, Any],
+    *, feature_set_version: str, n_min: int = 1,
+) -> Optional[Dict[str, Any]]:
+    """Build the per-team profile dict for a team event (e.g. FIDE Olympiad) — same
+    feature-rollup/leaderboard machinery as :func:`tournament_profile`, grouped by team
+    instead of by player, plus match-level standings. Returns ``None`` when the
+    tournament carries no team data (individual events)."""
+    if not any(g.wteam or g.bteam for g in summaries):
+        return None
+
+    team_docs, leaderboards, result_correlation, feature_correlation = _build_rollup(
+        summaries, manifest, n_min,
+        key_fn=lambda g, side: (g.wteam if side == "w" else g.bteam) or None,
+        opp_fn=lambda g, side: (g.bteam if side == "w" else g.wteam) or "?",
+        row_extra_fn=lambda g, side: {"player": g.white if side == "w" else g.black},
+    )
+    for name, doc in team_docs.items():
+        roster = Counter(r["player"] for r in doc["game_rows"])
+        doc["roster"] = [{"name": n, "games": c} for n, c in roster.most_common()]
+
+    matches, standings = _team_matches(summaries)
+    return {
+        "slug": slug, "label": label, "feature_set_version": feature_set_version, "n_min": n_min,
+        "teams": team_docs, "leaderboards": leaderboards, "matches": matches, "standings": standings,
         "result_correlation": result_correlation, "feature_correlation": feature_correlation,
     }
 

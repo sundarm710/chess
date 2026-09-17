@@ -414,7 +414,9 @@ to `data/raw/`). `build_library.py` reads `raw/`, writes `data/tournaments/` and
 
 **Metadata model.** Index entry per tournament: `slug, tournament, year, section,
 format, label, rounds, count, has_clock`. Game record: `id, round, board, white, black,
-welo, belo, result, eco, opening, label, pgn`.
+welo, belo, wteam, bteam, result, eco, opening, label, pgn`. `wteam`/`bteam` (from the
+PGN `WhiteTeam`/`BlackTeam` headers) are empty strings for individual events — only team
+events (currently the FIDE Olympiad) populate them; §17 team rollups gate on this.
 - **Game id = `<slug>__r<RR>b<BB>`** (zero-padded). The slug (and thus tournament file)
   is recoverable as `id.split("__")[0]` — used by deep links `#<id>@<ply>`.
 - **Category label = `"{tournament} {year} — {Open|Women}"`** (e.g. `Norway Chess 2026 — Open`).
@@ -472,6 +474,19 @@ Tournament-wide, cross-player views ("who is most X") are computed **generically
   `unavailable` (excluded from means, counted in `n_unavailable`); a `Leaderboard` is
   `available:false` when *every* game lacks the capability (Grand Swiss/Norway → `TIM.*`
   disabled; `EVAL.*` disabled everywhere until cloud-eval). The UI shows these disabled.
+- **Team rollups (team events only).** `aggregate.team_profile(...)` reuses the same
+  accumulation machinery as `tournament_profile` (factored into a shared `_build_rollup`,
+  parameterized by a `key_fn` picking the grouping entity) but groups boards by
+  `wteam`/`bteam` instead of by player name — so a team's feature means are just "every
+  board any of its players played," same reducers, same leaderboards. Returns `None` when
+  a tournament has no team data (`GameSummary.wteam`/`bteam`, threaded from the game
+  record's `wteam`/`bteam` — see §16). Also derives **match-level standings**
+  (`_team_matches`): boards are grouped by `(round, sorted team pair)`, summed to game
+  points, and converted to 2/1/0 match points — an approximation of FIDE team scoring,
+  no official tiebreaks. `build_profiles.py` attaches this as `profile["team_profile"]`
+  (`teams`, `leaderboards`, `matches`, `standings`, `result_correlation`,
+  `feature_correlation` — mirrors the top-level shape but team-keyed) alongside the
+  ordinary per-player profile in the same `web/data/profiles/<slug>.json`.
 - **Backend-only**, like the MOVE/GAME tier — not mirrored in JS. The parity wall is
   untouched (everything is downstream of stored analysis).
 - **Build & data.** `scripts/build_profiles.py` (run after `build_library.py`) →
