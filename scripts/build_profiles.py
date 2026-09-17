@@ -48,9 +48,14 @@ def main() -> None:
 
         # Eval is available if any game carried %eval (e.g. annotated by annotate_eval.py).
         has_eval = any(s.has_eval for s in summaries)
+        # Min-n gate (CLAUDE.md §17): default 3, but an event still early in its rounds
+        # (e.g. a live Olympiad after round 1) hasn't given anyone 3 games yet — floor it
+        # to the round count so real (if sparse) data shows instead of every cell gating out.
+        n_min = max(1, min(3, t.get("rounds") or 3))
         profile = tournament_profile(
             t["slug"], t["label"], summaries, manifest,
             has_clock=t.get("has_clock", False), has_eval=has_eval, feature_set_version=version,
+            n_min=n_min,
         )
         teams = team_profile(t["slug"], t["label"], summaries, manifest, feature_set_version=version)
         if teams is not None:

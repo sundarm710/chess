@@ -145,7 +145,10 @@ export function columnRange(
 export function cellColor(g: number): string {
   const c = Math.max(0, Math.min(1, g)); // clamp: per-game values can fall outside the field's mean range
   const hue = c * 120; // red→green (never past green into blue/purple)
-  return `hsl(${hue}, 55%, ${91 - Math.abs(c - 0.5) * 14}%)`;
+  const dist = Math.abs(c - 0.5) * 2; // 0 at the field average, 1 at either extreme
+  const sat = 35 + dist * 40; // 35% (muted, near-average) → 75% (standout)
+  const light = 90 - dist * 24; // 90% (near-paper) → 66% (clearly coloured)
+  return `hsl(${hue}, ${sat}%, ${light}%)`;
 }
 
 // Warm "analytical instrument" categorical palette — White (oxblood) and Black (deep

@@ -25,7 +25,7 @@ export default function App() {
   const lib = useJson<Library>('./data/library.json');
   const initial = parseHash();
   const [view, setView] = useState<View>(initial?.view ?? 'game');
-  const [slug, setSlug] = useState(initial?.slug ?? 'candidates-2026-open');
+  const [slug, setSlug] = useState(initial?.slug ?? 'olympiad-2026-open');
   const [deepGame, setDeepGame] = useState(initial?.gameId);
   const [deepPly, setDeepPly] = useState(initial?.ply ?? 0);
   // Selection that persists across tabs + game round-trips (kept above the view boundary).

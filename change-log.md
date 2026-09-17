@@ -6,6 +6,26 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-09-17 21:44 IST — Default to the Olympiad; fix blank profile tables; better cell colour
+
+- **What:** Three small fixes from user feedback on the just-shipped country/team work:
+  (1) both apps now default to `olympiad-2026-open` on load instead of the Candidates.
+  (2) `build_profiles.py`'s min-n gate (`n_min`, was a flat default of 3) now floors to
+  the tournament's round count (`max(1, min(3, rounds))`) — a live Olympiad after round 1
+  had every player at `games=1 < n_min=3`, so every cell in web-next's `MetricMatrix`
+  rendered as its low-sample "–" placeholder (the reported "all table values blank").
+  Rebuilt profiles: Open now uses `n_min=1`, Women `n_min=2`; real values show. (3)
+  web-next's `cellColor` (`lib/profile.ts`) widened its colour range — saturation
+  35%→75% and lightness 90%→66% by distance from the field average (was a flat 55%
+  saturation squeezed into an 84–91% lightness band, i.e. almost no visible contrast)
+  so standout cells actually read as coloured instead of all-pale.
+- **Why:** user: "set the default to fide chess olympiad open... profiles section shows
+  all table values as blank... feature table feels very off with no good coloring."
+  Root cause of the blank tables was the n_min gate combined with the Olympiad's low
+  per-player game count this early in the event, not a bug in the new filtering code.
+
+---
+
 ## 2026-09-17 21:14 IST — Country/team data: game filters + team-level rollups
 
 - **What:** Threaded the Olympiad's country data (PGN `WhiteTeam`/`BlackTeam`, already

@@ -524,8 +524,8 @@ async function boot() {
     await selectTournament(slug, h.game);
     if (h.ply) goto(h.ply);
   } else {
-    // Default to the first tournament's first game.
-    const first = S.index[0];
+    // Default to the FIDE Olympiad (Open), else the first tournament's first game.
+    const first = S.index.find((t) => t.slug === 'olympiad-2026-open') ?? S.index[0];
     if (first) {
       $('tournamentSel').value = first.slug;
       await selectTournament(first.slug);
