@@ -55,8 +55,8 @@
       "section": "open",
       "format": "swiss",
       "label": "FIDE Chess Olympiad 2026 \u2014 Open",
-      "rounds": 1,
-      "count": 393,
+      "rounds": 2,
+      "count": 799,
       "has_clock": true,
       "has_teams": true
     },
@@ -68,7 +68,7 @@
       "format": "swiss",
       "label": "FIDE Chess Olympiad 2026 \u2014 Women",
       "rounds": 2,
-      "count": 368,
+      "count": 743,
       "has_clock": true,
       "has_teams": true
     }

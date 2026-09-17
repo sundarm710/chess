@@ -29,7 +29,7 @@ function Cell({ c, title, onClick, big }: { c: TempCell; title: string; onClick:
       className={`group/cell relative flex items-center justify-center rounded-[3px] font-mono tabular-nums transition-transform hover:z-10 hover:scale-[1.18] hover:ring-1 hover:ring-ink/40 ${big ? 'h-7 text-[10px]' : 'h-5 text-[9px]'}`}
       style={{ background: tempColor(c.z), color: tempInk(c.z) }}
     >
-      {c.z != null && Math.abs(c.z) >= 0.75 ? z1(c.z) : ''}
+      {c.z == null ? '·' : Math.abs(c.z) >= 0.75 ? z1(c.z) : ''}
     </button>
   );
 }

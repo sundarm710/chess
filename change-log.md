@@ -6,6 +6,25 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-09-17 22:47 IST — Olympiad round 2 imported; fix single-game temperament blanks
+
+- **What:** Re-ran `scripts/fetch_olympiad.py` — round 2 is now complete for both sections
+  (Open 408 games / Women 376 games, both across all 5/4 sub-broadcasts) — then rebuilt
+  the library and profiles (799 games/955 players/204 teams Open, 743/877/188 Women;
+  `n_min` now 2 for both, per the round-count floor from the previous fix). Also fixed a
+  real bug in web-next's temperament heatmap: `zscores()` was returning `0` (not `null`)
+  for a player with only one game, because a single observation trivially equals its own
+  mean — that reads as "exactly average this round" (a real signal) when it actually means
+  "no baseline exists yet", and since the cell only labels itself when `|z| >= 0.75`, that
+  fake zero rendered as a fully blank, page-coloured cell. `zscores` now requires >=2
+  observations before computing anything (returns `null` otherwise); the heatmap cell
+  shows a muted `·` for `null` instead of nothing; and FormView shows an explanatory note
+  when the current player has fewer than 2 games. New test in `temperament.test.ts`.
+- **Why:** user asked to pull round 2 and pointed out the single-game temperament cell was
+  unintuitively blank — traced to the fake-baseline z=0 bug above, not a data problem.
+
+---
+
 ## 2026-09-17 21:44 IST — Default to the Olympiad; fix blank profile tables; better cell colour
 
 - **What:** Three small fixes from user feedback on the just-shipped country/team work:

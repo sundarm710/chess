@@ -137,6 +137,13 @@ export function FormView({
           Six behavioural traits, each folded from several raw features. Colour shows how dialled-up a trait was that
           round versus how <span className="font-semibold">{player}</span> normally plays — the tournament's emotional arc.
         </p>
+        {games.length < 2 && (
+          <p className="mb-3 rounded border border-line bg-paper2/60 px-2.5 py-1.5 text-[11px] text-ink2">
+            <span className="font-semibold">·</span> means no baseline yet — {player} has only played {games.length}{' '}
+            game{games.length === 1 ? '' : 's'} so far, and temperament is measured against a player's own average, so
+            it needs at least 2 games to show anything.
+          </p>
+        )}
         <TemperamentHeatmap
           rows={rows}
           rounds={rounds}

@@ -107,7 +107,9 @@ function std(xs: number[], mean: number): number {
  *  floor is relative to the mean's magnitude so the scale is dimension-agnostic. */
 export function zscores(values: (number | null)[]): (number | null)[] {
   const xs = values.filter((v): v is number => v != null);
-  if (xs.length === 0) return values.map(() => null);
+  // A single observation has no baseline to deviate from — forcing z=0 there would
+  // read as "exactly average" (a real signal) rather than "not enough games yet".
+  if (xs.length < 2) return values.map(() => null);
   const mean = xs.reduce((a, b) => a + b, 0) / xs.length;
   const s = std(xs, mean);
   const floor = Math.max(1e-9, Math.abs(mean) * 0.02);

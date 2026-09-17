@@ -43,6 +43,11 @@ describe('zscores', () => {
     expect(z[1]).toBeNull();
     expect((z[0] as number)).toBeLessThan(0);
   });
+
+  it('returns null (not a fake 0) for a single observation — no baseline exists yet', () => {
+    const z = zscores([42]);
+    expect(z).toEqual([null]);
+  });
 });
 
 describe('buildTemperament', () => {
