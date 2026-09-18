@@ -87,7 +87,9 @@ export interface TeamDoc {
   performance_elo: number | null;
   avg_opp_elo: number | null;
   rollups: Record<string, Rollup>;
-  game_rows: (GameRow & { player: string })[];
+  // `opp` is the opposing TEAM (matches player-mode GameRow's use for a ranking axis);
+  // `player`/`opp_player` name the individual board players.
+  game_rows: (GameRow & { player: string; opp_player: string })[];
   roster: { name: string; games: number }[];
 }
 

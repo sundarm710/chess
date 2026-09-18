@@ -86,7 +86,12 @@ export function PlayerBreakdown({
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) => (
+            {rows.map((r) => {
+              // Team mode rows (aggregate.team_profile) carry the individual board
+              // players too, not just the opposing team — GameRow itself has no such
+              // field, so this is present only when p.players is really team_profile.teams.
+              const rr = r as typeof r & { player?: string; opp_player?: string };
+              return (
               <tr
                 key={r.id}
                 onClick={() => onOpenGame?.(r.id)}
@@ -96,14 +101,20 @@ export function PlayerBreakdown({
                 <td className="sticky left-0 z-10 whitespace-nowrap border-b border-line/60 bg-white px-2 py-0.5">
                   <span className="text-ink2">R{r.round}</span>{' '}
                   <span className={r.color === 'w' ? 'text-w' : 'text-b'}>{r.color === 'w' ? '□' : '■'}</span>{' '}
-                  <span className={onOpenGame ? 'underline decoration-dotted underline-offset-2' : ''}>{r.opp}</span>{' '}
+                  {rr.player && <span className="font-medium">{rr.player}</span>}
+                  {rr.player && <span className="text-ink2"> vs </span>}
+                  <span className={onOpenGame ? 'underline decoration-dotted underline-offset-2' : ''}>
+                    {rr.opp_player ?? r.opp}
+                  </span>{' '}
+                  {rr.opp_player && <span className="text-ink2">({r.opp})</span>}{' '}
                   <span className="text-ink2">· {WDL(r.score)}</span>
                 </td>
                 {metrics.map((m) => (
                   <Cell key={m.id} m={m} v={m.game(r)} />
                 ))}
               </tr>
-            ))}
+              );
+            })}
             <tr className="font-semibold">
               <td className="sticky left-0 z-10 border-t border-line bg-paper2 px-2 py-1 text-left">Mean</td>
               {metrics.map((m) => (

@@ -302,6 +302,10 @@ class TestTeamProfile:
         assert uzb["games"] == 2 and uzb["score"] == 1.5  # 1 (board 1) + 0.5 (board 2)
         assert {r["name"] for r in uzb["roster"]} == {"A1", "A2"}
         assert prof["leaderboards"]["SPC.space"]["available"] is True
+        # Each game row names both the team's own player and the individual opponent
+        # (not just the opposing team), so the per-game breakdown reads as a real game.
+        row1 = next(r for r in uzb["game_rows"] if r["id"] == "g1")
+        assert row1["player"] == "A1" and row1["opp"] == "Peru" and row1["opp_player"] == "B1"
 
     def test_match_points_and_standings(self):
         # One match, round 1: Uzbekistan beats Peru 1.5-0.5 on boards -> 2 match points.

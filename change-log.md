@@ -6,6 +6,21 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-09-18 13:22 IST — Team-mode per-game breakdown names both players
+
+- **What:** `aggregate.team_profile`'s `row_extra_fn` now adds `opp_player` (the
+  individual who played for the other team that board) alongside the existing `player`
+  (the team's own board player) — `opp` stays the opposing *team* name, unchanged, so
+  it still works as the ranking axis the leaderboards/matrix expect. web-next's
+  `PlayerBreakdown` game column now reads `Abdusattorov vs Cori (Peru) · W` in Teams
+  mode instead of just `Peru · W` — both boards' actual players, not just the team
+  names. New Python assertion in `test_boards_roll_up_to_team_docs`; rebuilt profiles.
+- **Why:** user: "in team level - for the games - the players names (along with
+  opponent as well)" — the per-game breakdown only showed team names, not who actually
+  played.
+
+---
+
 ## 2026-09-18 12:46 IST — Round filter, country-tagged names, full team/player parity
 
 - **What:** Three asks. (1) **Round filter**: both apps' game picker gained a Round

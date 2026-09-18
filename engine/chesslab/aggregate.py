@@ -506,7 +506,10 @@ def team_profile(
         summaries, manifest, n_min,
         key_fn=lambda g, side: (g.wteam if side == "w" else g.bteam) or None,
         opp_fn=lambda g, side: (g.bteam if side == "w" else g.wteam) or "?",
-        row_extra_fn=lambda g, side: {"player": g.white if side == "w" else g.black},
+        row_extra_fn=lambda g, side: {
+            "player": g.white if side == "w" else g.black,
+            "opp_player": g.black if side == "w" else g.white,
+        },
     )
     for name, doc in team_docs.items():
         roster = Counter(r["player"] for r in doc["game_rows"])
