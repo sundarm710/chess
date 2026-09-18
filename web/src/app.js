@@ -29,6 +29,7 @@ const S = {
   tournaments: {}, // slug -> {games:[...]} (lazy-fetched, cached)
   byId: {}, // game id -> game record (across loaded tournaments)
   team: 'all', // country/team filter for team events (e.g. FIDE Olympiad)
+  round: 'all', // round filter for multi-round tournaments
   backend: true, // analyze via the Python backend by default
   backendUrl: 'http://localhost:8001',
   lastLoad: null, // {pgn, wn, bn}
@@ -112,13 +113,13 @@ async function loadTournament(slug) {
 }
 
 // Populate the round/game filter for a tournament, grouped by round. Games are
-// narrowed to S.team first when a country/team filter is active (team events only).
+// narrowed to S.team and S.round first when those filters are active.
 function buildGameSelect(doc) {
   const sel = $('gameSel');
   sel.innerHTML = '';
-  const games = S.team === 'all'
-    ? doc.games
-    : doc.games.filter((g) => g.wteam === S.team || g.bteam === S.team);
+  let games = doc.games;
+  if (S.team !== 'all') games = games.filter((g) => g.wteam === S.team || g.bteam === S.team);
+  if (S.round !== 'all') games = games.filter((g) => String(g.round) === S.round);
   let round = null;
   let group = null;
   for (const g of games) {
@@ -155,12 +156,30 @@ function buildTeamSelect(doc) {
   sel.value = 'all';
 }
 
+// Populate (or hide) the round filter — any multi-round tournament, not just team events.
+function buildRoundSelect(doc) {
+  const sel = $('roundSel');
+  const rounds = [...new Set(doc.games.map((g) => g.round))].sort((a, b) => a - b);
+  S.round = 'all';
+  if (rounds.length <= 1) {
+    sel.style.display = 'none';
+    sel.innerHTML = '';
+    return;
+  }
+  sel.style.display = '';
+  sel.innerHTML = '';
+  sel.appendChild(opt('all', 'All rounds'));
+  for (const r of rounds) sel.appendChild(opt(String(r), `Round ${r}`));
+  sel.value = 'all';
+}
+
 // Tournament filter changed: custom → paste box; otherwise load games + the first one.
 async function selectTournament(slug, gameId) {
   if (slug === 'custom') {
     $('pgnbox').style.display = 'block';
     $('gameSel').disabled = true;
     $('teamSel').style.display = 'none';
+    $('roundSel').style.display = 'none';
     return;
   }
   $('pgnbox').style.display = 'none';
@@ -168,6 +187,7 @@ async function selectTournament(slug, gameId) {
   try {
     const doc = await loadTournament(slug);
     buildTeamSelect(doc);
+    buildRoundSelect(doc);
     const games = buildGameSelect(doc);
     const target = gameId && S.byId[gameId] ? gameId : games[0]?.id;
     if (target) {
@@ -179,9 +199,9 @@ async function selectTournament(slug, gameId) {
   }
 }
 
-// Country/team filter changed: re-filter the game list for the current tournament.
-async function selectTeam(team) {
-  S.team = team;
+// Country/team or round filter changed: re-filter the game list for the current tournament.
+async function refilterGames(patch) {
+  Object.assign(S, patch);
   const doc = await loadTournament($('tournamentSel').value);
   const games = buildGameSelect(doc);
   const target = games[0]?.id;
@@ -205,10 +225,15 @@ function setView(view) {
   $('profilesRoot').style.display = profiles ? 'block' : 'none';
   $('gameSel').style.display = profiles ? 'none' : '';
   $('loadBtn').style.display = profiles ? 'none' : '';
-  // teamSel keeps its own display state (hidden entirely for team-less tournaments);
-  // only force it off in profiles view, restore it — untouched — coming back.
-  if (profiles) $('teamSel').style.display = 'none';
-  else if ($('teamSel').options.length) $('teamSel').style.display = '';
+  // teamSel/roundSel keep their own display state (hidden entirely when not applicable);
+  // only force them off in profiles view, restore them — untouched — coming back.
+  if (profiles) {
+    $('teamSel').style.display = 'none';
+    $('roundSel').style.display = 'none';
+  } else {
+    if ($('teamSel').options.length) $('teamSel').style.display = '';
+    if ($('roundSel').options.length) $('roundSel').style.display = '';
+  }
   if (!profiles) $('pgnbox').style.display = 'none';
   for (const b of $('viewTabs').querySelectorAll('[data-view]')) {
     b.classList.toggle('on', b.dataset.view === view);
@@ -457,7 +482,8 @@ function wireEvents() {
     else selectTournament(e.target.value);
   });
   // Country/team filter (team events only): re-filters the game list below it.
-  $('teamSel').addEventListener('change', (e) => selectTeam(e.target.value));
+  $('teamSel').addEventListener('change', (e) => refilterGames({ team: e.target.value }));
+  $('roundSel').addEventListener('change', (e) => refilterGames({ round: e.target.value }));
   // Third filter: picking a game loads it immediately.
   $('gameSel').addEventListener('change', (e) => loadGameById(e.target.value));
   // Load button: only needed for the custom-PGN path.

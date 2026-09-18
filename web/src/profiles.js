@@ -303,7 +303,8 @@ function matrix(p, entities = filteredPlayers(p), leaderboards = p.leaderboards,
 
   let body = '';
   for (const [name, d] of rowsIn) {
-    body += `<tr><th class="mx-name" title="${name}">${name}</th>`;
+    const country = d.team ? `<span class="mx-country">${d.team} ·</span> ` : '';
+    body += `<tr><th class="mx-name" title="${name}">${country}${name}</th>`;
     for (const c of cols) {
       const v = c.get(d, name);
       const low = c.feature && c.n(d) < min;

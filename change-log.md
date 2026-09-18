@@ -6,6 +6,35 @@ and each set is committed + pushed.
 
 ---
 
+## 2026-09-18 12:46 IST — Round filter, country-tagged names, full team/player parity
+
+- **What:** Three asks. (1) **Round filter**: both apps' game picker gained a Round
+  select alongside the existing country filter (vanilla: `#roundSel`; web-next:
+  `GameView`'s local `round` state) — shown for any tournament with >1 round, not just
+  team events, since it helps Grand Swiss/Candidates too. (2) **Country-in-name**:
+  `build_library.py`'s game `label` now prefixes the full country name for team events
+  (`"Uzbekistan · Abdusattorov–Peru · Cori (1-0)"`; unabbreviated — FIDE/IOC codes don't
+  derive cleanly from the country string, e.g. Netherlands → NED not a NET substring, so
+  a plausible-but-wrong code was judged worse than a longer correct name); web-next's
+  `MetricMatrix` player column and Form's player dropdown show the same prefix (from the
+  `team` field on each player doc). (3) **Full team/player field parity in web-next**:
+  `ProfilesView` now builds a `Profile`-shaped view over `team_profile`
+  (`teamsAsProfile`) and feeds it to the exact same feature matrix, temperament matrix,
+  per-game breakdown, Winning DNA and correlation components used for players — not a
+  parallel reimplementation, so every field a player has, a team automatically has too.
+  `TeamsPanel` shrank to just the standings table (the feature leaderboard it had is now
+  redundant with `FocusPanel`). Documented (CLAUDE.md §17) the aggregation-strategy
+  options considered for a team's feature values (board-pooled mean, unweighted
+  mean-of-player-means, median, weighted) and why board-pooled — the existing
+  `team_profile` behavior — is the right default now (same reducer semantics as
+  everywhere else; the alternatives are noisier, not cleaner, while most players still
+  have only 1-2 games this early in the event).
+- **Why:** user: "add filters for Round as well... in front of the players' names show
+  the country... add the exact same profile fields for teams as there are for
+  players... what aggregation strategies are possible - pick the best."
+
+---
+
 ## 2026-09-17 22:47 IST — Olympiad round 2 imported; fix single-game temperament blanks
 
 - **What:** Re-ran `scripts/fetch_olympiad.py` — round 2 is now complete for both sections

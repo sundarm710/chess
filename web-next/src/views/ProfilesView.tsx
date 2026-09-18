@@ -45,18 +45,40 @@ export function ProfilesView({
     return [...set].sort();
   }, [p]);
 
-  const tt = useMemo(() => (p ? traitTable(p, ui.sel) : null), [p, ui.sel]);
-  const tk = useMemo(() => (p ? takeaway(p, ui.sel.phase) : null), [p, ui.sel.phase]);
-  const allNames = useMemo(() => (p ? playerNames(p) : []), [p]);
+  // A Profile-shaped view over team_profile (CLAUDE.md §17: team_profile reuses the exact
+  // same reducer/rollup machinery as the player profile, grouped by team instead of player —
+  // so every field a player has, a team has too, board-pooled the same way TPR/avg-opponent
+  // already are). This lets every player-mode component below — matrix, traits, breakdown,
+  // Winning DNA, correlations — run completely unmodified against teams: no parallel
+  // "team matrix" implementation to keep in sync, real "exact same fields" rather than a
+  // lookalike.
+  const teamsAsProfile: Profile | null = useMemo(() => {
+    if (!p?.team_profile) return null;
+    const tp = p.team_profile;
+    return {
+      slug: p.slug, label: p.label, has_clock: p.has_clock, has_eval: p.has_eval,
+      n_min: tp.n_min, emit_cross: p.emit_cross, meta: p.meta,
+      players: tp.teams as unknown as Profile['players'],
+      leaderboards: tp.leaderboards,
+      result_correlation: tp.result_correlation,
+      feature_correlation: tp.feature_correlation,
+    };
+  }, [p]);
+
+  const activeP = viewMode === 'teams' && teamsAsProfile ? teamsAsProfile : p;
+
+  const tt = useMemo(() => (activeP ? traitTable(activeP, ui.sel) : null), [activeP, ui.sel]);
+  const tk = useMemo(() => (viewMode === 'players' && p ? takeaway(p, ui.sel.phase) : null), [viewMode, p, ui.sel.phase]);
+  const allNames = useMemo(() => (activeP ? playerNames(activeP) : []), [activeP]);
   const names = useMemo(
-    () => (country === 'all' ? allNames : allNames.filter((n) => p?.players[n]?.team === country)),
-    [allNames, p, country],
+    () => (viewMode === 'players' && country !== 'all' ? allNames.filter((n) => p?.players[n]?.team === country) : allNames),
+    [allNames, p, country, viewMode],
   );
-  const prefix = useMemo(() => (p ? playerPrefix(p) : []), [p]);
-  const featGroups = useMemo(() => (p ? featureGroups(p, ui.sel) : []), [p, ui.sel]);
-  const tGroups = useMemo(() => (p && tt ? traitGroups(p, ui.sel, tt) : []), [p, ui.sel, tt]);
-  const featRanges = useMemo(() => groupRanges(featGroups, names, p?.n_min ?? 3), [featGroups, names, p]);
-  const traitRanges = useMemo(() => groupRanges(tGroups, names, p?.n_min ?? 3), [tGroups, names, p]);
+  const prefix = useMemo(() => (activeP ? playerPrefix(activeP) : []), [activeP]);
+  const featGroups = useMemo(() => (activeP ? featureGroups(activeP, ui.sel) : []), [activeP, ui.sel]);
+  const tGroups = useMemo(() => (activeP && tt ? traitGroups(activeP, ui.sel, tt) : []), [activeP, ui.sel, tt]);
+  const featRanges = useMemo(() => groupRanges(featGroups, names, activeP?.n_min ?? 3), [featGroups, names, activeP]);
+  const traitRanges = useMemo(() => groupRanges(tGroups, names, activeP?.n_min ?? 3), [tGroups, names, activeP]);
 
   // id -> Metric, for resolving the focused column into its ranking panel.
   const byId = useMemo(() => {
@@ -69,7 +91,7 @@ export function ProfilesView({
   }, [featGroups, tGroups]);
 
   if (loading) return <p className="text-ink2">Loading profile…</p>;
-  if (error || !p || !tt) return <p className="text-w">Couldn’t load {slug}: {error ?? 'no data'}</p>;
+  if (error || !p || !activeP || !tt) return <p className="text-w">Couldn’t load {slug}: {error ?? 'no data'}</p>;
 
   const activePlayer = player && names.includes(player) ? player : null;
   const expanded = new Set(ui.expanded);
@@ -93,8 +115,8 @@ export function ProfilesView({
     ...allFeatureMetrics.filter((m) => !memberIds.has(m.id)),
   ];
 
-  const unitCount = viewMode === 'teams' ? Object.keys(p.team_profile?.teams ?? {}).length : names.length;
   const unitLabel = viewMode === 'teams' ? 'teams' : 'players';
+  const unitSingular = viewMode === 'teams' ? 'team' : 'player';
 
   return (
     <>
@@ -102,7 +124,7 @@ export function ProfilesView({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="font-display text-lg leading-tight">{p.label}</h2>
-            <p className="text-xs text-ink2">{unitCount} {unitLabel} · click a column to rank it on the right · click a player for their games</p>
+            <p className="text-xs text-ink2">{names.length} {unitLabel} · click a column to rank it on the right · click a {unitSingular} for their games</p>
           </div>
           {viewMode === 'players' && <FilterBar sel={ui.sel} onChange={(sel: SliceSel) => onUi({ sel })} emitCross={p.emit_cross} />}
         </div>
@@ -144,10 +166,10 @@ export function ProfilesView({
         )}
       </div>
 
-      {viewMode === 'teams' && p.team_profile ? (
-        <TeamsPanel tp={p.team_profile} meta={p.meta} />
-      ) : (
-      <>
+      {/* Team-only extra: match-level standings have no player analogue (CLAUDE.md §17
+          _team_matches) — everything below this is the identical player-mode system. */}
+      {viewMode === 'teams' && p.team_profile && <TeamsPanel tp={p.team_profile} />}
+
       {/* ── features ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_330px]">
         <div className="min-w-0">
@@ -156,19 +178,20 @@ export function ProfilesView({
             prefix={prefix}
             groups={featGroups}
             ranges={featRanges}
-            nMin={p.n_min}
+            nMin={activeP.n_min}
             focused={ui.featFocus}
             onFocus={(id) => onUi({ featFocus: id })}
             player={activePlayer}
             onSelectPlayer={selectPlayer}
+            countryOf={(n) => p.players[n]?.team}
           />
           <p className="mt-1.5 text-[11px] text-ink2">
-            Each cell is a player’s mean; colour ranks them within the column (green = better, red = worse), faint = below {p.n_min} games.
-            Click a header to rank that feature on the right; click a player for their per-game breakdown.
+            Each cell is a {unitSingular}’s mean; colour ranks them within the column (green = better, red = worse), faint = below {activeP.n_min} games.
+            Click a header to rank that feature on the right; click a {unitSingular} for their per-game breakdown.
           </p>
           {activePlayer && (
             <PlayerBreakdown
-              p={p}
+              p={activeP}
               player={activePlayer}
               title="per-game breakdown"
               metrics={allFeatureMetrics}
@@ -180,7 +203,7 @@ export function ProfilesView({
           )}
         </div>
         <aside className="flex min-w-0 flex-col gap-4">
-          <FocusPanel metric={byId.get(ui.featFocus) ?? null} names={names} nMin={p.n_min} />
+          <FocusPanel metric={byId.get(ui.featFocus) ?? null} names={names} nMin={activeP.n_min} />
         </aside>
       </div>
 
@@ -196,7 +219,7 @@ export function ProfilesView({
             prefix={prefix}
             groups={tGroups}
             ranges={traitRanges}
-            nMin={p.n_min}
+            nMin={activeP.n_min}
             focused={ui.traitFocus}
             onFocus={(id) => onUi({ traitFocus: id })}
             expandable
@@ -204,13 +227,14 @@ export function ProfilesView({
             onToggleExpand={toggleExpand}
             player={activePlayer}
             onSelectPlayer={selectPlayer}
+            countryOf={(n) => p.players[n]?.team}
           />
           <p className="mt-1.5 text-[11px] text-ink2">
             Trait cells are field-relative (green = more of the trait); member features keep their own direction. Click a trait to rank it on the right.
           </p>
           {activePlayer && (
             <PlayerBreakdown
-              p={p}
+              p={activeP}
               player={activePlayer}
               title={focusGroup ? `games — ${focusGroup.label.toLowerCase()} first` : 'games by temperament'}
               metrics={traitBreakdownMetrics}
@@ -222,16 +246,14 @@ export function ProfilesView({
           )}
         </div>
         <aside className="flex min-w-0 flex-col gap-4">
-          <FocusPanel metric={byId.get(ui.traitFocus) ?? null} names={names} nMin={p.n_min} />
+          <FocusPanel metric={byId.get(ui.traitFocus) ?? null} names={names} nMin={activeP.n_min} />
         </aside>
       </div>
 
       <RightDrawer label="Insights">
-        <WinningDNA p={p} sel={ui.sel} table={tt} />
-        <CorrelationMatrix p={p} sel={ui.sel} table={tt} />
+        <WinningDNA p={activeP} sel={ui.sel} table={tt} />
+        <CorrelationMatrix p={activeP} sel={ui.sel} table={tt} />
       </RightDrawer>
-      </>
-      )}
     </>
   );
 }

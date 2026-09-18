@@ -53,6 +53,12 @@ def _last(name: str) -> str:
     return name.split(",")[0].strip() if name else "?"
 
 
+def _tagged(name: str, team: str) -> str:
+    """Last name, country-prefixed for team events (empty team = unchanged)."""
+    short = _last(name)
+    return f"{team} · {short}" if team else short
+
+
 def _iter_games(src: dict):
     base = RAW / src["path"]
     files = sorted(base.glob("round-*/games.pgn")) if src["kind"] == "dir" else [base]
@@ -94,14 +100,15 @@ def build_source(src: dict) -> dict:
             truncated += 1
         pgn = _export(game, headers=False).strip()
         white, black, result = h.get("White", "?"), h.get("Black", "?"), h.get("Result", "*")
+        wteam, bteam = h.get("WhiteTeam", ""), h.get("BlackTeam", "")
         gid = f"{src['slug']}__r{rnd:02d}b{board:02d}"
         rec = {
             "id": gid, "round": rnd, "board": board,
             "white": white, "black": black,
             "welo": h.get("WhiteElo", ""), "belo": h.get("BlackElo", ""),
-            "wteam": h.get("WhiteTeam", ""), "bteam": h.get("BlackTeam", ""),
+            "wteam": wteam, "bteam": bteam,
             "result": result, "eco": h.get("ECO", ""), "opening": h.get("Opening", ""),
-            "label": f"R{rnd}.{board} {_last(white)}–{_last(black)} ({result})",
+            "label": f"R{rnd}.{board} {_tagged(white, wteam)}–{_tagged(black, bteam)} ({result})",
             "pgn": pgn,
         }
         games.append(rec)

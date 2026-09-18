@@ -22,6 +22,7 @@ export function MetricMatrix({
   onToggleExpand,
   player,
   onSelectPlayer,
+  countryOf,
 }: {
   names: string[]; // players in baseline (points) order — the fixed row order
   prefix: PrefixCol[];
@@ -35,6 +36,7 @@ export function MetricMatrix({
   onToggleExpand?: (groupKey: string) => void;
   player?: string | null;
   onSelectPlayer?: (name: string) => void;
+  countryOf?: (name: string) => string | null | undefined; // shown as a muted prefix, team events only
 }) {
   // visible columns per group: lead (if any) + members (always for non-collapsible groups)
   const view = useMemo(
@@ -127,6 +129,7 @@ export function MetricMatrix({
                     title="Show this player's per-game breakdown"
                     className={`text-left hover:underline ${sel ? 'font-semibold text-w' : ''}`}
                   >
+                    {countryOf?.(name) && <span className="mr-1 text-[9px] text-ink2">{countryOf(name)} ·</span>}
                     {name}
                   </button>
                 </td>

@@ -176,8 +176,9 @@
   .matrix th.mx-h:hover{color:var(--ink);text-decoration:underline;}
   .matrix th.sel{background:var(--ink);color:var(--paper);}
   .matrix .mx-name{position:sticky;left:0;z-index:1;background:#fff;text-align:left;
-    font-family:"Hanken Grotesk",sans-serif;max-width:150px;overflow:hidden;text-overflow:ellipsis;}
+    font-family:"Hanken Grotesk",sans-serif;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .matrix thead .mx-name{z-index:3;background:var(--paper);}
+  .mx-country{color:var(--ink2);font-size:0.85em;}
   .matrix .catstart{border-left:2px solid var(--line);}
   .matrix .mx-cell.low{opacity:.4;}
   .matrix tbody tr:hover .mx-cell{outline:1px solid rgba(33,28,22,.12);}
@@ -237,6 +238,7 @@
     <div class="controls">
       <select id="tournamentSel" title="Tournament · section"></select>
       <select id="teamSel" title="Filter by country/team" style="display:none;"></select>
+      <select id="roundSel" title="Filter by round" style="display:none;"></select>
       <select id="gameSel" title="Round · game"></select>
       <button id="loadBtn">Load</button>
       <label class="modetoggle" title="Compute via the Python backend instead of in-browser">

@@ -28,7 +28,8 @@ export function GameView({
 
   const [gameId, setGameId] = useState<string | null>(initialGameId ?? null);
   const [team, setTeam] = useState('all'); // country/team filter (team events only)
-  const [teamSlug, setTeamSlug] = useState(slug); // last slug the filter was reset for
+  const [round, setRound] = useState('all'); // round filter (multi-round tournaments)
+  const [filterSlug, setFilterSlug] = useState(slug); // last slug these filters were reset for
   const [customPgn, setCustomPgn] = useState('');
   const [submittedCustom, setSubmittedCustom] = useState('');
   const [backend, setBackend] = useState(true); // default on so MOVE/CLOCK features compute
@@ -37,11 +38,13 @@ export function GameView({
   const [selectedId, setSelectedId] = useState('MAT.hanging');
   const appliedInitial = useRef(false);
 
-  // Country/team filter (FIDE Olympiad etc. — CLAUDE.md §16); reset it on tournament
-  // change (React's "adjust state during render" recipe — avoids an effect-driven reset).
-  if (slug !== teamSlug) {
-    setTeamSlug(slug);
+  // Country/team + round filters (FIDE Olympiad etc. — CLAUDE.md §16); reset on
+  // tournament change (React's "adjust state during render" recipe — avoids an
+  // effect-driven reset).
+  if (slug !== filterSlug) {
+    setFilterSlug(slug);
     setTeam('all');
+    setRound('all');
   }
   const teams = useMemo(() => {
     const set = new Set<string>();
@@ -51,9 +54,13 @@ export function GameView({
     }
     return [...set].sort();
   }, [games]);
+  const rounds = useMemo(() => [...new Set(games.map((g) => g.round))].sort((a, b) => a - b), [games]);
   const filteredGames = useMemo(
-    () => (team === 'all' ? games : games.filter((g) => g.wteam === team || g.bteam === team)),
-    [games, team],
+    () =>
+      games
+        .filter((g) => team === 'all' || g.wteam === team || g.bteam === team)
+        .filter((g) => round === 'all' || g.round === Number(round)),
+    [games, team, round],
   );
 
   // Pick a default game when the tournament (or team filter) loads/changes.
@@ -177,6 +184,19 @@ export function GameView({
                   <option value="all">All countries</option>
                   {teams.map((t) => (
                     <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+              )}
+              {rounds.length > 1 && (
+                <select
+                  className="rounded-md border border-line bg-white px-2 py-1 text-sm"
+                  value={round}
+                  onChange={(e) => setRound(e.target.value)}
+                  title="Filter by round"
+                >
+                  <option value="all">All rounds</option>
+                  {rounds.map((r) => (
+                    <option key={r} value={r}>Round {r}</option>
                   ))}
                 </select>
               )}

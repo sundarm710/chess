@@ -117,7 +117,7 @@ export function FormView({
           Player
           <select className="rounded-md border border-line bg-white px-2 py-1 text-sm" value={player} onChange={(e) => setPlayer(e.target.value)}>
             {players.map((n) => (
-              <option key={n} value={n}>{n}</option>
+              <option key={n} value={n}>{p.players[n]?.team ? `${p.players[n].team} · ${n}` : n}</option>
             ))}
           </select>
         </label>

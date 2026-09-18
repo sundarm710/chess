@@ -421,17 +421,28 @@ events (currently the FIDE Olympiad) populate them; §17 team rollups gate on th
   is recoverable as `id.split("__")[0]` — used by deep links `#<id>@<ply>`.
 - **Category label = `"{tournament} {year} — {Open|Women}"`** (e.g. `Norway Chess 2026 — Open`).
 - `slug` is hyphenated, no underscores (so `__` is an unambiguous id delimiter).
+- **Game `label` is country-tagged for team events**: `_tagged(name, team)` in
+  `build_library.py` prefixes a non-empty `wteam`/`bteam` onto the last name
+  (`"Uzbekistan · Abdusattorov–Peru · Cori (1-0)"`); unchanged (no prefix) when `team`
+  is empty, so individual events are unaffected. Full country name, not an abbreviation
+  — FIDE/IOC federation codes don't map cleanly from the country string (`"Netherlands"`
+  → real code `NED`, not a `NET` substring guess), so a wrong-looking 3-letter code was
+  judged worse than a longer, unambiguous full name.
 
 ⚠ **`build_library.py` regenerates every `web/data/t/<slug>.json` from `data/raw/` —
 which has no `%eval` — so re-running it WIPES the Stockfish annotations for all
 tournaments.** After any library rebuild, either re-run `annotate_eval.py <slug>` or
 restore the untouched tournaments' `t/*.json` from git before `build_profiles.py`.
 
-**Frontend filtering (two cascading selects).** `#tournamentSel` (categories from
-`library.json`, plus a `Custom PGN…` option) → on change, lazy-fetch `t/<slug>.json` and
-populate `#gameSel` grouped by round; picking a game loads it. There are **no built-in
-sample games** — the library + custom paste are the only sources. To add a tournament:
-drop its PGN under `data/raw/`, add a `SOURCES` row, run `build_library.py`, commit.
+**Frontend filtering (three cascading selects).** `#tournamentSel` (categories from
+`library.json`, plus a `Custom PGN…` option) → on change, lazy-fetch `t/<slug>.json`,
+populate `#teamSel` (country/team — hidden unless the tournament has any `wteam`/`bteam`)
+and `#roundSel` (hidden unless the tournament has >1 round), then populate `#gameSel`
+grouped by round from whatever `#teamSel`/`#roundSel` currently narrow it to; picking a
+game loads it. web-next's `GameView` mirrors this with local `team`/`round` state instead
+of DOM selects. There are **no built-in sample games** — the library + custom paste are
+the only sources. To add a tournament: drop its PGN under `data/raw/`, add a `SOURCES`
+row, run `build_library.py`, commit.
 
 ## 17. Cross-game aggregation & tournament profiles
 
@@ -487,6 +498,33 @@ Tournament-wide, cross-player views ("who is most X") are computed **generically
   (`teams`, `leaderboards`, `matches`, `standings`, `result_correlation`,
   `feature_correlation` — mirrors the top-level shape but team-keyed) alongside the
   ordinary per-player profile in the same `web/data/profiles/<slug>.json`.
+- **Aggregation strategy for a team's feature values — chosen deliberately.** Candidates
+  considered: (a) **board-pooled mean** (current) — every board any of the team's players
+  played is one observation, reduced the same way a player's games are; (b) unweighted
+  mean-of-player-means — average each player's own mean, so a heavily-played board-1
+  regular doesn't outweigh a reserve; (c) median across boards — outlier-robust; (d)
+  board-number/rating-weighted. **(a) is what's implemented, and is the right default**:
+  it's the same reducer semantics already used everywhere else (player rollups, phase
+  rollups), so "team X's average space control" and "player Y's average space control"
+  mean the same kind of thing — no second aggregation layer to explain or keep consistent.
+  It's also the standard way team performance ratings are computed (pool every game as if
+  the team were one entity), which is already how `performance_elo`/`avg_opp_elo` work
+  here. (b)/(c)/(d) are real alternatives for a future "roster style, not results" lens,
+  but not clearly better *right now*: this early in a Swiss (few rounds played), most
+  players have only 1–2 games, so a per-player mean-of-means is a noisier estimate than
+  the pooled one, not a cleaner one — the case for switching strengthens as rounds
+  accumulate, not before. Not implemented until there's a concrete need for it.
+- **Frontend parity with players — via reuse, not reimplementation.** web-next's
+  `ProfilesView` builds a `Profile`-shaped view over `team_profile` (`teamsAsProfile`:
+  same `meta`, `players` ← `team_profile.teams`, `leaderboards`/`result_correlation`/
+  `feature_correlation` ← their team-profile counterparts) and feeds it to the *exact same*
+  `featureGroups`/`traitGroups`/`MetricMatrix`/`PlayerBreakdown`/`WinningDNA`/
+  `CorrelationMatrix` components used for players — no parallel "team matrix" to keep in
+  sync; every field a player has, a team has, automatically, because it's the same code
+  path. `TeamsPanel` (standings) is the one addition with no player analogue. The vanilla
+  `web/` app's flat `matrix()`/`leaderboard()` already showed every feature regardless of
+  entity type (no per-category grouping there to begin with), so it needed no change for
+  this.
 - **Backend-only**, like the MOVE/GAME tier — not mirrored in JS. The parity wall is
   untouched (everything is downstream of stored analysis).
 - **Build & data.** `scripts/build_profiles.py` (run after `build_library.py`) →
